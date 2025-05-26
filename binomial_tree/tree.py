@@ -157,7 +157,7 @@ class BinomialDecisionTree:
         value_to_code_map = {val: i for i, val in enumerate(unique_values)}
         code_to_value_map = {i: val for i, val in enumerate(unique_values)}
         
-        codes = np.array([value_to_code_map[val] for val in str_column_data], dtype=float)
+        codes = np.array([value_to_code_map[val] for val in str_column_data], dtype=int)
         
         self.categorical_maps[feature_name] = {
             'value_to_code': value_to_code_map,
@@ -396,18 +396,18 @@ class BinomialDecisionTree:
                     if cat_map:
                         code = cat_map['value_to_code'].get(str_val)
                         if code is None: # Unseen category
-                            # Handle unseen: map to the code for self.nan_placeholder_categorical if it was part of training,
-                            # otherwise use a default code (-1.0). This ensures new categories follow the path
+                            # Handle unseen: map to the code for '__NaN__' if it was part of training,
+                            # otherwise use a default code (-1). This ensures new categories follow the path
                             # designated for missing/NaN values from training, or a generic 'unknown' path.
-                            unknown_code = cat_map['value_to_code'].get(self.nan_placeholder_categorical, -1.0)
-                            coded_row_features[j] = unknown_code
+                            unknown_code = cat_map['value_to_code'].get('__NaN__', -1) # Use string literal and int fallback
+                            coded_row_features[j] = unknown_code # unknown_code is int, will be stored as float in coded_row_features
                             warnings.warn(
                                 f"Unseen category '{str_val}' for feature '{feat_name}'. "
-                                f"Mapping to code {unknown_code} (path for '{self.nan_placeholder_categorical}' or default for unknowns).",
+                                f"Mapping to code {unknown_code} (path for '__NaN__' or default for unknowns).", # Use string literal in warning
                                 UserWarning
                             )
                         else:
-                            coded_row_features[j] = float(code)
+                            coded_row_features[j] = code # code from map is int, assigned to float array (becomes float)
                     else: # Should not happen if tree is fit
                         coded_row_features[j] = -1.0 # Default code for error state
             
