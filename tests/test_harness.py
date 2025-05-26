@@ -197,7 +197,14 @@ def run_test_scenario(
     # This is just to be explicit if test_accuracy.py is defining it.
     # tree_params_for_init = tree_params.copy() # No longer needed if tree_params is already fine
 
-    tree = BinomialDecisionTree(**tree_params)
+    # Pass the verbose flag from run_test_scenario to the tree constructor
+    # tree_params may or may not contain 'verbose', so we pass it explicitly.
+    # If 'verbose' is in tree_params, this explicit one will likely take precedence or cause an error
+    # if BinomialDecisionTree doesn't expect it twice.
+    # The BinomialDecisionTree now has verbose in its __init__, so this is fine.
+    current_tree_params_for_init = tree_params.copy()
+    # The verbose flag for the tree's internal logging should come from the test_harness's verbose flag
+    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)
 
     start_time = time.time()
     try:

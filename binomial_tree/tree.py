@@ -77,11 +77,15 @@ class Node:
             return (f"Node(id={self.id}, Split, depth={self.depth}, rule='{self.split_rule['feature']}', "
                     f"val={self.split_rule['value']}')")
 
+import time # For performance logging
+
 class BinomialDecisionTree:
     def __init__(self, min_samples_split=2, max_depth=5, min_samples_leaf=1, 
                  confidence_level=0.95, min_likelihood_gain=-1e-6, 
                  min_n_sum_for_statistical_stop=30,
-                 relative_width_factor=0.5, epsilon_stopping=1e-6):
+                 relative_width_factor=0.5, epsilon_stopping=1e-6,
+                 max_numerical_split_points=255, # Max number of split points for numerical features
+                 verbose=False): # Added verbose
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.min_samples_leaf = min_samples_leaf
@@ -104,6 +108,8 @@ class BinomialDecisionTree:
         self.feature_types = {} 
         self.categorical_maps = {} 
         self.numeric_medians = {}
+        self.verbose = verbose # Store verbose flag
+        self.max_numerical_split_points = max_numerical_split_points
 
     def _infer_feature_types(self, data_list_of_dicts, feature_columns):
         inferred_types = {}
@@ -159,6 +165,10 @@ class BinomialDecisionTree:
         return codes
 
     def fit(self, data_list_of_dicts, target_column, exposure_column, feature_columns, feature_types=None):
+        if self.verbose:
+            fit_start_time = time.time()
+            print(f"BinomialDecisionTree.fit started. Training data size: {len(data_list_of_dicts)} samples.")
+
         if not data_list_of_dicts:
             raise ValueError("Training data cannot be empty.")
 
@@ -208,6 +218,12 @@ class BinomialDecisionTree:
                     self.feature_matrix[:,j] = codes
                     self.feature_types[feat_name] = 'categorical' # Correct type
         
+        if self.verbose:
+            print(f"BinomialDecisionTree.fit: Preprocessing completed. {len(self.feature_columns)} features processed.")
+            print(f"Feature types: {self.feature_types}")
+            if self.numeric_medians: print(f"Numeric medians for imputation: {self.numeric_medians}")
+            if self.categorical_maps: print(f"Categorical maps created for: {list(self.categorical_maps.keys())}")
+
         initial_indices = np.arange(n_samples)
         root_node = Node(depth=0, indices=initial_indices)
         root_node.calculate_stats(self, self.k_array, self.n_array)
@@ -217,13 +233,25 @@ class BinomialDecisionTree:
 
         if root_node.num_samples == 0: 
             root_node.set_as_leaf("empty_dataset")
+            if self.verbose:
+                print(f"  Root node {root_node.id} is LEAF. Reason: empty_dataset")
+                fit_end_time = time.time()
+                print(f"BinomialDecisionTree.fit completed in {fit_end_time - fit_start_time:.4f}s. Total nodes: {len(self.nodes)}")
             return
 
         queue = [root_node.id] 
 
+        if self.verbose:
+            print(f"  Root node {root_node.id} (Depth {root_node.depth}): {root_node.num_samples} samples. LL_self={root_node.log_likelihood_self:.2f}. Added to queue.")
+
         while queue:
             current_node_id = queue.pop(0)
             current_node = self.nodes[current_node_id]
+            
+            indent = "  " * (current_node.depth + 1) # For indented logging
+            if self.verbose:
+                print(f"{indent}Processing Node {current_node.id} (Depth {current_node.depth}): {current_node.num_samples} samples. LL_self={current_node.log_likelihood_self:.2f}")
+
 
             stop_reason = check_node_stopping_conditions(
                 node_k_sum=current_node.k_sum,
@@ -240,15 +268,40 @@ class BinomialDecisionTree:
 
             if stop_reason:
                 current_node.set_as_leaf(stop_reason)
+                if self.verbose:
+                    print(f"{indent}  Node {current_node.id} becomes LEAF. Reason: {stop_reason}")
                 continue
+            
+            if self.verbose:
+                t_split_start = time.time()
+                print(f"{indent}  Attempting to find best split for Node {current_node.id}...")
 
             best_split_found = find_best_split_for_node(
-                self, 
-                current_node.indices, 
-                current_node.log_likelihood_self 
+                tree=self, # Pass tree instance 
+                indices_for_node=current_node.indices, 
+                current_node_log_likelihood=current_node.log_likelihood_self,
+                verbose=self.verbose, # Pass verbose flag
+                node_id_for_logs=current_node.id, # Pass node_id for logging context
+                node_depth_for_logs=current_node.depth, # Pass node_depth for logging context
+                max_numerical_split_points=self.max_numerical_split_points # Pass new param
             )
 
+            if self.verbose:
+                t_split_end = time.time()
+                print(f"{indent}  find_best_split_for_node for Node {current_node.id} took {t_split_end - t_split_start:.4f}s")
+
             if best_split_found and best_split_found.get('log_likelihood_gain', -float('inf')) > self.min_likelihood_gain:
+                if self.verbose:
+                    # Default representation, might be overridden for specific types
+                    raw_value = best_split_found['value']
+                    if isinstance(raw_value, dict): # Categorical split value is a dict
+                        split_val_repr = f"'codes_for_left_group={raw_value.get('codes_for_left_group')}'"
+                    elif isinstance(raw_value, float):
+                         split_val_repr = f"'{raw_value:.3f}'"
+                    else: # General case, simple string representation
+                        split_val_repr = f"'{raw_value}'"
+                    print(f"{indent}  Node {current_node.id} SPLIT on {best_split_found['feature']} ({best_split_found['type']}) Val: {split_val_repr}. Gain: {best_split_found['log_likelihood_gain']:.4f}")
+                
                 current_node.set_split_rule(
                     feature=best_split_found['feature'],
                     value=best_split_found['value'],
@@ -270,6 +323,10 @@ class BinomialDecisionTree:
                 
                 current_node.children_ids = [left_child.id, right_child.id]
                 
+                if self.verbose:
+                    print(f"{indent}    Added Left Child Node {left_child.id} (Depth {left_child.depth}, {left_child.num_samples} samples) to queue.")
+                    print(f"{indent}    Added Right Child Node {right_child.id} (Depth {right_child.depth}, {right_child.num_samples} samples) to queue.")
+
                 queue.append(left_child.id)
                 queue.append(right_child.id)
             else:
@@ -279,6 +336,8 @@ class BinomialDecisionTree:
                 elif not best_split_found: # No split was found at all by splitting logic
                     reason = "no_split_found"
                 current_node.set_as_leaf(reason)
+                if self.verbose:
+                    print(f"{indent}  Node {current_node.id} becomes LEAF. Reason: {reason}")
 
     def _traverse_tree(self, node_id, row_features_coded, feature_name_to_idx_map):
         node = self.nodes[node_id]
@@ -359,7 +418,8 @@ class BinomialDecisionTree:
             'min_likelihood_gain': self.min_likelihood_gain,
             'min_n_sum_for_statistical_stop': self.min_n_sum_for_statistical_stop,
             'relative_width_factor': self.relative_width_factor,
-            'epsilon_stopping': self.epsilon_stopping
+            'epsilon_stopping': self.epsilon_stopping,
+            'max_numerical_split_points': self.max_numerical_split_points
         }
 
     def print_tree(self, node_id=None, indent=""):
