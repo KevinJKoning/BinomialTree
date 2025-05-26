@@ -26,76 +26,167 @@ TRUE_P_COLUMN = 'true_p'
 
 # Define configurations to test
 CONFIGURATIONS_TO_TEST = [
-    # {
-    #     "config_name": "InitialConfig_Std",
-    #     "min_samples_split": 20,
-    #     "min_samples_leaf": 10,
-    #     "confidence_level": 0.95,
-    #     "min_n_sum_for_statistical_stop": 50,
-    #     "relative_width_factor": 0.75,
-    #     "min_likelihood_gain": 0.1,
-    #     "epsilon_stopping": 1e-6,
-    #     "general_max_depth": 5,
-    #     "scenario_overrides": {
-    #         "Numerical_Linear_Function": {"max_depth": 7},
-    #         "Mixed_Features_Interaction": {"max_depth": 6},
-    #         "Numerical_Step_Rare_Events": {
-    #             "min_samples_leaf": 20, "relative_width_factor": 2.5, "min_n_sum_for_statistical_stop": 1000,
-    #         },
-    #         "Numerical_Linear_Large_100K": {
-    #             "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
-    #             "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
-    #         },
-    #         "Numerical_Linear_Huge_1M": {
-    #             "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
-    #             "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
-    #         }
-    #     }
-    # },
+    {
+        "config_name": "InitialConfig_Std",
+        "min_samples_split": 20,
+        "min_samples_leaf": 10,
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.1,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 5,
+        "max_numerical_split_points": 100, # Added default
+        "scenario_overrides": {
+            "Numerical_Linear_Function": {"max_depth": 7},
+            "Mixed_Features_Interaction": {"max_depth": 6},
+            "Numerical_Step_Rare_Events": {
+                "min_samples_leaf": 20, "relative_width_factor": 2.5, "min_n_sum_for_statistical_stop": 1000,
+            },
+            "Numerical_Linear_Large_100K": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
+            },
+            "Numerical_Linear_Huge_1M": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1,
+                "max_numerical_split_points": 255
+            }
+        }
+    },
     {
         "config_name": "Config_Global_LeafPlus20",
         "min_samples_split": 40, "min_samples_leaf": 20, "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.1, "epsilon_stopping": 1e-6, "general_max_depth": 5,
+        "max_numerical_split_points": 100, # Added default
         "scenario_overrides": {
-             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30}, # Keep other rare event params
-             "Numerical_Linear_Large_100K": {"max_depth": 6}, # Uses base params from this config, just override depth
-             "Numerical_Linear_Huge_1M": {"max_depth": 6}    # Uses base params from this config, just override depth
+             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30},
+             "Numerical_Linear_Large_100K": {"max_depth": 6},
+             "Numerical_Linear_Huge_1M": {"max_depth": 6, "max_numerical_split_points": 255}
         }
     },
-    # {
-    #     "config_name": "Config_MoreSplits", # Lower min_samples_leaf, lower gain threshold
-    #     "min_samples_split": 10, "min_samples_leaf": 5, "confidence_level": 0.95,
-    #     "min_n_sum_for_statistical_stop": 30, "relative_width_factor": 0.5,
-    #     "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "general_max_depth": 7,
-    #      "scenario_overrides": {
-    #          "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500},
-    #          "Numerical_Linear_Large_100K": {
-    #             "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
-    #             "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
-    #         },
-    #         "Numerical_Linear_Huge_1M": {
-    #             "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
-    #             "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
-    #         }
-    #     }
-    # }
+    {
+        "config_name": "Config_MoreSplits", # Lower min_samples_leaf, lower gain threshold
+        "min_samples_split": 10, "min_samples_leaf": 5, "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 30, "relative_width_factor": 0.5,
+        "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "general_max_depth": 7,
+        "max_numerical_split_points": 100, # Added default
+         "scenario_overrides": {
+             "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500},
+             "Numerical_Linear_Large_100K": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
+            },
+            "Numerical_Linear_Huge_1M": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1,
+                "max_numerical_split_points": 255
+            }
+        }
+    },
+    # Parameter Drift Testing Configurations
+    {
+        "config_name": "DriftTest_Baseline",
+        "min_samples_split": 40,
+        "min_samples_leaf": 20,
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 7,
+        "max_numerical_split_points": 100,
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
+            "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+        }
+    },
+    {
+        "config_name": "DriftTest_Leaf_5",
+        "min_samples_split": 10, # Adjusted: 2 * leaf
+        "min_samples_leaf": 5,   # Varied
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 7,
+        "max_numerical_split_points": 100,
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 10, "min_samples_split": 20, "max_numerical_split_points": 255},
+            "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
+            "Categorical_High_Cardinality": {"min_samples_leaf": 10, "min_samples_split": 20, "general_max_depth": 8}
+        }
+    },
+    {
+        "config_name": "DriftTest_Leaf_50",
+        "min_samples_split": 100, # Adjusted: 2 * leaf
+        "min_samples_leaf": 50,   # Varied
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 7,
+        "max_numerical_split_points": 100,
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 100, "min_samples_split": 200, "max_numerical_split_points": 255},
+            "Numerical_Step_Rare_Events": {"min_samples_leaf": 60, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
+            "Categorical_High_Cardinality": {"min_samples_leaf": 60, "min_samples_split": 120, "general_max_depth": 8}
+        }
+    },
+    {
+        "config_name": "DriftTest_MaxNumSplit_50", # Baseline with max_numerical_split_points = 50
+        "min_samples_split": 40,
+        "min_samples_leaf": 20,
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 7,
+        "max_numerical_split_points": 50, # Varied
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 50},
+            "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 50},
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+        }
+    },
+    {
+        "config_name": "DriftTest_MaxNumSplit_255", # Baseline with max_numerical_split_points = 255
+        "min_samples_split": 40,
+        "min_samples_leaf": 20,
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 50,
+        "relative_width_factor": 0.75,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "general_max_depth": 7,
+        "max_numerical_split_points": 255, # Varied
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
+            "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 255},
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+        }
+    }
 ]
 
 # Define test scenarios
 # Each scenario: name, generator_module, generator_function_name (in module), specific_generator_params, feature_columns, feature_types
 TEST_SCENARIOS_DEFINITIONS = [
-    # {
-    #     "name": "Numerical_Step_Function",
-    #     "generator_module": dataset_generator_numerical,
-    #     "generator_function_name": "generate_numerical_step_p_data",
-    #     "specific_generator_params": {
-    #         "feature_name": "num_feat_step", "min_val": 0, "max_val": 100,
-    #         "thresholds": [40, 70], "p_values": [0.1, 0.3, 0.05],
-    #         "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
-    #     },
-    #     "feature_columns": ["num_feat_step"], "feature_types": {"num_feat_step": "numerical"}
-    # },
+    {
+        "name": "Numerical_Step_Function",
+        "generator_module": dataset_generator_numerical,
+        "generator_function_name": "generate_numerical_step_p_data",
+        "specific_generator_params": {
+            "feature_name": "num_feat_step", "min_val": 0, "max_val": 100,
+            "thresholds": [40, 70], "p_values": [0.1, 0.3, 0.05],
+            "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
+        },
+        "feature_columns": ["num_feat_step"], "feature_types": {"num_feat_step": "numerical"}
+    },
     {
         "name": "Numerical_Linear_Function",
         "generator_module": dataset_generator_numerical,
@@ -107,57 +198,57 @@ TEST_SCENARIOS_DEFINITIONS = [
         },
         "feature_columns": ["num_feat_linear"], "feature_types": {"num_feat_linear": "numerical"}
     },
-    # {
-    #     "name": "Categorical_Simple_Levels",
-    #     "generator_module": dataset_generator_categorical,
-    #     "generator_function_name": "generate_categorical_p_data",
-    #     "specific_generator_params": {
-    #         "feature_name": "cat_feat_simple",
-    #         "categories_p_map": {"GroupA": 0.1, "GroupB": 0.25, "GroupC": 0.08, "GroupD": 0.02},
-    #         "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.005
-    #     },
-    #     "feature_columns": ["cat_feat_simple"], "feature_types": {"cat_feat_simple": "categorical"}
-    # },
-    # {
-    #     "name": "Mixed_Features_Interaction", # Using the mixed generator directly
-    #     "generator_module": dataset_generator_mixed,
-    #     "generator_function_name": "generate_mixed_p_data",
-    #     "specific_generator_params": {
-    #         "numerical_feature_name":"num_mix1", "categorical_feature_name":"cat_mix1",
-    #         "num_min_val":0, "num_max_val":10, "categories_list": ["X","Y","Z"],
-    #         "base_p":0.1, "num_coeff":0.02, "num_offset":5,
-    #         "category_effects": {"X":-0.05, "Y":0.0, "Z":0.05},
-    #         "n_min":30, "n_max":150, "noise_on_p_stddev": 0.01
-    #     },
-    #     "feature_columns": ["num_mix1", "cat_mix1"], "feature_types": {"num_mix1":"numerical", "cat_mix1":"categorical"}
-    # },
-    # {
-    #     "name": "Numerical_Step_Rare_Events",
-    #     "generator_module": dataset_generator_numerical,
-    #     "generator_function_name": "generate_numerical_step_p_data",
-    #     "specific_generator_params": {
-    #         "feature_name": "num_feat_rare", "min_val": 0, "max_val": 100,
-    #         "thresholds": [50], "p_values": [0.001, 0.005], # Very low p
-    #         "n_min": 1000, "n_max": 5000, # High exposure
-    #         "noise_on_p_stddev": 0.0001
-    #     },
-    #     "n_samples_train_override": 10000, # Larger sample size for rare events
-    #     "n_samples_test_override": 5000,
-    #     "feature_columns": ["num_feat_rare"], "feature_types": {"num_feat_rare": "numerical"}
-    # },
-    # {
-    #     "name": "Categorical_High_Cardinality",
-    #     "generator_module": dataset_generator_categorical,
-    #     "generator_function_name": "generate_categorical_p_data",
-    #     "specific_generator_params": {
-    #         "feature_name": "cat_feat_high_card",
-    #         "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)}, # 30 categories
-    #         "n_min": 40, "n_max": 160, "noise_on_p_stddev": 0.001
-    #     },
-    #     "n_samples_train_override": 6000, 
-    #     "n_samples_test_override": 2000,
-    #     "feature_columns": ["cat_feat_high_card"], "feature_types": {"cat_feat_high_card": "categorical"}
-    # },
+    {
+        "name": "Categorical_Simple_Levels",
+        "generator_module": dataset_generator_categorical,
+        "generator_function_name": "generate_categorical_p_data",
+        "specific_generator_params": {
+            "feature_name": "cat_feat_simple",
+            "categories_p_map": {"GroupA": 0.1, "GroupB": 0.25, "GroupC": 0.08, "GroupD": 0.02},
+            "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.005
+        },
+        "feature_columns": ["cat_feat_simple"], "feature_types": {"cat_feat_simple": "categorical"}
+    },
+    {
+        "name": "Mixed_Features_Interaction", # Using the mixed generator directly
+        "generator_module": dataset_generator_mixed,
+        "generator_function_name": "generate_mixed_p_data",
+        "specific_generator_params": {
+            "numerical_feature_name":"num_mix1", "categorical_feature_name":"cat_mix1",
+            "num_min_val":0, "num_max_val":10, "categories_list": ["X","Y","Z"],
+            "base_p":0.1, "num_coeff":0.02, "num_offset":5,
+            "category_effects": {"X":-0.05, "Y":0.0, "Z":0.05},
+            "n_min":30, "n_max":150, "noise_on_p_stddev": 0.01
+        },
+        "feature_columns": ["num_mix1", "cat_mix1"], "feature_types": {"num_mix1":"numerical", "cat_mix1":"categorical"}
+    },
+    {
+        "name": "Numerical_Step_Rare_Events",
+        "generator_module": dataset_generator_numerical,
+        "generator_function_name": "generate_numerical_step_p_data",
+        "specific_generator_params": {
+            "feature_name": "num_feat_rare", "min_val": 0, "max_val": 100,
+            "thresholds": [50], "p_values": [0.001, 0.005], # Very low p
+            "n_min": 1000, "n_max": 5000, # High exposure
+            "noise_on_p_stddev": 0.0001
+        },
+        "n_samples_train_override": 10000, # Larger sample size for rare events
+        "n_samples_test_override": 5000,
+        "feature_columns": ["num_feat_rare"], "feature_types": {"num_feat_rare": "numerical"}
+    },
+    {
+        "name": "Categorical_High_Cardinality",
+        "generator_module": dataset_generator_categorical,
+        "generator_function_name": "generate_categorical_p_data",
+        "specific_generator_params": {
+            "feature_name": "cat_feat_high_card",
+            "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)}, # 30 categories
+            "n_min": 40, "n_max": 160, "noise_on_p_stddev": 0.001
+        },
+        "n_samples_train_override": 6000, 
+        "n_samples_test_override": 2000,
+        "feature_columns": ["cat_feat_high_card"], "feature_types": {"cat_feat_high_card": "categorical"}
+    },
     {
         "name": "Numerical_Linear_Large_100K",
         "generator_module": dataset_generator_numerical,
@@ -171,13 +262,19 @@ TEST_SCENARIOS_DEFINITIONS = [
         "n_samples_test_override": 20000,
         "feature_columns": ["num_feat_linear_large"], "feature_types": {"num_feat_linear_large": "numerical"}
     },
-    # {
-    #     "name": "Numerical_Linear_Huge_1M",
-    #     "generator_module": dataset_generator_numerical,
-    #     "generator_function_name": "generate_numerical_linear_p_data",
-    #     "specific_generator_params": {
-    #         "feature_name": "num_feat_linear_huge", "min_val": 0, "max_val": 1,
-    #         "p_intercept": 0.05, "p_slope": 0.3,
+    {
+        "name": "Numerical_Linear_Huge_1M",
+        "generator_module": dataset_generator_numerical,
+        "generator_function_name": "generate_numerical_linear_p_data",
+        "specific_generator_params": {
+            "feature_name": "num_feat_linear_huge", "min_val": 0, "max_val": 1,
+            "p_intercept": 0.05, "p_slope": 0.3,
+            "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
+        },
+        "n_samples_train_override": 1000000,
+        "n_samples_test_override": 100000,
+        "feature_columns": ["num_feat_linear_huge"], "feature_types": {"num_feat_linear_huge": "numerical"}
+    },
     #         "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
     #     },
     #     "n_samples_train_override": 1000000,

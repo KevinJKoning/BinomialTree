@@ -26,6 +26,37 @@ def calculate_p_hat(k_sum, n_sum):
     return k_sum / n_sum
 
 
+def calculate_log_binom_coeff(k, n):
+    """
+    Calculates log(C(n, k)) = log(n! / (k! * (n-k)!))
+    Uses math.lgamma for numerical stability.
+    log(C(n,k)) = lgamma(n+1) - lgamma(k+1) - lgamma(n-k+1)
+    """
+    if k < 0 or k > n:
+        return -float('inf') 
+    if k == 0 or k == n: # C(n,0) = 1, C(n,n) = 1, log(1) = 0
+        return 0.0 
+    if n == 0: 
+        return 0.0
+
+    k = int(round(k))
+    n = int(round(n))
+    
+    # Re-check conditions after potential rounding/casting
+    if k < 0 or k > n:
+        return -float('inf')
+    if k == 0 or k == n: # Handles n=0 as well if k=0
+        return 0.0
+        
+    try:
+        # math.lgamma(x) is log(Gamma(x)). Gamma(m+1) = m!
+        # So log(m!) = math.lgamma(m+1)
+        log_coeff = math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1)
+    except ValueError: 
+        return -float('inf')
+    return log_coeff
+
+
 def calculate_binomial_log_likelihood(k, n, p):
     """
     Calculates the log-likelihood of observing k successes in n trials

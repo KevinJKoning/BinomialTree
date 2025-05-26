@@ -2,7 +2,56 @@
 import math
 import time # For performance logging
 import numpy as np
-from .utils import calculate_p_hat, get_total_log_likelihood
+# from scipy.special import loggamma # For log binomial coefficient - REMOVED
+from .utils import calculate_p_hat, get_total_log_likelihood, calculate_log_binom_coeff # get_total_log_likelihood might not be needed by this func anymore
+
+# _calculate_log_binomial_coefficient MOVED to utils.py as calculate_log_binom_coeff
+
+def _calculate_child_ll_from_sums(k_sum, n_sum, lbc_sum):
+    """
+    Calculates the log-likelihood for a child node given K_sum, N_sum, and LBC_sum.
+    LL = LBC_sum + K_sum * log(p_hat) + (N_sum - K_sum) * log(1 - p_hat)
+    Handles p_hat = 0 or p_hat = 1 cases carefully for logs.
+    """
+    if n_sum == 0: 
+        return 0.0 
+
+    p_hat = calculate_p_hat(k_sum, n_sum)
+
+    log_p_hat = 0.0
+    log_one_minus_p_hat = 0.0
+
+    if p_hat > 0:
+        try:
+            log_p_hat = math.log(p_hat)
+        except ValueError: 
+            log_p_hat = -float('inf') 
+    else: 
+        log_p_hat = -float('inf')
+
+    if p_hat < 1:
+        try:
+            log_one_minus_p_hat = math.log(1 - p_hat)
+        except ValueError: 
+             log_one_minus_p_hat = -float('inf')
+    else: 
+        log_one_minus_p_hat = -float('inf')
+    
+    term_k_log_p = 0.0
+    if k_sum > 0: 
+        if p_hat == 0: 
+            return -float('inf') 
+        term_k_log_p = k_sum * log_p_hat
+    
+    term_nk_log_1p = 0.0
+    if (n_sum - k_sum) > 0: 
+        if p_hat == 1: 
+            return -float('inf')
+        term_nk_log_1p = (n_sum - k_sum) * log_one_minus_p_hat
+        
+    log_likelihood = lbc_sum + term_k_log_p + term_nk_log_1p
+    
+    return log_likelihood
 
 def calculate_split_children_log_likelihood(left_observations, right_observations):
     if not left_observations or not right_observations:
@@ -39,57 +88,92 @@ def find_best_numerical_split(
     best_split = {'log_likelihood': -float('inf')}
     indent = "  " * (node_depth_for_logs + 2)
 
-    if indices_for_node.size < 2 * min_samples_leaf: # Or simply min_samples_split from tree
+    if indices_for_node.size < 2 * min_samples_leaf:
         if verbose:
             print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Not enough samples ({indices_for_node.size}) for split (min_samples_leaf: {min_samples_leaf}).")
         return best_split
 
-    feature_vals_node = feature_column_data_full[indices_for_node]
-    k_vals_node = k_array_full[indices_for_node]
-    n_vals_node = n_array_full[indices_for_node]
+    # Extract data for the current node
+    feature_values_at_node = feature_column_data_full[indices_for_node]
+    k_values_at_node = k_array_full[indices_for_node]
+    n_values_at_node = n_array_full[indices_for_node]
 
-    # Handle NaNs explicitly: NaNs go to the right child.
-    nan_mask_node = np.isnan(feature_vals_node)
-    num_nans_in_node = np.sum(nan_mask_node)
-
-    # Process non-NaN values for finding split points
-    feature_vals_nonan = feature_vals_node[~nan_mask_node]
+    # Handle NaNs: these always go to the right child by convention
+    nan_mask_at_node = np.isnan(feature_values_at_node)
+    original_indices_nan = indices_for_node[nan_mask_at_node]
+    k_nans = k_values_at_node[nan_mask_at_node]
+    n_nans = n_values_at_node[nan_mask_at_node]
     
-    if feature_vals_nonan.size < 2: # Not enough non-NaN values to form a split
+    sum_k_nans = np.sum(k_nans)
+    sum_n_nans = np.sum(n_nans)
+    sum_lbc_nans = 0.0
+    for k_val, n_val in zip(k_nans, n_nans):
+        sum_lbc_nans += calculate_log_binom_coeff(k_val, n_val)
+    
+    num_nans_in_node = len(original_indices_nan)
+
+    # Process non-NaN values
+    feature_vals_nonan = feature_values_at_node[~nan_mask_at_node]
+    k_nonan = k_values_at_node[~nan_mask_at_node]
+    n_nonan = n_values_at_node[~nan_mask_at_node]
+    original_indices_nonan_at_node = indices_for_node[~nan_mask_at_node]
+
+    if feature_vals_nonan.size == 0: # All NaNs or empty node after NaNs considered
         if verbose:
-            print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 non-NaN values, no split possible.")
-        return best_split
+             print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): No non-NaN values to split on.")
+        return best_split # No split possible if only NaNs (or < min_samples_leaf for non-NaNs)
 
-    unique_sorted_values = np.unique(feature_vals_nonan)
+    # Create a list of tuples: (feature_value, k, n, lbc, original_index) for non-NaN data
+    nonan_data_tuples = []
+    total_k_nonan = 0.0
+    total_n_nonan = 0.0
+    total_lbc_nonan = 0.0
+    for i in range(len(feature_vals_nonan)):
+        k_val, n_val = k_nonan[i], n_nonan[i]
+        lbc_val = calculate_log_binom_coeff(k_val, n_val)
+        nonan_data_tuples.append((feature_vals_nonan[i], k_val, n_val, lbc_val, original_indices_nonan_at_node[i]))
+        total_k_nonan += k_val
+        total_n_nonan += n_val
+        total_lbc_nonan += lbc_val
+        
+    # Sort by feature value for efficient iteration
+    sorted_nonan_data = sorted(nonan_data_tuples, key=lambda x: x[0])
 
-    if unique_sorted_values.size < 2:
+    # Determine unique feature values from sorted non-NaN data for generating split points
+    # This avoids re-calculating np.unique on feature_vals_nonan if sorted_nonan_data is already available
+    if not sorted_nonan_data: # Should be caught by feature_vals_nonan.size == 0
+         unique_sorted_values_for_splitting = np.array([])
+    else:
+        # Extract unique feature values from the already sorted data
+        unique_sorted_values_for_splitting = np.unique(np.array([item[0] for item in sorted_nonan_data]))
+
+
+    if unique_sorted_values_for_splitting.size < 2:
         if verbose:
-            print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 unique non-NaN values, no split possible.")
+            print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 unique non-NaN values ({unique_sorted_values_for_splitting.size}), no split possible.")
         return best_split
-
+    
     if verbose:
-        print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Original unique non-NaN values: {unique_sorted_values.size}.")
+        print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Original unique non-NaN values for splitting: {unique_sorted_values_for_splitting.size}.")
 
     # Sub-sample split points if necessary
-    if unique_sorted_values.size > max_numerical_split_points:
-        sampled_indices = np.linspace(0, unique_sorted_values.size - 1, max_numerical_split_points, dtype=int)
-        # Ensure we pick unique values, linspace might pick same index if max_numerical_split_points is high relative to unique_sorted_values.size
-        # However, unique_sorted_values[sampled_indices] will already be unique if unique_sorted_values itself is.
-        values_for_threshold_generation = np.unique(unique_sorted_values[sampled_indices]) # np.unique also sorts
+    if unique_sorted_values_for_splitting.size > max_numerical_split_points:
+        sampled_indices = np.linspace(0, unique_sorted_values_for_splitting.size - 1, max_numerical_split_points, dtype=int)
+        values_for_threshold_generation = np.unique(unique_sorted_values_for_splitting[sampled_indices])
         if verbose:
             print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Sub-sampled to {values_for_threshold_generation.size} unique values for threshold generation.")
     else:
-        values_for_threshold_generation = unique_sorted_values
+        values_for_threshold_generation = unique_sorted_values_for_splitting
 
     if values_for_threshold_generation.size < 2:
         if verbose:
-            print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 values after sub-sampling for threshold generation, no split possible.")
+            print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 values after sub-sampling for threshold generation ({values_for_threshold_generation.size}), no split possible.")
         return best_split
         
     # Generate actual split values (midpoints)
     split_values_to_test = []
     for i in range(values_for_threshold_generation.size - 1):
-        # Check if consecutive values are indeed different to avoid issues with identical sampled values
+        # Check if consecutive values are indeed different
         if values_for_threshold_generation[i] < values_for_threshold_generation[i+1]:
              split_values_to_test.append((values_for_threshold_generation[i] + values_for_threshold_generation[i+1]) / 2.0)
     
@@ -98,71 +182,74 @@ def find_best_numerical_split(
             print(f"{indent}  NumericalSplit '{feature_name}' (Node {node_id_for_logs}): No valid mid-point split values generated after sub-sampling.")
         return best_split
 
-    # Data for NaN observations (these always go to the right child)
-    k_nans = k_vals_node[nan_mask_node]
-    n_nans = n_vals_node[nan_mask_node]
+    # Iteratively calculate split likelihoods
+    current_k_left = 0.0
+    current_n_left = 0.0
+    current_lbc_sum_left = 0.0
+    current_original_indices_left = [] # Store actual original indices
     
-    # Data for non-NaN observations
-    k_nonan = k_vals_node[~nan_mask_node]
-    n_nonan = n_vals_node[~nan_mask_node]
-    original_indices_nonan = indices_for_node[~nan_mask_node]
-    original_indices_nan = indices_for_node[nan_mask_node]
+    sorted_data_ptr = 0 # Pointer for sorted_nonan_data
 
     for split_value in split_values_to_test:
-        # Partition non-NaN data based on the current split_value
-        left_mask_nonan = feature_vals_nonan <= split_value
-        right_mask_nonan = ~left_mask_nonan # feature_vals_nonan > split_value
+        # Move data points from "right" to "left" based on the current split_value
+        # All points with feature_value <= split_value go to the left.
+        # The sorted_data_ptr ensures we only iterate through sorted_nonan_data once overall.
+        while sorted_data_ptr < len(sorted_nonan_data) and sorted_nonan_data[sorted_data_ptr][0] <= split_value:
+            _feat_val, k_val, n_val, lbc_val, orig_idx = sorted_nonan_data[sorted_data_ptr]
+            current_k_left += k_val
+            current_n_left += n_val
+            current_lbc_sum_left += lbc_val
+            current_original_indices_left.append(orig_idx)
+            sorted_data_ptr += 1
 
-        num_left = np.sum(left_mask_nonan)
-        num_right_nonan = np.sum(right_mask_nonan)
-        num_right_total = num_right_nonan + num_nans_in_node # Effective number of samples in right child
+        # Check min_samples_leaf condition
+        num_samples_left = len(current_original_indices_left)
+        # num_samples_right_nonan is count of items remaining in sorted_nonan_data
+        num_samples_right_nonan = len(sorted_nonan_data) - num_samples_left 
+        num_samples_right_total = num_samples_right_nonan + num_nans_in_node
 
-        if num_left < min_samples_leaf or num_right_total < min_samples_leaf:
+        if num_samples_left < min_samples_leaf or num_samples_right_total < min_samples_leaf:
             continue
-        
-        # Get k and n for left child (only non-NaN data)
-        k_left_child = np.sum(k_nonan[left_mask_nonan])
-        n_left_child = np.sum(n_nonan[left_mask_nonan])
+            
+        # Calculate sums for the right child (non-NaN part)
+        k_right_nonan = total_k_nonan - current_k_left
+        n_right_nonan = total_n_nonan - current_n_left
+        lbc_sum_right_nonan = total_lbc_nonan - current_lbc_sum_left
 
-        # Get k and n for right child (non-NaN data from right partition + all NaN data)
-        k_right_child = np.sum(k_nonan[right_mask_nonan]) + np.sum(k_nans)
-        n_right_child = np.sum(n_nonan[right_mask_nonan]) + np.sum(n_nans)
+        # Final sums for right child (including NaNs)
+        final_k_right = k_right_nonan + sum_k_nans
+        final_n_right = n_right_nonan + sum_n_nans
+        final_lbc_sum_right = lbc_sum_right_nonan + sum_lbc_nans
 
-        if n_left_child == 0 or n_right_child == 0:
+        # Ensure children are not empty in terms of N sum (important for p_hat calc)
+        if current_n_left == 0 or final_n_right == 0:
             continue
 
-        # Prepare observation lists for log-likelihood calculation
-        # This part is still potentially slow if lists are very large.
-        # The core idea of the optimization was to avoid re-summing, which we did above.
-        # calculate_split_children_log_likelihood needs lists of (k,n) tuples.
-        
-        # For LL calculation, we need the distribution, not just sums.
-        # Create obs lists for non-NaN data going left/right
-        left_obs_list = list(zip(k_nonan[left_mask_nonan].tolist(), n_nonan[left_mask_nonan].tolist()))
-        
-        # For right child, combine non-NaNs going right and all NaNs
-        right_obs_k = np.concatenate((k_nonan[right_mask_nonan], k_nans)) if num_nans_in_node > 0 else k_nonan[right_mask_nonan]
-        right_obs_n = np.concatenate((n_nonan[right_mask_nonan], n_nans)) if num_nans_in_node > 0 else n_nonan[right_mask_nonan]
-        right_obs_list = list(zip(right_obs_k.tolist(), right_obs_n.tolist()))
-
-        current_split_log_likelihood = calculate_split_children_log_likelihood(left_obs_list, right_obs_list)
+        # Calculate log-likelihood for left and right children
+        ll_left = _calculate_child_ll_from_sums(current_k_left, current_n_left, current_lbc_sum_left)
+        ll_right = _calculate_child_ll_from_sums(final_k_right, final_n_right, final_lbc_sum_right)
+        current_split_log_likelihood = ll_left + ll_right
 
         if current_split_log_likelihood > best_split['log_likelihood']:
             best_split['feature'] = feature_name
-            best_split['value'] = split_value
+            best_split['value'] = split_value # The midpoint is the split value
             best_split['log_likelihood'] = current_split_log_likelihood
-            
-            # Correctly assign original indices
-            best_split['left_indices'] = original_indices_nonan[left_mask_nonan]
-            
-            right_indices_from_nonan = original_indices_nonan[right_mask_nonan]
-            if num_nans_in_node > 0:
-                best_split['right_indices'] = np.concatenate((right_indices_from_nonan, original_indices_nan))
-            else:
-                best_split['right_indices'] = right_indices_from_nonan
-            
             best_split['type'] = 'numerical'
             
+            best_split['left_indices'] = np.array(current_original_indices_left, dtype=indices_for_node.dtype)
+            
+            # Indices for right child: remaining non-NaNs + all NaNs
+            # Remaining non-NaNs are from sorted_data_ptr to the end of sorted_nonan_data
+            original_indices_right_nonan = [item[4] for item in sorted_nonan_data[sorted_data_ptr:]]
+            
+            if num_nans_in_node > 0:
+                best_split['right_indices'] = np.concatenate(
+                    (np.array(original_indices_right_nonan, dtype=indices_for_node.dtype), 
+                     original_indices_nan) # original_indices_nan is already a NumPy array
+                )
+            else:
+                best_split['right_indices'] = np.array(original_indices_right_nonan, dtype=indices_for_node.dtype)
+                            
     return best_split
 
 def find_best_categorical_split(
@@ -186,76 +273,116 @@ def find_best_categorical_split(
         return best_split
 
     codes_node = feature_codes_full[indices_for_node]
-    k_node = k_array_full[indices_for_node]
-    n_node = n_array_full[indices_for_node]
+    k_values_node = k_array_full[indices_for_node]
+    n_values_node = n_array_full[indices_for_node]
     
-    unique_codes_in_node, inverse_indices = np.unique(codes_node, return_inverse=True)
-    
-    if verbose:
-        print(f"{indent}  CategoricalSplit '{feature_name}' (Node {node_id_for_logs}): Evaluating {unique_codes_in_node.size} unique categories.")
+    # Calculate LBC for each observation in the node
+    lbc_values_node = np.array([calculate_log_binom_coeff(k, n) for k, n in zip(k_values_node, n_values_node)])
 
-    if unique_codes_in_node.size < 2:
+    # Aggregate stats per unique category
+    unique_category_codes, inverse_indices = np.unique(codes_node, return_inverse=True)
+
+    if verbose:
+        print(f"{indent}  CategoricalSplit '{feature_name}' (Node {node_id_for_logs}): Evaluating {unique_category_codes.size} unique categories.")
+
+    if unique_category_codes.size < 2:
         if verbose:
             print(f"{indent}  CategoricalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 unique categories, no split possible.")
         return best_split
 
-    k_sum_per_code = np.bincount(inverse_indices, weights=k_node, minlength=unique_codes_in_node.size)
-    n_sum_per_code = np.bincount(inverse_indices, weights=n_node, minlength=unique_codes_in_node.size)
+    # Initialize storage for aggregated data per unique category
+    agg_k_per_cat = np.zeros(unique_category_codes.size)
+    agg_n_per_cat = np.zeros(unique_category_codes.size)
+    agg_lbc_per_cat = np.zeros(unique_category_codes.size)
+    agg_count_per_cat = np.zeros(unique_category_codes.size, dtype=int)
+    agg_indices_per_cat = [[] for _ in range(unique_category_codes.size)]
+
+    for i in range(len(codes_node)): # Iterate over each observation in the node
+        cat_idx = inverse_indices[i] # Get the index of the category for this observation
+        agg_k_per_cat[cat_idx] += k_values_node[i]
+        agg_n_per_cat[cat_idx] += n_values_node[i]
+        agg_lbc_per_cat[cat_idx] += lbc_values_node[i]
+        agg_count_per_cat[cat_idx] += 1
+        agg_indices_per_cat[cat_idx].append(indices_for_node[i])
+
+    # Prepare list of category data for sorting
+    # Each item: {'p_hat': ..., 'k': ..., 'n': ..., 'lbc': ..., 'count': ..., 'indices': ..., 'code': ...}
+    categories_data_to_sort = []
+    for i, cat_code_val in enumerate(unique_category_codes):
+        if agg_n_per_cat[i] > 0: # Only consider categories with exposure (n_sum > 0)
+            p_hat_cat = agg_k_per_cat[i] / agg_n_per_cat[i] if agg_n_per_cat[i] > 0 else 0.0
+            categories_data_to_sort.append({
+                'p_hat': p_hat_cat,
+                'k': agg_k_per_cat[i],
+                'n': agg_n_per_cat[i],
+                'lbc': agg_lbc_per_cat[i],
+                'count': agg_count_per_cat[i],
+                'indices': np.array(agg_indices_per_cat[i], dtype=indices_for_node.dtype),
+                'code': cat_code_val
+            })
+
+    # Sort categories by their p_hat values
+    categories_data_to_sort.sort(key=lambda x: x['p_hat'])
     
-    valid_code_mask = n_sum_per_code > 0
-    if np.sum(valid_code_mask) < 2: 
+    num_valid_categories_for_splitting = len(categories_data_to_sort)
+    if num_valid_categories_for_splitting < 2:
+        if verbose:
+            print(f"{indent}  CategoricalSplit '{feature_name}' (Node {node_id_for_logs}): Less than 2 valid categories after filtering/aggregation, no split possible.")
         return best_split
 
-    # Calculate p_hat only for codes with exposure
-    k_sum_valid = k_sum_per_code[valid_code_mask]
-    n_sum_valid = n_sum_per_code[valid_code_mask]
-    actual_codes_valid = unique_codes_in_node[valid_code_mask]
-    
-    p_hat_for_valid_codes = k_sum_valid / n_sum_valid
-    
-    sorted_indices_of_valid_codes = np.argsort(p_hat_for_valid_codes)
-    sorted_actual_codes = actual_codes_valid[sorted_indices_of_valid_codes]
-    
-    num_sorted_valid_codes = sorted_actual_codes.size
-    if num_sorted_valid_codes < 2:
-        return best_split
+    # Calculate total sums for all categories being considered for splitting
+    total_k_all_cats = sum(item['k'] for item in categories_data_to_sort)
+    total_n_all_cats = sum(item['n'] for item in categories_data_to_sort)
+    total_lbc_all_cats = sum(item['lbc'] for item in categories_data_to_sort)
+    total_count_all_cats = sum(item['count'] for item in categories_data_to_sort)
 
-    for i in range(num_sorted_valid_codes - 1):
-        codes_for_left_split = set(sorted_actual_codes[:i+1])
-        
-        left_mask_node = np.array([c in codes_for_left_split for c in codes_node], dtype=bool)
-        right_mask_node = ~left_mask_node 
-        
-        num_left = left_mask_node.sum()
-        num_right = right_mask_node.sum()
+    # Iteratively build left partition and calculate split likelihoods
+    current_k_left = 0.0
+    current_n_left = 0.0
+    current_lbc_left = 0.0
+    current_count_left = 0
+    current_left_indices_list = [] 
+    current_left_codes_set = set()
 
-        if num_left < min_samples_leaf or num_right < min_samples_leaf:
+    # Iterate N-1 times to create N-1 possible splits from N sorted categories
+    for i in range(num_valid_categories_for_splitting - 1):
+        cat_data = categories_data_to_sort[i]
+        
+        current_k_left += cat_data['k']
+        current_n_left += cat_data['n']
+        current_lbc_left += cat_data['lbc']
+        current_count_left += cat_data['count']
+        current_left_indices_list.append(cat_data['indices'])
+        current_left_codes_set.add(cat_data['code'])
+
+        # Calculate right partition stats
+        k_right = total_k_all_cats - current_k_left
+        n_right = total_n_all_cats - current_n_left
+        lbc_right = total_lbc_all_cats - current_lbc_left
+        count_right = total_count_all_cats - current_count_left
+        
+        # Check min_samples_leaf for both potential children based on observation counts
+        if current_count_left < min_samples_leaf or count_right < min_samples_leaf:
             continue
-
-        n_sum_left = n_node[left_mask_node].sum()
-        n_sum_right = n_node[right_mask_node].sum()
-
-        if n_sum_left == 0 or n_sum_right == 0:
+        
+        # Ensure children have non-zero N_sum for p_hat calculation (usually covered by count check if min_samples_leaf >=1)
+        if current_n_left == 0 or n_right == 0:
             continue
             
-        left_indices_original = indices_for_node[left_mask_node]
-        right_indices_original = indices_for_node[right_mask_node]
-
-        left_obs_list = list(zip(k_node[left_mask_node].tolist(), n_node[left_mask_node].tolist()))
-        right_obs_list = list(zip(k_node[right_mask_node].tolist(), n_node[right_mask_node].tolist()))
-        
-        current_split_log_likelihood = calculate_split_children_log_likelihood(left_obs_list, right_obs_list)
+        ll_left = _calculate_child_ll_from_sums(current_k_left, current_n_left, current_lbc_left)
+        ll_right = _calculate_child_ll_from_sums(k_right, n_right, lbc_right)
+        current_split_log_likelihood = ll_left + ll_right
 
         if current_split_log_likelihood > best_split['log_likelihood']:
             best_split['feature'] = feature_name
-            best_split['value'] = {
-                'codes_for_left_group': list(map(float, codes_for_left_split)), 
-                'split_definition_sorted_codes': sorted_actual_codes.tolist(), 
-                'split_definition_index': i 
-            }
+            best_split['value'] = {'codes_for_left_group': list(map(float, current_left_codes_set))} # Map codes to float as per original
             best_split['log_likelihood'] = current_split_log_likelihood
-            best_split['left_indices'] = left_indices_original
-            best_split['right_indices'] = right_indices_original
+            
+            best_split['left_indices'] = np.concatenate(current_left_indices_list) if current_left_indices_list else np.array([], dtype=indices_for_node.dtype)
+            
+            right_indices_list = [item['indices'] for item in categories_data_to_sort[i+1:]]
+            best_split['right_indices'] = np.concatenate(right_indices_list) if right_indices_list else np.array([], dtype=indices_for_node.dtype)
+            
             best_split['type'] = 'categorical'
             
     return best_split
