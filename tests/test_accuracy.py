@@ -41,6 +41,14 @@ CONFIGURATIONS_TO_TEST = [
             "Mixed_Features_Interaction": {"max_depth": 6},
             "Numerical_Step_Rare_Events": {
                 "min_samples_leaf": 20, "relative_width_factor": 2.5, "min_n_sum_for_statistical_stop": 1000,
+            },
+            "Numerical_Linear_Large_100K": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
+            },
+            "Numerical_Linear_Huge_1M": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
             }
         }
     },
@@ -50,7 +58,9 @@ CONFIGURATIONS_TO_TEST = [
         "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.1, "epsilon_stopping": 1e-6, "general_max_depth": 5,
         "scenario_overrides": {
-             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30} # Keep other rare event params
+             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30}, # Keep other rare event params
+             "Numerical_Linear_Large_100K": {"max_depth": 6}, # Uses base params from this config, just override depth
+             "Numerical_Linear_Huge_1M": {"max_depth": 6}    # Uses base params from this config, just override depth
         }
     },
     {
@@ -59,7 +69,15 @@ CONFIGURATIONS_TO_TEST = [
         "min_n_sum_for_statistical_stop": 30, "relative_width_factor": 0.5,
         "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "general_max_depth": 7,
          "scenario_overrides": {
-             "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500}
+             "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500},
+             "Numerical_Linear_Large_100K": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
+            },
+            "Numerical_Linear_Huge_1M": {
+                "max_depth": 6, "min_samples_split": 40, "min_samples_leaf": 20,
+                "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75, "min_likelihood_gain": 0.1
+            }
         }
     }
 ]
@@ -136,9 +154,35 @@ TEST_SCENARIOS_DEFINITIONS = [
             "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)}, # 30 categories
             "n_min": 40, "n_max": 160, "noise_on_p_stddev": 0.001
         },
-        "n_samples_train_override": 6000, 
+        "n_samples_train_override": 6000,
         "n_samples_test_override": 2000,
         "feature_columns": ["cat_feat_high_card"], "feature_types": {"cat_feat_high_card": "categorical"}
+    },
+    {
+        "name": "Numerical_Linear_Large_100K",
+        "generator_module": dataset_generator_numerical,
+        "generator_function_name": "generate_numerical_linear_p_data",
+        "specific_generator_params": {
+            "feature_name": "num_feat_linear_large", "min_val": 0, "max_val": 1,
+            "p_intercept": 0.05, "p_slope": 0.3,
+            "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
+        },
+        "n_samples_train_override": 100000,
+        "n_samples_test_override": 20000,
+        "feature_columns": ["num_feat_linear_large"], "feature_types": {"num_feat_linear_large": "numerical"}
+    },
+    {
+        "name": "Numerical_Linear_Huge_1M",
+        "generator_module": dataset_generator_numerical,
+        "generator_function_name": "generate_numerical_linear_p_data",
+        "specific_generator_params": {
+            "feature_name": "num_feat_linear_huge", "min_val": 0, "max_val": 1,
+            "p_intercept": 0.05, "p_slope": 0.3,
+            "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
+        },
+        "n_samples_train_override": 1000000,
+        "n_samples_test_override": 200000,
+        "feature_columns": ["num_feat_linear_huge"], "feature_types": {"num_feat_linear_huge": "numerical"}
     }
 ]
 
@@ -153,7 +197,8 @@ def run_all_tests_for_config(config_params_base, verbose=False):
 
     for i, scenario_def in enumerate(TEST_SCENARIOS_DEFINITIONS):
         scenario_name = scenario_def["name"]
-        print(f"\n\n==================== Test {i+1}/{len(TEST_SCENARIOS_DEFINITIONS)}: {scenario_name} ====================")
+        # Progress indicator for scenario
+        print(f"\n  -> Running Scenario {i+1}/{len(TEST_SCENARIOS_DEFINITIONS)}: {scenario_name}...")
         
         # Determine tree parameters for this scenario
         current_tree_params = {k: v for k, v in config_params_base.items() 
@@ -197,6 +242,7 @@ def run_all_tests_for_config(config_params_base, verbose=False):
             verbose=verbose
         )
         all_scenario_results[scenario_name] = results_scenario
+        print(f"  -> Scenario {scenario_name} completed.") # Progress indicator
         
         if verbose and results_scenario:
             print(f"--- Results for {scenario_name} ---")
@@ -261,9 +307,12 @@ if __name__ == "__main__":
         if not configs_to_execute:
             print(f"Error: Specified configuration '{config_to_run_name}' not found.")
             sys.exit(1)
+    
+    print(f"\nFound {len(configs_to_execute)} configuration(s) to run.")
 
-    for config_params in configs_to_execute:
+    for idx, config_params in enumerate(configs_to_execute):
         config_name = config_params["config_name"]
+        print(f"\n>>> Starting Configuration {idx+1}/{len(configs_to_execute)}: {config_name} <<<")
         try:
             results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)
             overall_summary[config_name] = results_for_this_config
