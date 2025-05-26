@@ -58,6 +58,7 @@ def evaluate_predictions(
             "avg_observed_p": None,
             "avg_known_p": None,
             "total_log_likelihood_on_test": None,
+            "total_poisson_deviance": None,
             "num_test_samples": 0,
             "num_leaf_nodes": len([nid for nid, n in tree.nodes.items() if n.is_leaf]) if tree.nodes else 0,
             "max_depth_reached": max(n.depth for n in tree.nodes.values()) if tree.nodes else 0
@@ -72,6 +73,7 @@ def evaluate_predictions(
     total_n_test = 0
     
     test_set_log_likelihood = 0.0
+    total_poisson_deviance = 0.0
     
     for i, row in enumerate(test_data):
         k_i = row[target_column]
@@ -99,6 +101,30 @@ def evaluate_predictions(
                 print(f"Warning: LL calculation error for k={k_i},n={n_i},p={p_pred_for_row}: {e}")
                 test_set_log_likelihood += -float('inf') # Penalize heavily
 
+            # Calculate Poisson Deviance for this sample
+            mu_i = n_i * p_pred_for_row # Predicted mean count
+            
+            try:
+                if k_i == 0:
+                    # If k_i is 0, k_i * log(k_i / mu_i) term is 0. Deviance is 2 * mu_i.
+                    sample_poisson_deviance = 2 * mu_i
+                elif mu_i <= 0: # Should ideally not happen if p_pred_for_row is clamped > 0
+                    print(f"Warning: mu_i <= 0 ({mu_i}) for k={k_i},n={n_i},p_pred={p_pred_for_row}. Setting sample_poisson_deviance to large value.")
+                    sample_poisson_deviance = 1e12 # Penalize with a large finite number
+                else:
+                    # k_i > 0 and mu_i > 0
+                    log_term_val = k_i * math.log(k_i / mu_i)
+                    sample_poisson_deviance = 2 * (log_term_val - (k_i - mu_i))
+                
+                if not math.isfinite(sample_poisson_deviance):
+                     print(f"Warning: Non-finite Poisson deviance for k={k_i},n={n_i},p_pred={p_pred_for_row},mu_i={mu_i}. Value: {sample_poisson_deviance}. Setting to large value.")
+                     total_poisson_deviance += 1e12 # Penalize with a large finite number
+                else:
+                    total_poisson_deviance += sample_poisson_deviance
+            except (ValueError, OverflowError, ZeroDivisionError) as e: # Added ZeroDivisionError
+                print(f"Warning: Poisson Deviance calculation error for k={k_i},n={n_i},p_pred={p_pred_for_row},mu_i={mu_i}: {e}")
+                total_poisson_deviance += 1e12 # Penalize heavily with a large finite number
+
 
     metrics = {}
     metrics["num_test_samples"] = len(test_data)
@@ -123,6 +149,7 @@ def evaluate_predictions(
         metrics["avg_known_p"] = None
         
     metrics["total_log_likelihood_on_test"] = test_set_log_likelihood
+    metrics["total_poisson_deviance"] = total_poisson_deviance
     metrics["num_leaf_nodes"] = len([nid for nid, n in tree.nodes.items() if n.is_leaf]) if tree.nodes else 0
     metrics["max_depth_reached"] = max(n.depth for n in tree.nodes.values()) if tree.nodes else 0
     metrics["total_k_test"] = total_k_test

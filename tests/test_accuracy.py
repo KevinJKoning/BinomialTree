@@ -205,20 +205,34 @@ def run_all_tests_for_config(config_params_base, verbose=False):
                 if isinstance(value, float): print(f"  {key}: {value:.4f}")
                 else: print(f"  {key}: {value}")
             print(f"  Training Time (s): {results_scenario.get('training_time_seconds', 'N/A'):.2f}")
-            print(f"  Total Nodes: {results_scenario.get('num_nodes_total', 'N/A')}")
+            print(f"  Total Nodes: {results_scenario.get('num_nodes_total', 'N/A')}") # This is total nodes, not leaf nodes from evaluation.
             print("--- End of Scenario ---")
             
     return all_scenario_results
 
 def save_results_to_json(results_dict, filename_prefix="test_results"):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    filename = f"{filename_prefix}_{timestamp}.json"
+    base_filename = f"{filename_prefix}_{timestamp}.json"
     
+    # Define the results directory
+    results_dir = os.path.join(project_root_for_path, "tests", "results") # project_root_for_path is defined globally
+    
+    # Create the results directory if it doesn't exist
+    try:
+        os.makedirs(results_dir, exist_ok=True)
+    except OSError as e:
+        print(f"Error creating directory {results_dir}: {e}")
+        # Fallback to current directory or handle error as appropriate
+        # For now, we'll just print the error and continue saving to current dir for filename
+        results_dir = "." # Fallback, though ideally this should be handled more robustly
+
+    filename = os.path.join(results_dir, base_filename)
+
     def convert_numpy_types(obj):
         if isinstance(obj, np.ndarray): return obj.tolist()
         if isinstance(obj, np.integer): return int(obj)
         if isinstance(obj, np.floating): return float(obj)
-        if isinstance(obj, (np.bool_, bool)): return bool(obj) # ensure np.bool_ is converted
+        if isinstance(obj, (np.bool_, bool)): return bool(obj) 
         if isinstance(obj, dict): return {k: convert_numpy_types(v) for k, v in obj.items()}
         if isinstance(obj, list): return [convert_numpy_types(i) for i in obj]
         return obj
@@ -269,7 +283,17 @@ if __name__ == "__main__":
         
         has_scenario_errors = False
         scenario_count = 0
-        metrics_agg = {"rmse_vs_known": [], "mae_vs_known": [], "total_log_likelihood_on_test": [], "num_leaf_nodes": [], "max_depth_reached": []}
+        
+        # Explicitly define metrics_agg with all expected keys
+        metrics_agg = {
+            "mse_p_vs_known": [],
+            # "rmse_vs_known": [], # This was not being populated from eval_res, RMSE is calculated from MSE later
+            "mae_p_vs_known": [],
+            "total_log_likelihood_on_test": [],
+            "total_poisson_deviance": [],
+            "num_leaf_nodes": [],
+            "max_depth_reached": []
+        }
 
         for scenario_name, scenario_results in results_data.items():
             scenario_count +=1
@@ -279,13 +303,17 @@ if __name__ == "__main__":
                 has_scenario_errors = True
             elif isinstance(scenario_results, dict) and "evaluation" in scenario_results:
                 eval_res = scenario_results["evaluation"]
-                print(f"    RMSE (vs Known P): {eval_res.get('mse_p_vs_known', np.nan)**0.5:.4f}") # RMSE from MSE
+                print(f"    RMSE (vs Known P): {eval_res.get('mse_p_vs_known', np.nan)**0.5:.4f}") 
                 print(f"    MAE (vs Known P): {eval_res.get('mae_p_vs_known', np.nan):.4f}")
                 print(f"    LogLikelihood: {eval_res.get('total_log_likelihood_on_test', np.nan):.2f}")
+                print(f"    Poisson Deviance: {eval_res.get('total_poisson_deviance', np.nan):.2f}")
                 print(f"    Leafs: {eval_res.get('num_leaf_nodes', np.nan)}, Depth: {eval_res.get('max_depth_reached', np.nan)}")
-                for key in metrics_agg:
-                    if eval_res.get(key) is not None:
-                         metrics_agg[key].append(eval_res[key])
+                
+                # Populate metrics_agg
+                for key_metric_agg in metrics_agg.keys(): # Iterate over keys defined in metrics_agg
+                    value = eval_res.get(key_metric_agg) # Get value from evaluation results
+                    if value is not None:
+                        metrics_agg[key_metric_agg].append(value)
             else:
                  print(f"    Status: UNKNOWN or Incomplete Results")
                  has_scenario_errors = True
@@ -293,13 +321,37 @@ if __name__ == "__main__":
 
         if not has_scenario_errors and scenario_count > 0:
             print(f"  Average Metrics for {config_name_summary} ({scenario_count} scenarios):")
-            if metrics_agg["mse_p_vs_known"]: # Assuming mse used for rmse calc
+            if metrics_agg["mse_p_vs_known"]: 
                  avg_rmse = np.mean([m**0.5 for m in metrics_agg["mse_p_vs_known"]])
                  print(f"    Avg RMSE (vs Known P): {avg_rmse:.4f}")
-            if metrics_agg["mae_p_vs_known"]: print(f"    Avg MAE (vs Known P): {np.mean(metrics_agg['mae_p_vs_known']):.4f}")
-            if metrics_agg["total_log_likelihood_on_test"]: print(f"    Avg LogLikelihood: {np.mean(metrics_agg['total_log_likelihood_on_test']):.2f}")
-            if metrics_agg["num_leaf_nodes"]: print(f"    Avg Leaf Nodes: {np.mean(metrics_agg['num_leaf_nodes']):.1f}")
-            if metrics_agg["max_depth_reached"]: print(f"    Avg Max Depth: {np.mean(metrics_agg['max_depth_reached']):.1f}")
+            else:
+                 print(f"    Avg RMSE (vs Known P): nan") # Handle case where mse_p_vs_known list is empty
+
+            if metrics_agg["mae_p_vs_known"]: 
+                print(f"    Avg MAE (vs Known P): {np.mean(metrics_agg['mae_p_vs_known']):.4f}")
+            else:
+                print(f"    Avg MAE (vs Known P): nan")
+
+            if metrics_agg["total_log_likelihood_on_test"]: 
+                print(f"    Avg LogLikelihood: {np.mean(metrics_agg['total_log_likelihood_on_test']):.2f}")
+            else:
+                print(f"    Avg LogLikelihood: nan")
+
+            if metrics_agg["total_poisson_deviance"]: 
+                print(f"    Avg Poisson Deviance: {np.mean(metrics_agg['total_poisson_deviance']):.2f}")
+            else:
+                print(f"    Avg Poisson Deviance: nan")
+
+            if metrics_agg["num_leaf_nodes"]: 
+                print(f"    Avg Leaf Nodes: {np.mean(metrics_agg['num_leaf_nodes']):.1f}")
+            else:
+                print(f"    Avg Leaf Nodes: nan")
+
+            if metrics_agg["max_depth_reached"]: 
+                print(f"    Avg Max Depth: {np.mean(metrics_agg['max_depth_reached']):.1f}")
+            else:
+                print(f"    Avg Max Depth: nan")
+
         elif scenario_count == 0:
             print(f"  Status: NO SCENARIOS RUN")
         else:
