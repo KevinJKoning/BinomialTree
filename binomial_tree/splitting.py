@@ -264,6 +264,9 @@ def find_best_categorical_split(
     node_depth_for_logs: int = 0 # Added for logging indent
 ):
     best_split = {'log_likelihood': -float('inf')}
+    # Temporary storage for the components of the best split's indices, to defer concatenation
+    _best_split_left_idx_components_list = None
+    _best_split_right_categories_start_idx = -1 
     
     indent = "  " * (node_depth_for_logs + 2) # Indent for verbose logging
 
@@ -375,15 +378,31 @@ def find_best_categorical_split(
 
         if current_split_log_likelihood > best_split['log_likelihood']:
             best_split['feature'] = feature_name
-            best_split['value'] = {'codes_for_left_group': list(map(float, current_left_codes_set))} # Map codes to float as per original
+            best_split['value'] = {'codes_for_left_group': list(current_left_codes_set)} # Keep codes as integers for type consistency
             best_split['log_likelihood'] = current_split_log_likelihood
-            
-            best_split['left_indices'] = np.concatenate(current_left_indices_list) if current_left_indices_list else np.array([], dtype=indices_for_node.dtype)
-            
-            right_indices_list = [item['indices'] for item in categories_data_to_sort[i+1:]]
-            best_split['right_indices'] = np.concatenate(right_indices_list) if right_indices_list else np.array([], dtype=indices_for_node.dtype)
-            
             best_split['type'] = 'categorical'
+            
+            # Store components to build final indices later, avoid repeated concatenation
+            _best_split_left_idx_components_list = list(current_left_indices_list) # Shallow copy
+            _best_split_right_categories_start_idx = i + 1
+            
+    # After iterating through all potential splits, if a best split was found, construct its indices
+    if _best_split_left_idx_components_list is not None:
+        # Ensure left_indices is populated if components exist
+        if _best_split_left_idx_components_list:
+            best_split['left_indices'] = np.concatenate(_best_split_left_idx_components_list)
+        else:
+            best_split['left_indices'] = np.array([], dtype=indices_for_node.dtype)
+
+        # Construct right_indices from the stored start index for the right categories
+        if _best_split_right_categories_start_idx >= 0 and _best_split_right_categories_start_idx < len(categories_data_to_sort):
+            right_indices_list_final = [item['indices'] for item in categories_data_to_sort[_best_split_right_categories_start_idx:]]
+            if right_indices_list_final:
+                best_split['right_indices'] = np.concatenate(right_indices_list_final)
+            else:
+                best_split['right_indices'] = np.array([], dtype=indices_for_node.dtype)
+        else: # Handles cases like all categories moving to left, or invalid index
+            best_split['right_indices'] = np.array([], dtype=indices_for_node.dtype)
             
     return best_split
 
@@ -560,7 +579,8 @@ if __name__ == '__main__':
         n_array_full=mock_tree_instance.n_array,
         indices_for_node=all_indices,
         min_samples_leaf=mock_tree_instance.min_samples_leaf,
-        feature_name='feature_num'
+        feature_name='feature_num',
+        max_numerical_split_points=100
     )
     if 'feature' in best_num_split and best_num_split['log_likelihood'] > -float('inf'):
         print(f"Best numerical split on '{best_num_split['feature']}' at {best_num_split['value']:.2f} "

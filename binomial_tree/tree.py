@@ -2,6 +2,7 @@
 import math
 import uuid
 import numpy as np
+import warnings
 
 from .utils import (
     calculate_p_hat,
@@ -395,11 +396,16 @@ class BinomialDecisionTree:
                     if cat_map:
                         code = cat_map['value_to_code'].get(str_val)
                         if code is None: # Unseen category
-                            # Handle unseen: map to '__NaN__' code if it exists, else a default like -1 or 0
-                            # This means new categories go to the path of '__NaN__'/missing from training
-                            unknown_code = cat_map['value_to_code'].get('__NaN__', -1.0) # Default to -1.0 if __NaN__ not seen
+                            # Handle unseen: map to the code for self.nan_placeholder_categorical if it was part of training,
+                            # otherwise use a default code (-1.0). This ensures new categories follow the path
+                            # designated for missing/NaN values from training, or a generic 'unknown' path.
+                            unknown_code = cat_map['value_to_code'].get(self.nan_placeholder_categorical, -1.0)
                             coded_row_features[j] = unknown_code
-                            # print(f"Warning: Unseen category '{str_val}' for feature '{feat_name}'. Using code {unknown_code}.")
+                            warnings.warn(
+                                f"Unseen category '{str_val}' for feature '{feat_name}'. "
+                                f"Mapping to code {unknown_code} (path for '{self.nan_placeholder_categorical}' or default for unknowns).",
+                                UserWarning
+                            )
                         else:
                             coded_row_features[j] = float(code)
                     else: # Should not happen if tree is fit

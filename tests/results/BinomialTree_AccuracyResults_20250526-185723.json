@@ -1,0 +1,820 @@
+{
+    "InitialConfig_Std": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.0518491268157959,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14740659588166605,
+                "mae_p_vs_observed": 0.027812457963081166,
+                "mse_p_vs_observed": 0.0013775736205365807,
+                "avg_observed_p": 0.14689443922433923,
+                "mae_p_vs_known": 0.010110591477740082,
+                "mse_p_vs_known": 0.00030339782404692993,
+                "avg_known_p": 0.14728726337632805,
+                "total_log_likelihood_on_test": -2833.473128565226,
+                "total_poisson_deviance": 1264.845134870305,
+                "num_leaf_nodes": 23,
+                "max_depth_reached": 5,
+                "total_k_test": 18554,
+                "total_n_test": 125886,
+                "overall_p_test": 0.14738731868515959
+            },
+            "num_nodes_total": 45
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.07824468612670898,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1983854152119601,
+                "mae_p_vs_observed": 0.03115549094961474,
+                "mse_p_vs_observed": 0.0016425437000663343,
+                "avg_observed_p": 0.19971555158317067,
+                "mae_p_vs_known": 0.012418776120389871,
+                "mse_p_vs_known": 0.0002485798883137509,
+                "avg_known_p": 0.1997854933317739,
+                "total_log_likelihood_on_test": -2933.376978400918,
+                "total_poisson_deviance": 1001.8464367220375,
+                "num_leaf_nodes": 94,
+                "max_depth_reached": 7,
+                "total_k_test": 24963,
+                "total_n_test": 125076,
+                "overall_p_test": 0.19958265374652212
+            },
+            "num_nodes_total": 187
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.021976232528686523,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11345421600533777,
+                "mae_p_vs_observed": 0.023018387577479996,
+                "mse_p_vs_observed": 0.0010095391241385936,
+                "avg_observed_p": 0.11493202218203227,
+                "mae_p_vs_known": 0.0041822378383343855,
+                "mse_p_vs_known": 2.692703543112321e-05,
+                "avg_known_p": 0.11371613338014647,
+                "total_log_likelihood_on_test": -2487.618198319931,
+                "total_poisson_deviance": 978.163455996366,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14126,
+                "total_n_test": 124061,
+                "overall_p_test": 0.11386334142075269
+            },
+            "num_nodes_total": 7
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 6
+            },
+            "training_time_seconds": 0.09260320663452148,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1044893138814704,
+                "mae_p_vs_observed": 0.029110560644993542,
+                "mse_p_vs_observed": 0.00148227812883714,
+                "avg_observed_p": 0.10719794087581187,
+                "mae_p_vs_known": 0.01002746275738815,
+                "mse_p_vs_known": 0.00017786959432203,
+                "avg_known_p": 0.10595733523857137,
+                "total_log_likelihood_on_test": -2423.907800413596,
+                "total_poisson_deviance": 1220.215294494372,
+                "num_leaf_nodes": 55,
+                "max_depth_reached": 6,
+                "total_k_test": 9504,
+                "total_n_test": 89234,
+                "overall_p_test": 0.1065064885581729
+            },
+            "num_nodes_total": 109
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 1000,
+                "relative_width_factor": 2.5,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.2012009620666504,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.009989745828588173,
+                "mae_p_vs_observed": 0.0015369877231159617,
+                "mse_p_vs_observed": 3.9154075040648005e-06,
+                "avg_observed_p": 0.01000811448423083,
+                "mae_p_vs_known": 5.8556044176677554e-05,
+                "mse_p_vs_known": 1.8587328930010374e-08,
+                "avg_known_p": 0.009999999999999724,
+                "total_log_likelihood_on_test": -15323.453561397608,
+                "total_poisson_deviance": 4950.7932993151,
+                "num_leaf_nodes": 15,
+                "max_depth_reached": 5,
+                "total_k_test": 149854,
+                "total_n_test": 14993204,
+                "overall_p_test": 0.009994794975110056
+            },
+            "num_nodes_total": 29
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.10880303382873535,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08153997847214495,
+                "mae_p_vs_observed": 0.021970075558735046,
+                "mse_p_vs_observed": 0.000839485970439766,
+                "avg_observed_p": 0.08179255108957828,
+                "mae_p_vs_known": 0.0019211649747374814,
+                "mse_p_vs_known": 5.640402145065421e-06,
+                "avg_known_p": 0.08118304565737733,
+                "total_log_likelihood_on_test": -4552.985042298567,
+                "total_poisson_deviance": 1941.8980256166603,
+                "num_leaf_nodes": 26,
+                "max_depth_reached": 5,
+                "total_k_test": 16434,
+                "total_n_test": 202706,
+                "overall_p_test": 0.0810730812112123
+            },
+            "num_nodes_total": 51
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 6
+            },
+            "training_time_seconds": 3.653272867202759,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.19962420325334207,
+                "mae_p_vs_observed": 0.030109434857867694,
+                "mse_p_vs_observed": 0.0015215933872908358,
+                "avg_observed_p": 0.1998932644769877,
+                "mae_p_vs_known": 0.00809110506766951,
+                "mse_p_vs_known": 0.00010329692504507574,
+                "avg_known_p": 0.199635026479526,
+                "total_log_likelihood_on_test": -57225.2011252073,
+                "total_poisson_deviance": 17887.901673918404,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 495799,
+                "total_n_test": 2482428,
+                "overall_p_test": 0.19972341594600126
+            },
+            "num_nodes_total": 127
+        },
+        "Numerical_Linear_Huge_1M": {
+            "dataset_name": "Numerical_Linear_Huge_1M",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 255,
+                "max_depth": 6
+            },
+            "training_time_seconds": 74.08979892730713,
+            "evaluation": {
+                "num_test_samples": 100000,
+                "avg_predicted_p": 0.20023492894276945,
+                "mae_p_vs_observed": 0.03006723813655472,
+                "mse_p_vs_observed": 0.001511618048111435,
+                "avg_observed_p": 0.20014723223002936,
+                "mae_p_vs_known": 0.008062139318902992,
+                "mse_p_vs_known": 0.00010218358885940847,
+                "avg_known_p": 0.20018835939065405,
+                "total_log_likelihood_on_test": -286177.1269491879,
+                "total_poisson_deviance": 88891.5471044742,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 2495761,
+                "total_n_test": 12462666,
+                "overall_p_test": 0.200258997553172
+            },
+            "num_nodes_total": 127
+        }
+    },
+    "Config_Global_LeafPlus20": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.0511937141418457,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14980174675331853,
+                "mae_p_vs_observed": 0.026704643911221303,
+                "mse_p_vs_observed": 0.0012789635926553926,
+                "avg_observed_p": 0.1493417217321504,
+                "mae_p_vs_known": 0.009761771745647506,
+                "mse_p_vs_known": 0.00024425739008382256,
+                "avg_known_p": 0.14894548185628328,
+                "total_log_likelihood_on_test": -2769.5039050519,
+                "total_poisson_deviance": 1116.7606446708994,
+                "num_leaf_nodes": 22,
+                "max_depth_reached": 5,
+                "total_k_test": 18713,
+                "total_n_test": 125752,
+                "overall_p_test": 0.1488087664609708
+            },
+            "num_nodes_total": 43
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.056478023529052734,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20557689997883102,
+                "mae_p_vs_observed": 0.030635908790126114,
+                "mse_p_vs_observed": 0.001524803706712254,
+                "avg_observed_p": 0.20419580181473296,
+                "mae_p_vs_known": 0.009070314220229006,
+                "mse_p_vs_known": 0.00012749202766248961,
+                "avg_known_p": 0.20525182479577,
+                "total_log_likelihood_on_test": -2893.1588539525633,
+                "total_poisson_deviance": 908.0457678154781,
+                "num_leaf_nodes": 31,
+                "max_depth_reached": 5,
+                "total_k_test": 26160,
+                "total_n_test": 127053,
+                "overall_p_test": 0.20589832589549242
+            },
+            "num_nodes_total": 61
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.02140212059020996,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11188774840015937,
+                "mae_p_vs_observed": 0.021592590237744062,
+                "mse_p_vs_observed": 0.0008482185971357662,
+                "avg_observed_p": 0.11335093648531099,
+                "mae_p_vs_known": 0.004728642792450148,
+                "mse_p_vs_known": 3.396832541993218e-05,
+                "avg_known_p": 0.11432834362988664,
+                "total_log_likelihood_on_test": -2508.652413138259,
+                "total_poisson_deviance": 1036.6974547560128,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14149,
+                "total_n_test": 126170,
+                "overall_p_test": 0.1121423476262186
+            },
+            "num_nodes_total": 7
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.07825684547424316,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10160771155919314,
+                "mae_p_vs_observed": 0.027548098106746622,
+                "mse_p_vs_observed": 0.001364144430332904,
+                "avg_observed_p": 0.10147335684435578,
+                "mae_p_vs_known": 0.009324673722348636,
+                "mse_p_vs_known": 0.0001500843434423434,
+                "avg_known_p": 0.10187341550617231,
+                "total_log_likelihood_on_test": -2318.101915292537,
+                "total_poisson_deviance": 1117.5190663069882,
+                "num_leaf_nodes": 31,
+                "max_depth_reached": 5,
+                "total_k_test": 9254,
+                "total_n_test": 89966,
+                "overall_p_test": 0.1028610808527666
+            },
+            "num_nodes_total": 61
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 30,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.5873417854309082,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.010003714911379559,
+                "mae_p_vs_observed": 0.0015198417026785391,
+                "mse_p_vs_observed": 3.81830926215237e-06,
+                "avg_observed_p": 0.009978346695080567,
+                "mae_p_vs_known": 0.00010934457132829866,
+                "mse_p_vs_known": 3.2426793196044915e-08,
+                "avg_known_p": 0.009999999999999724,
+                "total_log_likelihood_on_test": -15301.224329659182,
+                "total_poisson_deviance": 4823.092216138526,
+                "num_leaf_nodes": 30,
+                "max_depth_reached": 5,
+                "total_k_test": 152322,
+                "total_n_test": 15258699,
+                "overall_p_test": 0.009982633512857157
+            },
+            "num_nodes_total": 59
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 5
+            },
+            "training_time_seconds": 0.340040922164917,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08219078992001916,
+                "mae_p_vs_observed": 0.022520473598531963,
+                "mse_p_vs_observed": 0.0009141470578755352,
+                "avg_observed_p": 0.08245790585980847,
+                "mae_p_vs_known": 0.0017882019724508053,
+                "mse_p_vs_known": 5.182732295977963e-06,
+                "avg_known_p": 0.0821821972301547,
+                "total_log_likelihood_on_test": -4576.004992412361,
+                "total_poisson_deviance": 1992.5695927048462,
+                "num_leaf_nodes": 25,
+                "max_depth_reached": 5,
+                "total_k_test": 16410,
+                "total_n_test": 200162,
+                "overall_p_test": 0.08198359328943555
+            },
+            "num_nodes_total": 49
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 6
+            },
+            "training_time_seconds": 4.308583974838257,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.20051761704319498,
+                "mae_p_vs_observed": 0.030279079229258262,
+                "mse_p_vs_observed": 0.0015346315062529313,
+                "avg_observed_p": 0.20016453046885066,
+                "mae_p_vs_known": 0.008050732312335945,
+                "mse_p_vs_known": 0.00010217975794541957,
+                "avg_known_p": 0.20060164333692476,
+                "total_log_likelihood_on_test": -57403.385179611156,
+                "total_poisson_deviance": 18005.928649425896,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 499252,
+                "total_n_test": 2494136,
+                "overall_p_test": 0.20017031950142253
+            },
+            "num_nodes_total": 127
+        },
+        "Numerical_Linear_Huge_1M": {
+            "dataset_name": "Numerical_Linear_Huge_1M",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 255,
+                "max_depth": 6
+            },
+            "training_time_seconds": 80.9470911026001,
+            "evaluation": {
+                "num_test_samples": 100000,
+                "avg_predicted_p": 0.20048001265060938,
+                "mae_p_vs_observed": 0.03019156848915757,
+                "mse_p_vs_observed": 0.0015192793567256222,
+                "avg_observed_p": 0.2005932434004779,
+                "mae_p_vs_known": 0.008050157051252404,
+                "mse_p_vs_known": 0.00010176610511090858,
+                "avg_known_p": 0.20049174498463798,
+                "total_log_likelihood_on_test": -286788.5070234168,
+                "total_poisson_deviance": 89429.78447291795,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 2504002,
+                "total_n_test": 12491262,
+                "overall_p_test": 0.2004602897609545
+            },
+            "num_nodes_total": 127
+        }
+    },
+    "Config_MoreSplits": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 30,
+                "relative_width_factor": 0.5,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.08115220069885254,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14621356807719682,
+                "mae_p_vs_observed": 0.027428328656714674,
+                "mse_p_vs_observed": 0.0014633434627524312,
+                "avg_observed_p": 0.147991234329835,
+                "mae_p_vs_known": 0.011087316145870536,
+                "mse_p_vs_known": 0.00037065280396004075,
+                "avg_known_p": 0.14767588567277365,
+                "total_log_likelihood_on_test": -2816.6069094084287,
+                "total_poisson_deviance": 1214.9602543718288,
+                "num_leaf_nodes": 54,
+                "max_depth_reached": 7,
+                "total_k_test": 17870,
+                "total_n_test": 122161,
+                "overall_p_test": 0.14628236507559697
+            },
+            "num_nodes_total": 107
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 30,
+                "relative_width_factor": 0.5,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.08342814445495605,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20237230891931138,
+                "mae_p_vs_observed": 0.033175801282848943,
+                "mse_p_vs_observed": 0.0018638226563285917,
+                "avg_observed_p": 0.19973840545075394,
+                "mae_p_vs_known": 0.013340224519789718,
+                "mse_p_vs_known": 0.0002984984853134335,
+                "avg_known_p": 0.20123230860052618,
+                "total_log_likelihood_on_test": -2938.5308617682754,
+                "total_poisson_deviance": 1012.2600362708137,
+                "num_leaf_nodes": 100,
+                "max_depth_reached": 7,
+                "total_k_test": 24697,
+                "total_n_test": 123198,
+                "overall_p_test": 0.20046591665449115
+            },
+            "num_nodes_total": 199
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 30,
+                "relative_width_factor": 0.5,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.021304845809936523,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11440799289420235,
+                "mae_p_vs_observed": 0.021077132236247433,
+                "mse_p_vs_observed": 0.0008204321001663711,
+                "avg_observed_p": 0.1159086185002166,
+                "mae_p_vs_known": 0.0041361960972413955,
+                "mse_p_vs_known": 2.732920749837952e-05,
+                "avg_known_p": 0.11488770724188381,
+                "total_log_likelihood_on_test": -2480.3200583768175,
+                "total_poisson_deviance": 942.3978245384137,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 15034,
+                "total_n_test": 128050,
+                "overall_p_test": 0.11740726278797345
+            },
+            "num_nodes_total": 7
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 30,
+                "relative_width_factor": 0.5,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.11573624610900879,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.09952911438397584,
+                "mae_p_vs_observed": 0.027155551029495316,
+                "mse_p_vs_observed": 0.0013315738484911044,
+                "avg_observed_p": 0.09812537761037292,
+                "mae_p_vs_known": 0.01192943486617496,
+                "mse_p_vs_known": 0.0002530833839967884,
+                "avg_known_p": 0.09857443290837707,
+                "total_log_likelihood_on_test": -2349.5769545411126,
+                "total_poisson_deviance": 1230.9243309113176,
+                "num_leaf_nodes": 104,
+                "max_depth_reached": 7,
+                "total_k_test": 8766,
+                "total_n_test": 89283,
+                "overall_p_test": 0.09818218473841604
+            },
+            "num_nodes_total": 207
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 500,
+                "relative_width_factor": 1.0,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.2769451141357422,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.009993622649415085,
+                "mae_p_vs_observed": 0.001537266847591709,
+                "mse_p_vs_observed": 3.830449752454847e-06,
+                "avg_observed_p": 0.009957603826433164,
+                "mae_p_vs_known": 7.799463104198472e-05,
+                "mse_p_vs_known": 3.020530688624165e-08,
+                "avg_known_p": 0.009999999999999724,
+                "total_log_likelihood_on_test": -15250.500964665081,
+                "total_poisson_deviance": 4795.1975265333995,
+                "num_leaf_nodes": 48,
+                "max_depth_reached": 7,
+                "total_k_test": 150248,
+                "total_n_test": 15090750,
+                "overall_p_test": 0.009956297732054404
+            },
+            "num_nodes_total": 95
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 30,
+                "relative_width_factor": 0.5,
+                "min_likelihood_gain": 0.01,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 7
+            },
+            "training_time_seconds": 0.12408208847045898,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08342976217266289,
+                "mae_p_vs_observed": 0.0224045244521103,
+                "mse_p_vs_observed": 0.000870247213206969,
+                "avg_observed_p": 0.0838312966821788,
+                "mae_p_vs_known": 0.001780093459126987,
+                "mse_p_vs_known": 5.464336503430869e-06,
+                "avg_known_p": 0.08297379489371799,
+                "total_log_likelihood_on_test": -4566.02794133733,
+                "total_poisson_deviance": 1920.6412240147033,
+                "num_leaf_nodes": 29,
+                "max_depth_reached": 6,
+                "total_k_test": 16678,
+                "total_n_test": 198862,
+                "overall_p_test": 0.08386720439299615
+            },
+            "num_nodes_total": 57
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 100,
+                "max_depth": 6
+            },
+            "training_time_seconds": 3.8781042098999023,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.2008522684252349,
+                "mae_p_vs_observed": 0.030160601694884468,
+                "mse_p_vs_observed": 0.0015139480561995474,
+                "avg_observed_p": 0.20125640568490352,
+                "mae_p_vs_known": 0.00811405136013049,
+                "mse_p_vs_known": 0.00010263565493169417,
+                "avg_known_p": 0.20076153583539555,
+                "total_log_likelihood_on_test": -57305.66976189699,
+                "total_poisson_deviance": 17802.935943205197,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 503685,
+                "total_n_test": 2495194,
+                "overall_p_test": 0.20186205962342008
+            },
+            "num_nodes_total": 127
+        },
+        "Numerical_Linear_Huge_1M": {
+            "dataset_name": "Numerical_Linear_Huge_1M",
+            "tree_params": {
+                "min_samples_split": 40,
+                "min_samples_leaf": 20,
+                "confidence_level": 0.95,
+                "min_n_sum_for_statistical_stop": 50,
+                "relative_width_factor": 0.75,
+                "min_likelihood_gain": 0.1,
+                "epsilon_stopping": 1e-06,
+                "max_numerical_split_points": 255,
+                "max_depth": 6
+            },
+            "training_time_seconds": 75.27216601371765,
+            "evaluation": {
+                "num_test_samples": 100000,
+                "avg_predicted_p": 0.1996006987890814,
+                "mae_p_vs_observed": 0.030188424033733667,
+                "mse_p_vs_observed": 0.0015230395272694613,
+                "avg_observed_p": 0.19952164514315454,
+                "mae_p_vs_known": 0.00808209543750501,
+                "mse_p_vs_known": 0.00010248439173638158,
+                "avg_known_p": 0.1996002478848688,
+                "total_log_likelihood_on_test": -286785.675421356,
+                "total_poisson_deviance": 90097.22669092257,
+                "num_leaf_nodes": 64,
+                "max_depth_reached": 6,
+                "total_k_test": 2488587,
+                "total_n_test": 12477070,
+                "overall_p_test": 0.1994528362828773
+            },
+            "num_nodes_total": 127
+        }
+    },
+    "DriftTest_Baseline": {
+        "ERROR_MAIN_LOOP": "__init__() got an unexpected keyword argument 'general_max_depth'",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 409, in <module>\n    results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 324, in run_all_tests_for_config\n    results_scenario = run_test_scenario(\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_harness.py\", line 207, in run_test_scenario\n    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)\nTypeError: __init__() got an unexpected keyword argument 'general_max_depth'\n"
+    },
+    "DriftTest_Leaf_5": {
+        "ERROR_MAIN_LOOP": "__init__() got an unexpected keyword argument 'general_max_depth'",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 409, in <module>\n    results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 324, in run_all_tests_for_config\n    results_scenario = run_test_scenario(\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_harness.py\", line 207, in run_test_scenario\n    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)\nTypeError: __init__() got an unexpected keyword argument 'general_max_depth'\n"
+    },
+    "DriftTest_Leaf_50": {
+        "ERROR_MAIN_LOOP": "__init__() got an unexpected keyword argument 'general_max_depth'",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 409, in <module>\n    results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 324, in run_all_tests_for_config\n    results_scenario = run_test_scenario(\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_harness.py\", line 207, in run_test_scenario\n    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)\nTypeError: __init__() got an unexpected keyword argument 'general_max_depth'\n"
+    },
+    "DriftTest_MaxNumSplit_50": {
+        "ERROR_MAIN_LOOP": "__init__() got an unexpected keyword argument 'general_max_depth'",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 409, in <module>\n    results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 324, in run_all_tests_for_config\n    results_scenario = run_test_scenario(\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_harness.py\", line 207, in run_test_scenario\n    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)\nTypeError: __init__() got an unexpected keyword argument 'general_max_depth'\n"
+    },
+    "DriftTest_MaxNumSplit_255": {
+        "ERROR_MAIN_LOOP": "__init__() got an unexpected keyword argument 'general_max_depth'",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 409, in <module>\n    results_for_this_config = run_all_tests_for_config(config_params, verbose=verbose_output)\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_accuracy.py\", line 324, in run_all_tests_for_config\n    results_scenario = run_test_scenario(\n  File \"/Users/kevinkoning/Library/CloudStorage/GoogleDrive-kevin.koning@gmail.com/My Drive/Code/NewBinomialTree/tests/test_harness.py\", line 207, in run_test_scenario\n    tree = BinomialDecisionTree(**current_tree_params_for_init, verbose=verbose)\nTypeError: __init__() got an unexpected keyword argument 'general_max_depth'\n"
+    }
+}

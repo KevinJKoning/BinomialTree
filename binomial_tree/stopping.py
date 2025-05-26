@@ -45,20 +45,16 @@ def check_node_stopping_conditions(
     if node_n_sum == 0: # No exposure, cannot estimate p
         return "zero_exposure_sum"
 
-    # Check if p_hat is essentially 0 or 1.
-    # If k_sum is 0 (and n_sum > 0), p_hat is 0.
-    # If k_sum is n_sum (and n_sum > 0), p_hat is 1.
-    # In these cases, further splitting might not change p much, or might lead to overfitting noise.
-    # This is a simple purity check.
-    if node_k_sum == 0 and node_n_sum > 0:
-        # If p_hat is 0, any split will also have p_hat=0 for children with k_sum=0.
-        # If a child gets some k>0, it will be different.
-        # Let's rely on the interval for this.
-        pass
-
-    if node_k_sum == node_n_sum and node_n_sum > 0:
-        # If p_hat is 1.
-        pass
+    # Purity checks: if node is pure (all k=0 or all k=n), stop.
+    # This is checked after basic sample/depth/exposure checks.
+    # The case node_n_sum == 0 is handled above.
+    if node_n_sum > 0:
+        if node_k_sum == 0:
+            # All outcomes are 0 for the given exposure.
+            return "pure_node (k_sum == 0)"
+        if node_k_sum == node_n_sum:
+            # All outcomes are 1 for the given exposure.
+            return "pure_node (k_sum == n_sum)"
 
 
     # Statistical stopping criterion based on Wilson score interval
@@ -94,8 +90,7 @@ if __name__ == '__main__':
     stop_reason = check_node_stopping_conditions(
         node_k_sum=10, node_n_sum=100, node_num_samples=5, current_depth=3,
         min_samples_split=10, max_depth=5, confidence_level=0.95,
-        min_n_sum_for_statistical_stop=50, p_precision_threshold=0.01, relative_width_factor=0.5,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        min_n_sum_for_statistical_stop=50, relative_width_factor=0.5
     )
     print(f"Scenario 1 (Min samples): {stop_reason}") # Expected: min_samples_split
 
@@ -103,8 +98,7 @@ if __name__ == '__main__':
     stop_reason = check_node_stopping_conditions(
         node_k_sum=10, node_n_sum=100, node_num_samples=15, current_depth=5,
         min_samples_split=10, max_depth=5, confidence_level=0.95,
-        min_n_sum_for_statistical_stop=50, p_precision_threshold=0.01, relative_width_factor=0.5,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        min_n_sum_for_statistical_stop=50, relative_width_factor=0.5
     )
     print(f"Scenario 2 (Max depth): {stop_reason}") # Expected: max_depth
 
@@ -114,8 +108,7 @@ if __name__ == '__main__':
     stop_reason = check_node_stopping_conditions(
         node_k_sum=5, node_n_sum=50, node_num_samples=20, current_depth=3,
         min_samples_split=10, max_depth=10, confidence_level=0.95,
-        min_n_sum_for_statistical_stop=30, p_precision_threshold=0.01, relative_width_factor=0.5,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        min_n_sum_for_statistical_stop=30, relative_width_factor=0.5
     )
     print(f"Scenario 3 (Statistically wide - relative): {stop_reason}")
 
@@ -127,8 +120,7 @@ if __name__ == '__main__':
     stop_reason = check_node_stopping_conditions(
         node_k_sum=50, node_n_sum=1000, node_num_samples=100, current_depth=3,
         min_samples_split=10, max_depth=10, confidence_level=0.95,
-        min_n_sum_for_statistical_stop=50, p_precision_threshold=0.03, relative_width_factor=1.0,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        min_n_sum_for_statistical_stop=50, relative_width_factor=1.0
     )
     print(f"Scenario 4 (Statistically precise - should be None): {stop_reason}")
 
@@ -144,8 +136,7 @@ if __name__ == '__main__':
     stop_reason = check_node_stopping_conditions(
         node_k_sum=1, node_n_sum=30, node_num_samples=20, current_depth=3,
         min_samples_split=10, max_depth=10, confidence_level=0.95,
-        min_n_sum_for_statistical_stop=20, p_precision_threshold=0.01, relative_width_factor=0.5,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9 # Using default 0.1 here, so 0.16 > 0.1 stops.
+        min_n_sum_for_statistical_stop=20, relative_width_factor=0.5
     )
     print(f"Scenario 5 (p near 0, high uncertainty): {stop_reason}")
 
@@ -154,8 +145,7 @@ if __name__ == '__main__':
         node_k_sum=1, node_n_sum=10, node_num_samples=20, current_depth=3,
         min_samples_split=10, max_depth=10, confidence_level=0.95,
         min_n_sum_for_statistical_stop=50, # n_sum=10 is less than this
-        p_precision_threshold=0.01, relative_width_factor=0.5,
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        relative_width_factor=0.5
     )
     print(f"Scenario 6 (n_sum too low for stat stop - should be None): {stop_reason}")
 
@@ -164,8 +154,6 @@ if __name__ == '__main__':
         node_k_sum=20, node_n_sum=100, node_num_samples=50, current_depth=2,
         min_samples_split=10, max_depth=5, confidence_level=0.95,
         min_n_sum_for_statistical_stop=50,
-        p_precision_threshold=0.01, # Wilson(20,100) is (0.127, 0.292), width=0.165. This is not <0.01
-        relative_width_factor=1.0, # Rel width = 0.165/0.2 = 0.825. This is not > 1.0
-        p_near_zero_threshold_high=0.1, p_near_one_threshold_low=0.9
+        relative_width_factor=1.0 # Rel width = 0.165/0.2 = 0.825. This is not > 1.0
     )
     print(f"Scenario 7 (No stop condition met - should be None): {stop_reason}")

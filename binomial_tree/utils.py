@@ -1,6 +1,7 @@
 # NewBinomialTree/binomial_tree/utils.py
 import math
 import random
+import warnings
 
 # Z-scores for common confidence levels
 Z_SCORES = {
@@ -17,12 +18,17 @@ def calculate_p_hat(k_sum, n_sum):
     if n_sum == 0:
         return 0.0 # Or perhaps a more sophisticated default for an empty node
     if k_sum > n_sum:
-        # This shouldn't happen with valid binomial data (k <= n for each observation)
-        # but if k_sum and n_sum are aggregated, k_sum could exceed n_sum if data is malformed.
-        # For a leaf, k_sum is sum of k's, n_sum is sum of n's.
-        # If sum_k_i > sum_n_i, something is wrong. However, for a single (k,n) pair, k<=n.
-        # Let's assume k_sum <= n_sum.
-        pass
+        warnings.warn(
+            f"k_sum ({k_sum}) > n_sum ({n_sum}) in calculate_p_hat. This indicates a data issue. Clamping k_sum to n_sum for p_hat calculation.",
+            UserWarning
+        )
+        k_sum = n_sum # Clamp k_sum for p_hat calculation
+    elif k_sum < 0:
+        warnings.warn(
+            f"k_sum ({k_sum}) < 0 in calculate_p_hat. This indicates a data issue. Clamping k_sum to 0 for p_hat calculation.",
+            UserWarning
+        )
+        k_sum = 0 # Clamp k_sum to 0
     return k_sum / n_sum
 
 
@@ -126,16 +132,22 @@ def get_total_log_likelihood(observations, p):
 
 def calculate_wilson_score_interval(k_sum, n_sum, confidence_level=0.95):
     """
-    Calculate the Wilson score interval for a binomial proportion.
+    Calculate the Wilson score interval for a binomial proportion using precomputed Z-scores.
 
     Args:
         k_sum (int): Total number of successes.
         n_sum (int): Total number of trials.
-        confidence_level (float): The desired confidence level (e.g., 0.95).
+        confidence_level (float): The desired confidence level. 
+                                  Supported values are 0.90, 0.95, and 0.99, corresponding
+                                  to Z-scores defined in Z_SCORES. Other values will
+                                  raise a ValueError as SciPy is not a dependency.
 
     Returns:
         tuple: (lower_bound, upper_bound) for the proportion p.
                Returns (0.0, 1.0) if n_sum is 0.
+    
+    Raises:
+        ValueError: If the provided confidence_level is not one of the supported values (0.90, 0.95, 0.99).
     """
     if n_sum == 0:
         return (0.0, 1.0) # No data, so p could be anything
