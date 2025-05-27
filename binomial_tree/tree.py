@@ -3,31 +3,33 @@ import math
 import uuid
 import numpy as np
 import warnings
+import time
 
 from .utils import (
     calculate_p_hat,
     get_total_log_likelihood,
-    calculate_wilson_score_interval
+    calculate_wilson_score_interval,
+    Z_SCORES
 )
 from .stopping import check_node_stopping_conditions
-from .splitting import find_best_split_for_node 
+from .splitting import find_best_split_for_node
 
 class Node:
     def __init__(self, depth, indices, parent_id=None):
         self.id = uuid.uuid4()
         self.depth = depth
-        self.indices = np.array(indices, dtype=int) 
+        self.indices = np.array(indices, dtype=int)
         self.parent_id = parent_id
-        self.children_ids = [] 
+        self.children_ids = []
         self.is_leaf = False
         self.leaf_reason = None
-        self.split_rule = None 
+        self.split_rule = None
 
         self.num_samples = len(indices)
         self.k_sum = 0
         self.n_sum = 0
         self.p_hat = 0.0
-        self.log_likelihood_self = -float('inf') 
+        self.log_likelihood_self = -float('inf')
         self.confidence_interval = (0.0, 0.0)
 
     def calculate_stats(self, tree_instance, k_array_full, n_array_full):
@@ -35,7 +37,7 @@ class Node:
             self.k_sum = 0
             self.n_sum = 0
             self.p_hat = 0.0
-            self.log_likelihood_self = 0 
+            self.log_likelihood_self = 0
             self.confidence_interval = (0.0, 0.0)
             return
 
@@ -45,10 +47,10 @@ class Node:
         self.k_sum = np.sum(node_k_values)
         self.n_sum = np.sum(node_n_values)
         self.p_hat = calculate_p_hat(self.k_sum, self.n_sum)
-        
+
         node_observations = list(zip(node_k_values.tolist(), node_n_values.tolist()))
         self.log_likelihood_self = get_total_log_likelihood(node_observations, self.p_hat)
-        
+
         if self.n_sum > 0:
             self.confidence_interval = calculate_wilson_score_interval(
                 self.k_sum, self.n_sum, tree_instance.confidence_level
@@ -64,7 +66,7 @@ class Node:
         # Children IDs are set separately after they are created
         self.split_rule = {
             'feature': feature,
-            'value': value, 
+            'value': value,
             'type': split_type,
             'log_likelihood_gain': log_likelihood_gain
         }
@@ -78,27 +80,35 @@ class Node:
             return (f"Node(id={self.id}, Split, depth={self.depth}, rule='{self.split_rule['feature']}', "
                     f"val={self.split_rule['value']}')")
 
-import time # For performance logging
-
 class BinomialDecisionTree:
-    def __init__(self, min_samples_split=2, max_depth=5, min_samples_leaf=1, 
-                 confidence_level=0.95, min_likelihood_gain=-1e-6, 
-                 min_n_sum_for_statistical_stop=30,
-                 relative_width_factor=0.5, epsilon_stopping=1e-6,
-                 max_numerical_split_points=255, # Max number of split points for numerical features
-                 verbose=False): # Added verbose
+    def __init__(
+        self,
+        stopping_strategy="hybrid",       # "statistical", "hybrid", or "tuned"
+        min_samples_split=2,
+        max_depth=5,
+        min_samples_leaf=1,
+        confidence_level=0.95,
+        min_likelihood_gain=-1e-6,
+        min_n_sum_for_statistical_stop=30,
+        relative_width_factor=0.5,
+        epsilon_stopping=1e-6,
+        max_numerical_split_points=255,
+        verbose=False
+    ):
+        self.stopping_strategy = stopping_strategy
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.min_samples_leaf = min_samples_leaf
         self.confidence_level = confidence_level
-        self.min_likelihood_gain = min_likelihood_gain 
-        
+        self.min_likelihood_gain = min_likelihood_gain
         self.min_n_sum_for_statistical_stop = min_n_sum_for_statistical_stop
         self.relative_width_factor = relative_width_factor
         self.epsilon_stopping = epsilon_stopping
+        self.max_numerical_split_points = max_numerical_split_points
+        self.verbose = verbose
 
         self.root_id = None
-        self.nodes = {} 
+        self.nodes = {}
 
         self.feature_matrix = None
         self.k_array = None
@@ -106,17 +116,16 @@ class BinomialDecisionTree:
         self.feature_columns = []
         self.target_column = ''
         self.exposure_column = ''
-        self.feature_types = {} 
-        self.categorical_maps = {} 
+        self.feature_types = {}
+        self.categorical_maps = {}
         self.numeric_medians = {}
-        self.verbose = verbose # Store verbose flag
-        self.max_numerical_split_points = max_numerical_split_points
+
 
     def _infer_feature_types(self, data_list_of_dicts, feature_columns):
         inferred_types = {}
         if not data_list_of_dicts:
-            return {col: 'numerical' for col in feature_columns} 
-        
+            return {col: 'numerical' for col in feature_columns}
+
         sample_row = data_list_of_dicts[0]
         for col in feature_columns:
             val = sample_row.get(col)
@@ -124,20 +133,20 @@ class BinomialDecisionTree:
                 inferred_types[col] = 'numerical'
             elif isinstance(val, str):
                 inferred_types[col] = 'categorical'
-            elif val is None: 
+            elif val is None:
                 found_type = False
                 for r_idx in range(min(len(data_list_of_dicts), 100)): # Check up to 100 rows for None
                     if data_list_of_dicts[r_idx].get(col) is not None:
                         if isinstance(data_list_of_dicts[r_idx].get(col), (int, float)):
                             inferred_types[col] = 'numerical'
                         else:
-                            inferred_types[col] = 'categorical' 
+                            inferred_types[col] = 'categorical'
                         found_type = True
                         break
                 if not found_type:
                      inferred_types[col] = 'categorical' # Default to categorical if all checked are None
             else: # bool, complex, etc.
-                inferred_types[col] = 'categorical' 
+                inferred_types[col] = 'categorical'
         return inferred_types
 
     def _manual_factorize(self, column_data_list, feature_name):
@@ -148,17 +157,17 @@ class BinomialDecisionTree:
         """
         # Convert Nones and all values to string to ensure consistent typing for unique finding
         str_column_data = [str(x) if x is not None else '__NaN__' for x in column_data_list]
-        
+
         unique_values = []
         for x in str_column_data:
             if x not in unique_values:
                 unique_values.append(x)
-        
+
         value_to_code_map = {val: i for i, val in enumerate(unique_values)}
         code_to_value_map = {i: val for i, val in enumerate(unique_values)}
-        
+
         codes = np.array([value_to_code_map[val] for val in str_column_data], dtype=int)
-        
+
         self.categorical_maps[feature_name] = {
             'value_to_code': value_to_code_map,
             'code_to_value': code_to_value_map
@@ -175,7 +184,7 @@ class BinomialDecisionTree:
 
         self.target_column = target_column
         self.exposure_column = exposure_column
-        self.feature_columns = list(feature_columns) 
+        self.feature_columns = list(feature_columns)
 
         if feature_types:
             self.feature_types = feature_types
@@ -184,10 +193,41 @@ class BinomialDecisionTree:
 
         n_samples = len(data_list_of_dicts)
         n_feats = len(self.feature_columns)
-        
+
         self.k_array = np.array([row.get(target_column, 0) for row in data_list_of_dicts], dtype=float)
         self.n_array = np.array([row.get(exposure_column, 0) for row in data_list_of_dicts], dtype=float)
-        self.feature_matrix = np.empty((n_samples, n_feats), dtype=float) 
+        # ---------------------------------------------------
+        # Hierarchical stopping‐strategy override (runs once)
+        global_k = self.k_array.sum()
+        global_n = self.n_array.sum()
+        global_p = global_k / global_n if global_n > 0 else 0.0
+        z = Z_SCORES[self.confidence_level]
+        R = self.relative_width_factor
+
+        if self.stopping_strategy == "statistical":
+            # no depth/samples caps
+            self.min_samples_split = 1
+            self.min_samples_leaf = 1
+            self.max_depth = float("inf")
+            if global_p > 0:
+                N0 = ((2 * z) / R) ** 2 * (1.0 - global_p) / global_p
+            else:
+                N0 = self.min_n_sum_for_statistical_stop
+            self.min_n_sum_for_statistical_stop = max(int(math.ceil(N0)), 1)
+
+        elif self.stopping_strategy == "hybrid":
+            # heuristic defaults
+            self.min_samples_leaf = max(1, int(0.01 * n_samples))
+            self.min_samples_split = 2 * self.min_samples_leaf
+            self.max_depth = int(math.ceil(math.log2(n_samples)))
+            if global_p > 0:
+                N0 = ((2 * z) / R) ** 2 * (1.0 - global_p) / global_p
+                self.min_n_sum_for_statistical_stop = max(int(math.ceil(N0)), 1)
+        # else: 'tuned' → use user‐passed parameters unchanged
+        # ---------------------------------------------------
+
+        # build feature matrix (with imputation and coding)
+        self.feature_matrix = np.empty((n_samples, n_feats), dtype=float)
 
         self.numeric_medians = {}
         self.categorical_maps = {}
@@ -200,15 +240,15 @@ class BinomialDecisionTree:
                 nan_mask = np.isnan(numeric_col_data)
                 if np.any(nan_mask):
                     median_val = np.nanmedian(numeric_col_data[~nan_mask]) if np.sum(~nan_mask) > 0 else 0.0
-                    if np.isnan(median_val): 
-                        median_val = 0.0 
+                    if np.isnan(median_val):
+                        median_val = 0.0
                     self.numeric_medians[feat_name] = median_val
                     numeric_col_data[nan_mask] = median_val
                 self.feature_matrix[:, j] = numeric_col_data
-            
+
             elif self.feature_types.get(feat_name) == 'categorical':
                 codes = self._manual_factorize(col_data_list, feat_name)
-                self.feature_matrix[:, j] = codes 
+                self.feature_matrix[:, j] = codes
             else:
                 print(f"Warning: Feature '{feat_name}' has an unspecified or mixed type. Attempting float conversion.")
                 try:
@@ -218,7 +258,7 @@ class BinomialDecisionTree:
                     codes = self._manual_factorize(col_data_list, feat_name)
                     self.feature_matrix[:,j] = codes
                     self.feature_types[feat_name] = 'categorical' # Correct type
-        
+
         if self.verbose:
             print(f"BinomialDecisionTree.fit: Preprocessing completed. {len(self.feature_columns)} features processed.")
             print(f"Feature types: {self.feature_types}")
@@ -228,11 +268,11 @@ class BinomialDecisionTree:
         initial_indices = np.arange(n_samples)
         root_node = Node(depth=0, indices=initial_indices)
         root_node.calculate_stats(self, self.k_array, self.n_array)
-        
+
         self.nodes[root_node.id] = root_node
         self.root_id = root_node.id
 
-        if root_node.num_samples == 0: 
+        if root_node.num_samples == 0:
             root_node.set_as_leaf("empty_dataset")
             if self.verbose:
                 print(f"  Root node {root_node.id} is LEAF. Reason: empty_dataset")
@@ -240,7 +280,7 @@ class BinomialDecisionTree:
                 print(f"BinomialDecisionTree.fit completed in {fit_end_time - fit_start_time:.4f}s. Total nodes: {len(self.nodes)}")
             return
 
-        queue = [root_node.id] 
+        queue = [root_node.id]
 
         if self.verbose:
             print(f"  Root node {root_node.id} (Depth {root_node.depth}): {root_node.num_samples} samples. LL_self={root_node.log_likelihood_self:.2f}. Added to queue.")
@@ -248,7 +288,7 @@ class BinomialDecisionTree:
         while queue:
             current_node_id = queue.pop(0)
             current_node = self.nodes[current_node_id]
-            
+
             indent = "  " * (current_node.depth + 1) # For indented logging
             if self.verbose:
                 print(f"{indent}Processing Node {current_node.id} (Depth {current_node.depth}): {current_node.num_samples} samples. LL_self={current_node.log_likelihood_self:.2f}")
@@ -264,7 +304,7 @@ class BinomialDecisionTree:
                 confidence_level=self.confidence_level,
                 min_n_sum_for_statistical_stop=self.min_n_sum_for_statistical_stop,
                 relative_width_factor=self.relative_width_factor,
-                epsilon=self.epsilon_stopping 
+                epsilon=self.epsilon_stopping
             )
 
             if stop_reason:
@@ -272,14 +312,14 @@ class BinomialDecisionTree:
                 if self.verbose:
                     print(f"{indent}  Node {current_node.id} becomes LEAF. Reason: {stop_reason}")
                 continue
-            
+
             if self.verbose:
                 t_split_start = time.time()
                 print(f"{indent}  Attempting to find best split for Node {current_node.id}...")
 
             best_split_found = find_best_split_for_node(
-                tree=self, # Pass tree instance 
-                indices_for_node=current_node.indices, 
+                tree=self, # Pass tree instance
+                indices_for_node=current_node.indices,
                 current_node_log_likelihood=current_node.log_likelihood_self,
                 verbose=self.verbose, # Pass verbose flag
                 node_id_for_logs=current_node.id, # Pass node_id for logging context
@@ -302,7 +342,7 @@ class BinomialDecisionTree:
                     else: # General case, simple string representation
                         split_val_repr = f"'{raw_value}'"
                     print(f"{indent}  Node {current_node.id} SPLIT on {best_split_found['feature']} ({best_split_found['type']}) Val: {split_val_repr}. Gain: {best_split_found['log_likelihood_gain']:.4f}")
-                
+
                 current_node.set_split_rule(
                     feature=best_split_found['feature'],
                     value=best_split_found['value'],
@@ -311,19 +351,19 @@ class BinomialDecisionTree:
                 )
 
                 left_child = Node(depth=current_node.depth + 1,
-                                  indices=best_split_found['left_indices'], 
+                                  indices=best_split_found['left_indices'],
                                   parent_id=current_node.id)
                 left_child.calculate_stats(self, self.k_array, self.n_array)
                 self.nodes[left_child.id] = left_child
 
                 right_child = Node(depth=current_node.depth + 1,
-                                   indices=best_split_found['right_indices'], 
+                                   indices=best_split_found['right_indices'],
                                    parent_id=current_node.id)
                 right_child.calculate_stats(self, self.k_array, self.n_array)
                 self.nodes[right_child.id] = right_child
-                
+
                 current_node.children_ids = [left_child.id, right_child.id]
-                
+
                 if self.verbose:
                     print(f"{indent}    Added Left Child Node {left_child.id} (Depth {left_child.depth}, {left_child.num_samples} samples) to queue.")
                     print(f"{indent}    Added Right Child Node {right_child.id} (Depth {right_child.depth}, {right_child.num_samples} samples) to queue.")
@@ -343,13 +383,13 @@ class BinomialDecisionTree:
     def _traverse_tree(self, node_id, row_features_coded, feature_name_to_idx_map):
         node = self.nodes[node_id]
         if node.is_leaf:
-            return node.p_hat, node.n_sum, node.id 
+            return node.p_hat, node.n_sum, node.id
 
         rule = node.split_rule
         feature_to_check = rule['feature']
         split_value_rule = rule['value'] # For numerical: float; for categorical: dict {'codes_for_left_group': [codes]}
         feature_idx = feature_name_to_idx_map[feature_to_check]
-        
+
         # row_features_coded is already an np.array of coded values (float for numerical, int codes for categorical)
         val_in_row_coded = row_features_coded[feature_idx]
 
@@ -374,7 +414,7 @@ class BinomialDecisionTree:
     def predict_p(self, data_list_of_dicts):
         if self.root_id is None:
             raise ValueError("Tree has not been fitted yet.")
-        
+
         predictions = []
         feature_name_to_idx_map = {name: i for i, name in enumerate(self.feature_columns)}
 
@@ -383,8 +423,8 @@ class BinomialDecisionTree:
             for j, feat_name in enumerate(self.feature_columns):
                 val = row_dict.get(feat_name)
                 if self.feature_types[feat_name] == 'numerical':
-                    if val is None or np.isnan(val): 
-                        coded_row_features[j] = self.numeric_medians.get(feat_name, 0.0) 
+                    if val is None or np.isnan(val):
+                        coded_row_features[j] = self.numeric_medians.get(feat_name, 0.0)
                     else:
                         try:
                             coded_row_features[j] = float(val)
@@ -410,7 +450,7 @@ class BinomialDecisionTree:
                             coded_row_features[j] = code # code from map is int, assigned to float array (becomes float)
                     else: # Should not happen if tree is fit
                         coded_row_features[j] = -1.0 # Default code for error state
-            
+
             p_hat, _, _ = self._traverse_tree(self.root_id, coded_row_features, feature_name_to_idx_map)
             predictions.append(p_hat)
         return np.array(predictions)
@@ -431,7 +471,7 @@ class BinomialDecisionTree:
     def print_tree(self, node_id=None, indent=""):
         if node_id is None:
             node_id = self.root_id
-        
+
         node = self.nodes.get(node_id)
         if not node:
             print(f"{indent}No node found for ID: {node_id}")
@@ -447,7 +487,7 @@ class BinomialDecisionTree:
             value_rule = rule['value']
             split_type = rule['type']
             gain = rule.get('log_likelihood_gain', 0.0)
-            
+
             condition = ""
             if split_type == 'numerical':
                 condition = f"{feature} <= {value_rule:.3f}"
@@ -458,8 +498,8 @@ class BinomialDecisionTree:
                     original_values_left = [cat_map_specific.get(int(c), str(c) + "(code?)") for c in codes_left]
                     condition = f"{feature} in {set(original_values_left)}"
                 else:
-                    condition = f"{feature} codes_left: {codes_left}" 
-            
+                    condition = f"{feature} codes_left: {codes_left}"
+
             print(f"{indent}Split: {condition} (Gain={gain:.4f}) | {node_stats}")
             if node.children_ids:
                 self.print_tree(node.children_ids[0], indent + "  |--L: ")
