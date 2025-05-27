@@ -35,7 +35,7 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.1,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 5,
+        "max_depth": 5,
         "max_numerical_split_points": 100, # Added default
         "scenario_overrides": {
             "Numerical_Linear_Function": {"max_depth": 7},
@@ -58,7 +58,7 @@ CONFIGURATIONS_TO_TEST = [
         "config_name": "Config_Global_LeafPlus20",
         "min_samples_split": 40, "min_samples_leaf": 20, "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75,
-        "min_likelihood_gain": 0.1, "epsilon_stopping": 1e-6, "general_max_depth": 5,
+        "min_likelihood_gain": 0.1, "epsilon_stopping": 1e-6, "max_depth": 5,
         "max_numerical_split_points": 100, # Added default
         "scenario_overrides": {
              "Numerical_Step_Rare_Events": {"min_samples_leaf": 30},
@@ -70,7 +70,7 @@ CONFIGURATIONS_TO_TEST = [
         "config_name": "Config_MoreSplits", # Lower min_samples_leaf, lower gain threshold
         "min_samples_split": 10, "min_samples_leaf": 5, "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 30, "relative_width_factor": 0.5,
-        "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "general_max_depth": 7,
+        "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "max_depth": 7,
         "max_numerical_split_points": 100, # Added default
          "scenario_overrides": {
              "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500},
@@ -95,7 +95,7 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 7,
+        "max_depth": 7,
         "max_numerical_split_points": 100,
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
@@ -112,12 +112,12 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 7,
+        "max_depth": 7,
         "max_numerical_split_points": 100,
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 10, "min_samples_split": 20, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 10, "min_samples_split": 20, "general_max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 10, "min_samples_split": 20, "max_depth": 8}
         }
     },
     {
@@ -129,12 +129,12 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 7,
+        "max_depth": 7,
         "max_numerical_split_points": 100,
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 100, "min_samples_split": 200, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 60, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 60, "min_samples_split": 120, "general_max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 60, "min_samples_split": 120, "max_depth": 8}
         }
     },
     {
@@ -146,12 +146,12 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 7,
+        "max_depth": 7,
         "max_numerical_split_points": 50, # Varied
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 50},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 50},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "max_depth": 8}
         }
     },
     {
@@ -163,12 +163,12 @@ CONFIGURATIONS_TO_TEST = [
         "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
-        "general_max_depth": 7,
+        "max_depth": 7,
         "max_numerical_split_points": 255, # Varied
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 255},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "max_depth": 8}
         }
     }
 ]
