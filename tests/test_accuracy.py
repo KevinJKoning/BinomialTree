@@ -28,6 +28,7 @@ TRUE_P_COLUMN = 'true_p'
 CONFIGURATIONS_TO_TEST = [
     {
         "config_name": "InitialConfig_Std",
+        "stopping_strategy": "tuned", # Explicitly use tuned for existing manual configs
         "min_samples_split": 20,
         "min_samples_leaf": 10,
         "confidence_level": 0.95,
@@ -36,7 +37,7 @@ CONFIGURATIONS_TO_TEST = [
         "min_likelihood_gain": 0.1,
         "epsilon_stopping": 1e-6,
         "max_depth": 5,
-        "max_numerical_split_points": 100, # Added default
+        "max_numerical_split_points": 100,
         "scenario_overrides": {
             "Numerical_Linear_Function": {"max_depth": 7},
             "Mixed_Features_Interaction": {"max_depth": 6},
@@ -56,10 +57,11 @@ CONFIGURATIONS_TO_TEST = [
     },
     {
         "config_name": "Config_Global_LeafPlus20",
+        "stopping_strategy": "tuned",
         "min_samples_split": 40, "min_samples_leaf": 20, "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 50, "relative_width_factor": 0.75,
         "min_likelihood_gain": 0.1, "epsilon_stopping": 1e-6, "max_depth": 5,
-        "max_numerical_split_points": 100, # Added default
+        "max_numerical_split_points": 100,
         "scenario_overrides": {
              "Numerical_Step_Rare_Events": {"min_samples_leaf": 30},
              "Numerical_Linear_Large_100K": {"max_depth": 6},
@@ -68,10 +70,11 @@ CONFIGURATIONS_TO_TEST = [
     },
     {
         "config_name": "Config_MoreSplits", # Lower min_samples_leaf, lower gain threshold
+        "stopping_strategy": "tuned",
         "min_samples_split": 10, "min_samples_leaf": 5, "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 30, "relative_width_factor": 0.5,
         "min_likelihood_gain": 0.01, "epsilon_stopping": 1e-6, "max_depth": 7,
-        "max_numerical_split_points": 100, # Added default
+        "max_numerical_split_points": 100,
          "scenario_overrides": {
              "Numerical_Step_Rare_Events": {"min_samples_leaf": 10, "relative_width_factor": 1.0, "min_n_sum_for_statistical_stop": 500},
              "Numerical_Linear_Large_100K": {
@@ -85,9 +88,41 @@ CONFIGURATIONS_TO_TEST = [
             }
         }
     },
-    # Parameter Drift Testing Configurations
+    # New configurations for stopping strategies
+    {
+        "config_name": "Config_Strategy_Hybrid_Defaults",
+        "stopping_strategy": "hybrid",
+        # For 'hybrid', min_samples_leaf, min_samples_split, max_depth are set by the tree.
+        # We can still specify other parameters.
+        "confidence_level": 0.95,
+        "min_n_sum_for_statistical_stop": 30, # Tree might override this based on N0 calc.
+        "relative_width_factor": 0.5,
+        "min_likelihood_gain": 0.01,
+        "epsilon_stopping": 1e-6,
+        "max_numerical_split_points": 100,
+        "scenario_overrides": {
+            # Specific overrides for hybrid if needed, e.g., for huge datasets
+            "Numerical_Linear_Huge_1M": {"max_numerical_split_points": 255}
+        }
+    },
+    {
+        "config_name": "Config_Strategy_Statistical_Defaults",
+        "stopping_strategy": "statistical",
+        # For 'statistical', min_samples_leaf, min_samples_split, max_depth are set to non-restrictive values by the tree.
+        # min_n_sum_for_statistical_stop is calculated.
+        "confidence_level": 0.95,
+        "relative_width_factor": 0.5, # This is used by statistical to calculate N0
+        "min_likelihood_gain": 0.01, # Still useful to prevent trivial splits if stat checks pass
+        "epsilon_stopping": 1e-6,
+        "max_numerical_split_points": 100,
+        "scenario_overrides": {
+            "Numerical_Linear_Huge_1M": {"max_numerical_split_points": 255}
+        }
+    },
+    # Parameter Drift Testing Configurations (now explicitly "tuned")
     {
         "config_name": "DriftTest_Baseline",
+        "stopping_strategy": "tuned",
         "min_samples_split": 40,
         "min_samples_leaf": 20,
         "confidence_level": 0.95,
@@ -100,13 +135,14 @@ CONFIGURATIONS_TO_TEST = [
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "general_max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 30, "min_samples_split": 60, "max_depth": 8} # Corrected typo from general_max_depth
         }
     },
     {
         "config_name": "DriftTest_Leaf_5",
-        "min_samples_split": 10, # Adjusted: 2 * leaf
-        "min_samples_leaf": 5,   # Varied
+        "stopping_strategy": "tuned",
+        "min_samples_split": 10,
+        "min_samples_leaf": 5,
         "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 50,
         "relative_width_factor": 0.75,
@@ -122,8 +158,9 @@ CONFIGURATIONS_TO_TEST = [
     },
     {
         "config_name": "DriftTest_Leaf_50",
-        "min_samples_split": 100, # Adjusted: 2 * leaf
-        "min_samples_leaf": 50,   # Varied
+        "stopping_strategy": "tuned",
+        "min_samples_split": 100,
+        "min_samples_leaf": 50,
         "confidence_level": 0.95,
         "min_n_sum_for_statistical_stop": 50,
         "relative_width_factor": 0.75,
@@ -134,11 +171,12 @@ CONFIGURATIONS_TO_TEST = [
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 100, "min_samples_split": 200, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 60, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5},
-            "Categorical_High_Cardinality": {"min_samples_leaf": 60, "min_samples_split": 120, "max_depth": 8}
+            "Categorical_High_Cardinality": {"min_samples_leaf": 60, "min_samples_split": 120, "max_depth": 8} # Corrected typo
         }
     },
     {
-        "config_name": "DriftTest_MaxNumSplit_50", # Baseline with max_numerical_split_points = 50
+        "config_name": "DriftTest_MaxNumSplit_50",
+        "stopping_strategy": "tuned",
         "min_samples_split": 40,
         "min_samples_leaf": 20,
         "confidence_level": 0.95,
@@ -147,7 +185,7 @@ CONFIGURATIONS_TO_TEST = [
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
         "max_depth": 7,
-        "max_numerical_split_points": 50, # Varied
+        "max_numerical_split_points": 50,
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 50},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 50},
@@ -155,7 +193,8 @@ CONFIGURATIONS_TO_TEST = [
         }
     },
     {
-        "config_name": "DriftTest_MaxNumSplit_255", # Baseline with max_numerical_split_points = 255
+        "config_name": "DriftTest_MaxNumSplit_255",
+        "stopping_strategy": "tuned",
         "min_samples_split": 40,
         "min_samples_leaf": 20,
         "confidence_level": 0.95,
@@ -164,7 +203,7 @@ CONFIGURATIONS_TO_TEST = [
         "min_likelihood_gain": 0.01,
         "epsilon_stopping": 1e-6,
         "max_depth": 7,
-        "max_numerical_split_points": 255, # Varied
+        "max_numerical_split_points": 255,
         "scenario_overrides": {
             "Numerical_Linear_Huge_1M": {"max_depth": 7, "min_samples_leaf": 50, "min_samples_split": 100, "max_numerical_split_points": 255},
             "Numerical_Step_Rare_Events": {"min_samples_leaf": 30, "min_n_sum_for_statistical_stop": 1000, "relative_width_factor": 1.5, "max_numerical_split_points": 255},
@@ -210,7 +249,7 @@ TEST_SCENARIOS_DEFINITIONS = [
         "feature_columns": ["cat_feat_simple"], "feature_types": {"cat_feat_simple": "categorical"}
     },
     {
-        "name": "Mixed_Features_Interaction", # Using the mixed generator directly
+        "name": "Mixed_Features_Interaction",
         "generator_module": dataset_generator_mixed,
         "generator_function_name": "generate_mixed_p_data",
         "specific_generator_params": {
@@ -228,11 +267,11 @@ TEST_SCENARIOS_DEFINITIONS = [
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "num_feat_rare", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.001, 0.005], # Very low p
-            "n_min": 1000, "n_max": 5000, # High exposure
+            "thresholds": [50], "p_values": [0.001, 0.005],
+            "n_min": 1000, "n_max": 5000,
             "noise_on_p_stddev": 0.0001
         },
-        "n_samples_train_override": 10000, # Larger sample size for rare events
+        "n_samples_train_override": 10000,
         "n_samples_test_override": 5000,
         "feature_columns": ["num_feat_rare"], "feature_types": {"num_feat_rare": "numerical"}
     },
@@ -242,10 +281,10 @@ TEST_SCENARIOS_DEFINITIONS = [
         "generator_function_name": "generate_categorical_p_data",
         "specific_generator_params": {
             "feature_name": "cat_feat_high_card",
-            "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)}, # 30 categories
+            "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)},
             "n_min": 40, "n_max": 160, "noise_on_p_stddev": 0.001
         },
-        "n_samples_train_override": 6000, 
+        "n_samples_train_override": 6000,
         "n_samples_test_override": 2000,
         "feature_columns": ["cat_feat_high_card"], "feature_types": {"cat_feat_high_card": "categorical"}
     },
@@ -274,13 +313,7 @@ TEST_SCENARIOS_DEFINITIONS = [
         "n_samples_train_override": 1000000,
         "n_samples_test_override": 100000,
         "feature_columns": ["num_feat_linear_huge"], "feature_types": {"num_feat_linear_huge": "numerical"}
-    },
-    #         "n_min": 50, "n_max": 200, "noise_on_p_stddev": 0.01
-    #     },
-    #     "n_samples_train_override": 1000000,
-    #     "n_samples_test_override": 200000,
-    #     "feature_columns": ["num_feat_linear_huge"], "feature_types": {"num_feat_linear_huge": "numerical"}
-    # } # Temporarily commented out the 1M row scenario
+    }
 ]
 
 
@@ -294,17 +327,23 @@ def run_all_tests_for_config(config_params_base, verbose=False):
 
     for i, scenario_def in enumerate(TEST_SCENARIOS_DEFINITIONS):
         scenario_name = scenario_def["name"]
-        # Progress indicator for scenario
         print(f"\n  -> Running Scenario {i+1}/{len(TEST_SCENARIOS_DEFINITIONS)}: {scenario_name}...")
         
-        # Determine tree parameters for this scenario
         current_tree_params = {k: v for k, v in config_params_base.items() 
-                               if k not in ["config_name", "scenario_overrides", "general_max_depth"]}
-        current_tree_params["max_depth"] = config_params_base.get("general_max_depth", 5)
+                               if k not in ["config_name", "scenario_overrides"]}
+        # If strategy is tuned, max_depth from base config is used, else tree decides.
+        # For hybrid/statistical, we don't want to pass max_depth unless specifically overridden.
+        if config_params_base.get("stopping_strategy") == "tuned":
+            if "max_depth" not in current_tree_params: # Should be there for tuned from base config
+                 current_tree_params["max_depth"] = 5 # Fallback, though base config should have it.
+        else: # For hybrid/statistical, remove max_depth if it was in base, unless overridden by scenario
+            if "max_depth" in current_tree_params:
+                del current_tree_params["max_depth"]
+
+
         scenario_cfg_overrides = config_params_base.get("scenario_overrides", {}).get(scenario_name, {})
         current_tree_params.update(scenario_cfg_overrides)
 
-        # Generate data
         generator_module = scenario_def["generator_module"]
         generator_func = getattr(generator_module, scenario_def["generator_function_name"])
         
@@ -333,22 +372,22 @@ def run_all_tests_for_config(config_params_base, verbose=False):
             target_column=TARGET_COLUMN,
             exposure_column=EXPOSURE_COLUMN,
             feature_columns=scenario_def["feature_columns"],
-            tree_params=current_tree_params,
+            tree_params=current_tree_params, # This now includes the stopping_strategy
             feature_types=scenario_def["feature_types"],
             known_p_column=TRUE_P_COLUMN,
-            verbose=False # Temporarily disable detailed tree logging for this run
+            verbose=False
         )
         all_scenario_results[scenario_name] = results_scenario
-        print(f"  -> Scenario {scenario_name} completed.") # Progress indicator
+        print(f"  -> Scenario {scenario_name} completed.")
         
         if verbose and results_scenario:
             print(f"--- Results for {scenario_name} ---")
             eval_metrics = results_scenario.get("evaluation", {})
-            for key, value in eval_metrics.items(): # Print evaluation metrics
+            for key, value in eval_metrics.items():
                 if isinstance(value, float): print(f"  {key}: {value:.4f}")
                 else: print(f"  {key}: {value}")
             print(f"  Training Time (s): {results_scenario.get('training_time_seconds', 'N/A'):.2f}")
-            print(f"  Total Nodes: {results_scenario.get('num_nodes_total', 'N/A')}") # This is total nodes, not leaf nodes from evaluation.
+            print(f"  Total Nodes: {results_scenario.get('num_nodes_total', 'N/A')}")
             print("--- End of Scenario ---")
             
     return all_scenario_results
@@ -356,18 +395,13 @@ def run_all_tests_for_config(config_params_base, verbose=False):
 def save_results_to_json(results_dict, filename_prefix="test_results"):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     base_filename = f"{filename_prefix}_{timestamp}.json"
+    results_dir = os.path.join(project_root_for_path, "tests", "results")
     
-    # Define the results directory
-    results_dir = os.path.join(project_root_for_path, "tests", "results") # project_root_for_path is defined globally
-    
-    # Create the results directory if it doesn't exist
     try:
         os.makedirs(results_dir, exist_ok=True)
     except OSError as e:
         print(f"Error creating directory {results_dir}: {e}")
-        # Fallback to current directory or handle error as appropriate
-        # For now, we'll just print the error and continue saving to current dir for filename
-        results_dir = "." # Fallback, though ideally this should be handled more robustly
+        results_dir = "."
 
     filename = os.path.join(results_dir, base_filename)
 
@@ -430,10 +464,8 @@ if __name__ == "__main__":
         has_scenario_errors = False
         scenario_count = 0
         
-        # Explicitly define metrics_agg with all expected keys
         metrics_agg = {
             "mse_p_vs_known": [],
-            # "rmse_vs_known": [], # This was not being populated from eval_res, RMSE is calculated from MSE later
             "mae_p_vs_known": [],
             "total_log_likelihood_on_test": [],
             "total_poisson_deviance": [],
@@ -455,46 +487,44 @@ if __name__ == "__main__":
                 print(f"    Poisson Deviance: {eval_res.get('total_poisson_deviance', np.nan):.2f}")
                 print(f"    Leafs: {eval_res.get('num_leaf_nodes', np.nan)}, Depth: {eval_res.get('max_depth_reached', np.nan)}")
                 
-                # Populate metrics_agg
-                for key_metric_agg in metrics_agg.keys(): # Iterate over keys defined in metrics_agg
-                    value = eval_res.get(key_metric_agg) # Get value from evaluation results
+                for key_metric_agg in metrics_agg.keys():
+                    value = eval_res.get(key_metric_agg)
                     if value is not None:
                         metrics_agg[key_metric_agg].append(value)
             else:
                  print(f"    Status: UNKNOWN or Incomplete Results")
                  has_scenario_errors = True
 
-
         if not has_scenario_errors and scenario_count > 0:
             print(f"  Average Metrics for {config_name_summary} ({scenario_count} scenarios):")
             if metrics_agg["mse_p_vs_known"]: 
-                 avg_rmse = np.mean([m**0.5 for m in metrics_agg["mse_p_vs_known"]])
+                 avg_rmse = np.mean([m**0.5 for m in metrics_agg["mse_p_vs_known"] if m is not None and not np.isnan(m)])
                  print(f"    Avg RMSE (vs Known P): {avg_rmse:.4f}")
             else:
-                 print(f"    Avg RMSE (vs Known P): nan") # Handle case where mse_p_vs_known list is empty
+                 print(f"    Avg RMSE (vs Known P): nan")
 
             if metrics_agg["mae_p_vs_known"]: 
-                print(f"    Avg MAE (vs Known P): {np.mean(metrics_agg['mae_p_vs_known']):.4f}")
+                print(f"    Avg MAE (vs Known P): {np.mean([m for m in metrics_agg['mae_p_vs_known'] if m is not None and not np.isnan(m)]):.4f}")
             else:
                 print(f"    Avg MAE (vs Known P): nan")
 
             if metrics_agg["total_log_likelihood_on_test"]: 
-                print(f"    Avg LogLikelihood: {np.mean(metrics_agg['total_log_likelihood_on_test']):.2f}")
+                print(f"    Avg LogLikelihood: {np.mean([m for m in metrics_agg['total_log_likelihood_on_test'] if m is not None and not np.isnan(m)]):.2f}")
             else:
                 print(f"    Avg LogLikelihood: nan")
 
             if metrics_agg["total_poisson_deviance"]: 
-                print(f"    Avg Poisson Deviance: {np.mean(metrics_agg['total_poisson_deviance']):.2f}")
+                print(f"    Avg Poisson Deviance: {np.mean([m for m in metrics_agg['total_poisson_deviance'] if m is not None and not np.isnan(m)]):.2f}")
             else:
                 print(f"    Avg Poisson Deviance: nan")
 
             if metrics_agg["num_leaf_nodes"]: 
-                print(f"    Avg Leaf Nodes: {np.mean(metrics_agg['num_leaf_nodes']):.1f}")
+                print(f"    Avg Leaf Nodes: {np.mean([m for m in metrics_agg['num_leaf_nodes'] if m is not None and not np.isnan(m)]):.1f}")
             else:
                 print(f"    Avg Leaf Nodes: nan")
 
             if metrics_agg["max_depth_reached"]: 
-                print(f"    Avg Max Depth: {np.mean(metrics_agg['max_depth_reached']):.1f}")
+                print(f"    Avg Max Depth: {np.mean([m for m in metrics_agg['max_depth_reached'] if m is not None and not np.isnan(m)]):.1f}")
             else:
                 print(f"    Avg Max Depth: nan")
 
