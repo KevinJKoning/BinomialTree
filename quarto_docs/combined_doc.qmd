@@ -67,7 +67,7 @@ This documentation is organized into three main sections:
 
 The examples and comparisons in this documentation demonstrate both the strengths and limitations of the binomial tree approach.
 
-# Theory and Mathematical Foundations
+# Mathematical Foundations
 
 ## Binomial Distribution Foundation
 

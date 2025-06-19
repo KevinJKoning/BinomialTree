@@ -1,4 +1,4 @@
-# Theory and Mathematical Foundations
+# Mathematical Foundations
 
 ## Binomial Distribution Foundation
 
