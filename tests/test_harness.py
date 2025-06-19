@@ -10,7 +10,7 @@ def calculate_mae(true_values, predicted_values):
         raise ValueError("Length of true_values and predicted_values must be the same.")
     if not true_values:
         return 0.0
-    
+
     error_sum = 0.0
     for true, pred in zip(true_values, predicted_values):
         error_sum += abs(true - pred)
@@ -22,7 +22,7 @@ def calculate_mse(true_values, predicted_values):
         raise ValueError("Length of true_values and predicted_values must be the same.")
     if not true_values:
         return 0.0
-    
+
     error_sum_sq = 0.0
     for true, pred in zip(true_values, predicted_values):
         error_sum_sq += (true - pred)**2
@@ -65,36 +65,36 @@ def evaluate_predictions(
         }
 
     predicted_p_values = tree.predict_p(test_data)
-    
+
     observed_p_values = []
     known_p_values_list = [] # Only if known_p_column is provided
-    
+
     total_k_test = 0
     total_n_test = 0
-    
+
     test_set_log_likelihood = 0.0
     total_poisson_deviance = 0.0
-    
+
     for i, row in enumerate(test_data):
         k_i = row[target_column]
         n_i = row[exposure_column]
-        
+
         if n_i > 0:
             observed_p_values.append(k_i / n_i)
         else:
-            observed_p_values.append(0.0) 
-            
+            observed_p_values.append(0.0)
+
         if known_p_column and known_p_column in row:
             known_p_values_list.append(row[known_p_column])
-            
+
         total_k_test += k_i
         total_n_test += n_i
 
         p_pred_for_row = predicted_p_values[i]
         epsilon = 1e-9 # for log-likelihood calculation stability
         p_pred_for_row = max(epsilon, min(1.0 - epsilon, p_pred_for_row))
-        
-        if n_i > 0: 
+
+        if n_i > 0:
             try:
                 test_set_log_likelihood += calculate_binomial_log_likelihood(k_i, n_i, p_pred_for_row)
             except (ValueError, OverflowError) as e:
@@ -103,7 +103,7 @@ def evaluate_predictions(
 
             # Calculate Poisson Deviance for this sample
             mu_i = n_i * p_pred_for_row # Predicted mean count
-            
+
             try:
                 if k_i == 0:
                     # If k_i is 0, k_i * log(k_i / mu_i) term is 0. Deviance is 2 * mu_i.
@@ -115,7 +115,7 @@ def evaluate_predictions(
                     # k_i > 0 and mu_i > 0
                     log_term_val = k_i * math.log(k_i / mu_i)
                     sample_poisson_deviance = 2 * (log_term_val - (k_i - mu_i))
-                
+
                 if not math.isfinite(sample_poisson_deviance):
                      print(f"Warning: Non-finite Poisson deviance for k={k_i},n={n_i},p_pred={p_pred_for_row},mu_i={mu_i}. Value: {sample_poisson_deviance}. Setting to large value.")
                      total_poisson_deviance += 1e12 # Penalize with a large finite number
@@ -129,8 +129,8 @@ def evaluate_predictions(
     metrics = {}
     metrics["num_test_samples"] = len(test_data)
     metrics["avg_predicted_p"] = sum(predicted_p_values) / len(predicted_p_values) if predicted_p_values.size > 0 else 0
-    
-    if observed_p_values: 
+
+    if observed_p_values:
         metrics["mae_p_vs_observed"] = calculate_mae(observed_p_values, predicted_p_values)
         metrics["mse_p_vs_observed"] = calculate_mse(observed_p_values, predicted_p_values)
         metrics["avg_observed_p"] = sum(observed_p_values) / len(observed_p_values) if observed_p_values else 0
@@ -139,7 +139,7 @@ def evaluate_predictions(
         metrics["mse_p_vs_observed"] = None
         metrics["avg_observed_p"] = None
 
-    if known_p_values_list: 
+    if known_p_values_list:
         metrics["mae_p_vs_known"] = calculate_mae(known_p_values_list, predicted_p_values)
         metrics["mse_p_vs_known"] = calculate_mse(known_p_values_list, predicted_p_values)
         metrics["avg_known_p"] = sum(known_p_values_list) / len(known_p_values_list) if known_p_values_list else 0
@@ -147,7 +147,7 @@ def evaluate_predictions(
         metrics["mae_p_vs_known"] = None
         metrics["mse_p_vs_known"] = None
         metrics["avg_known_p"] = None
-        
+
     metrics["total_log_likelihood_on_test"] = test_set_log_likelihood
     metrics["total_poisson_deviance"] = total_poisson_deviance
     metrics["num_leaf_nodes"] = len([nid for nid, n in tree.nodes.items() if n.is_leaf]) if tree.nodes else 0
@@ -209,7 +209,7 @@ def run_test_scenario(
     start_time = time.time()
     try:
         tree.fit(
-            data_list_of_dicts=train_data, # Corrected argument name
+            data=train_data,
             target_column=target_column,
             exposure_column=exposure_column,
             feature_columns=feature_columns,
@@ -267,7 +267,7 @@ if __name__ == '__main__':
 
     # Create a tiny mock dataset
     mock_train_data = [
-        {'f1': 1, 'k': 1, 'n': 10, 'true_p': 0.1}, 
+        {'f1': 1, 'k': 1, 'n': 10, 'true_p': 0.1},
         {'f1': 2, 'k': 2, 'n': 10, 'true_p': 0.2},
         {'f1': 3, 'k': 1, 'n': 10, 'true_p': 0.1},
         {'f1': 10, 'k': 8, 'n': 10, 'true_p': 0.8},
@@ -275,7 +275,7 @@ if __name__ == '__main__':
         {'f1': 12, 'k': 7, 'n': 10, 'true_p': 0.7},
     ]
     mock_test_data = [
-        {'f1': 1.5, 'k': 1, 'n': 20, 'true_p': 0.1}, 
+        {'f1': 1.5, 'k': 1, 'n': 20, 'true_p': 0.1},
         {'f1': 2.5, 'k': 2, 'n': 20, 'true_p': 0.2},
         {'f1': 10.5, 'k': 18, 'n': 20, 'true_p': 0.8},
         {'f1': 11.5, 'k': 15, 'n': 20, 'true_p': 0.9},
@@ -285,11 +285,8 @@ if __name__ == '__main__':
         "min_samples_split": 2,
         "min_samples_leaf": 1,
         "max_depth": 2,
-        "confidence_level": 0.95,
-        "min_n_sum_for_statistical_stop": 5, # Low for small data
-        "relative_width_factor": 1.0,
-        "min_likelihood_gain": 0.001,
-        "epsilon_stopping": 1e-6 # Added to match BinomialDecisionTree __init__
+        "alpha": 0.05,
+        "confidence_level": 0.95
     }
 
     results = run_test_scenario(
@@ -304,7 +301,7 @@ if __name__ == '__main__':
         known_p_column='true_p',
         verbose=True
     )
-    
+
     assert results is not None
     if "evaluation" in results and results["evaluation"]: # Check if evaluation was successful
       assert results["evaluation"]["num_test_samples"] == len(mock_test_data)
@@ -312,5 +309,5 @@ if __name__ == '__main__':
            print(f"MAE vs Known P: {results['evaluation']['mae_p_vs_known']:.4f}")
     elif "error" in results:
         print(f"Test scenario failed with error: {results['error']}")
-    
+
     print("\nTest Harness Self-Test Completed.")
