@@ -17,6 +17,7 @@ No external machine learning libraries are required for the core functionality.
 ### Data Preparation
 
 Your data should contain:
+
 - **Target column**: Number of successes (k)
 - **Exposure column**: Number of trials (n) 
 - **Feature columns**: Predictor variables (numerical or categorical)

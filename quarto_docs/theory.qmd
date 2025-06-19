@@ -33,6 +33,7 @@ For rare events where $p$ is small and $n_i$ varies significantly:
 
 ### Practical Implications
 Consider two observations:
+
 - Observation A: 1 success out of 10 trials ($k/n = 0.1$)  
 - Observation B: 10 successes out of 100 trials ($k/n = 0.1$)
 

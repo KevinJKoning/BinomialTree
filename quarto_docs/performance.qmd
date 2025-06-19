@@ -166,6 +166,7 @@ xychart-beta
 
 ## Analysis
 BinomialTree excels with step functions because:
+
 - Natural match to tree splitting logic
 - Statistical stopping prevents overfitting
 - Clean decision boundaries align with data structure

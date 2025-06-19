@@ -102,6 +102,7 @@ For rare events where $p$ is small and $n_i$ varies significantly:
 
 ### Practical Implications
 Consider two observations:
+
 - Observation A: 1 success out of 10 trials ($k/n = 0.1$)  
 - Observation B: 10 successes out of 100 trials ($k/n = 0.1$)
 
@@ -272,6 +273,7 @@ No external machine learning libraries are required for the core functionality.
 ### Data Preparation
 
 Your data should contain:
+
 - **Target column**: Number of successes (k)
 - **Exposure column**: Number of trials (n) 
 - **Feature columns**: Predictor variables (numerical or categorical)
@@ -594,6 +596,7 @@ The performance evaluation uses a robust testing framework (`test_harness.py`) t
 ### Target Distribution Assumptions
 
 The synthetic datasets are generated under the assumption that the target follows a binomial distribution with varying:
+
 - Success probabilities (p)
 - Exposure levels (n)
 - Feature relationships
