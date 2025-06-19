@@ -78,13 +78,27 @@ For each potential split, we test:
 - **Alternative Hypothesis ($H_1$)**: The split provides significant improvement
 
 ### Likelihood Ratio Test
-The test statistic is:
+For each potential split, we calculate a likelihood ratio test statistic to assess whether the split provides a statistically significant improvement over the parent node.
 
-$$LR = 2(\ell_{children} - \ell_{parent})$$
+The test statistic compares the log-likelihood of the data under two models:
 
-Under $H_0$, this follows a chi-squared distribution with degrees of freedom:
-- Numerical features: $df = 1$
-- Categorical features: $df = C - 1$ (where $C$ is the number of categories)
+- **Null model**: Single binomial distribution for the entire parent node
+- **Alternative model**: Separate binomial distributions for left and right child nodes
+
+The likelihood ratio test statistic is:
+
+$$LR = 2(\ell_{children} - \ell_{parent}) = 2[(\ell_{left} + \ell_{right}) - \ell_{parent}]$$
+
+Where:
+
+- $\ell_{parent}$ is the log-likelihood of the parent node with estimated probability $\hat{p}_{parent} = \frac{\sum k_i}{\sum n_i}$
+- $\ell_{left}$ is the log-likelihood of the left child with estimated probability $\hat{p}_{left}$
+- $\ell_{right}$ is the log-likelihood of the right child with estimated probability $\hat{p}_{right}$
+
+Under the null hypothesis $H_0$ (no benefit from splitting), this test statistic follows a chi-squared distribution with degrees of freedom:
+
+- **Numerical features**: $df = 1$ (one additional parameter: the split threshold)
+- **Categorical features**: $df = C - 1$ (where $C$ is the number of categories being split)
 
 ### Bonferroni Correction
 Since we test multiple features at each node, we apply Bonferroni correction:
@@ -102,24 +116,48 @@ The stopping procedure follows these steps:
 4. **Multiple Testing Correction**: Apply Bonferroni correction to the minimum p-value
 5. **Decision**: Split only if adjusted p-value < α
 
-## Permutation Tests (Future Extension)
+## Comparison to Permutation Testing
 
-While the current implementation uses the likelihood ratio test with chi-squared distribution, the framework supports permutation tests for more robust inference:
+The BinomialTree approach differs fundamentally from permutation-based methods like those used in Conditional Inference Trees (ctree):
 
-### Procedure
+### Ctree Permutation Approach
+Conditional Inference Trees use permutation testing because they make **no assumptions about the target distribution**:
+
 1. Compute observed test statistic for the best split
 2. Randomly permute the target values while keeping exposure fixed
 3. Recompute test statistic on permuted data
-4. Repeat B times to build null distribution
+4. Repeat B times (typically B = 1000+) to build null distribution
 5. P-value = proportion of permuted statistics ≥ observed statistic
 
-### Advantages
-- No distributional assumptions
+**Advantages of Permutation Testing:**
+- No distributional assumptions required
 - Exact finite-sample validity
-- Robust to model misspecification
+- Robust to any form of model misspecification
+- Works for any target distribution
 
-### Current Status
-The permutation test framework is designed into the architecture but not yet implemented, as the likelihood ratio test provides good performance with much lower computational cost.
+**Computational Cost:**
+- Requires B × (number of features) × (split evaluations) calculations
+- Typically 1000+ permutations needed for stable p-values
+- Computationally expensive for large datasets
+
+### BinomialTree Parametric Approach
+BinomialTree leverages the **explicit binomial distribution assumption** to use more efficient inference:
+
+**Key Insight:** Since we assume the target follows a binomial distribution, we can use the known theoretical properties of the likelihood ratio test under this assumption.
+
+**Computational Efficiency:**
+
+- Uses chi-squared distribution for p-value calculation
+- Single evaluation per feature (no permutations needed)
+- Orders of magnitude faster than permutation testing
+
+**Trade-off:**
+
+- **More efficient** when binomial assumption holds
+- **Less robust** when assumption is violated
+- **Requires careful validation** of distributional assumptions
+
+This design choice reflects the specialized nature of BinomialTree: by accepting the constraint of binomial-distributed targets, we achieve significant computational efficiency while maintaining statistical rigor through parametric hypothesis testing.
 
 ## Assumptions and Limitations
 
