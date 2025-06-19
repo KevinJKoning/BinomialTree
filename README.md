@@ -2,6 +2,8 @@
 
 A custom-built regression decision tree in Python that models a binomial distribution at each leaf.
 
+📖 **[Complete Documentation](https://kevinjkoning.github.io/BinomialTree/)** - Mathematical foundations, implementation guide, and performance analysis
+
 ## Features
 
 *   **Binomial Likelihood Maximization**: The tree is optimized to find splits that maximize the binomial log-likelihood, making it suitable for modeling rates, proportions, or conversion probabilities.
