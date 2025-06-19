@@ -1,6 +1,9 @@
 # NewBinomialTree/tests/test_harness.py
 import math
 import time
+import xgboost as xgb
+import pandas as pd
+import numpy as np
 from binomial_tree.tree import BinomialDecisionTree
 from binomial_tree.utils import get_total_log_likelihood, calculate_p_hat, calculate_binomial_log_likelihood
 
@@ -260,6 +263,254 @@ def run_test_scenario(
     return results
 
 
+def prepare_data_for_xgboost(
+    train_data,
+    test_data,
+    feature_columns,
+    target_column,
+    exposure_column,
+    feature_types
+):
+    """
+    Prepares data for an XGBoost model.
+    - Converts lists of dicts to Pandas DataFrames.
+    - One-hot encodes categorical features.
+    - Uses exposure ('n') as a feature.
+    - Sets the target as rate ('k'/'n').
+    """
+    train_df = pd.DataFrame(train_data)
+    test_df = pd.DataFrame(test_data)
+
+    # Use a copy to avoid modifying the original list
+    feature_columns_xgb = feature_columns.copy()
+    if exposure_column not in feature_columns_xgb:
+        feature_columns_xgb.append(exposure_column)
+
+    X_train_raw = train_df[feature_columns_xgb].copy()
+    X_test_raw = test_df[feature_columns_xgb].copy()
+
+    # Impute numerical NaNs first
+    numerical_features = [f for f, t in feature_types.items() if t == 'numerical']
+    for col in numerical_features:
+        if X_train_raw[col].isnull().any():
+            median_val = X_train_raw[col].median()
+            X_train_raw.loc[:, col] = X_train_raw[col].fillna(median_val)
+            X_test_raw.loc[:, col] = X_test_raw[col].fillna(median_val)
+
+    # One-hot encode
+    categorical_features = [f for f, t in feature_types.items() if t == 'categorical']
+    X_train_encoded = pd.get_dummies(X_train_raw, columns=categorical_features, dummy_na=True, dtype=float)
+    X_test_encoded = pd.get_dummies(X_test_raw, columns=categorical_features, dummy_na=True, dtype=float)
+
+    # Align columns - crucial for when test set has categories not in train set or vice-versa
+    X_train_final, X_test_final = X_train_encoded.align(X_test_encoded, join='left', axis=1, fill_value=0)
+
+    # Create target variable (rate)
+    epsilon = 1e-9
+    y_train = (train_df[target_column] / (train_df[exposure_column].replace(0, 1) + epsilon)).fillna(0)
+
+    return X_train_final, y_train, X_test_final
+
+
+def evaluate_xgboost_predictions(
+    predicted_p_values,
+    test_data,
+    target_column,
+    exposure_column,
+    known_p_column=None,
+    model_params=None
+):
+    """
+    Evaluates an XGBoost model's predictions. This is similar to evaluate_predictions
+    but adapted for a generic model that outputs p-hat values directly.
+    """
+    if not test_data:
+        return {
+            "mae_p_vs_observed": None, "mse_p_vs_observed": None,
+            "mae_p_vs_known": None, "mse_p_vs_known": None,
+            "avg_predicted_p": None, "avg_observed_p": None, "avg_known_p": None,
+            "total_log_likelihood_on_test": None, "total_poisson_deviance": None,
+            "num_test_samples": 0,
+        }
+
+    observed_p_values = []
+    known_p_values_list = []
+
+    total_k_test = 0
+    total_n_test = 0
+    test_set_log_likelihood = 0.0
+    total_poisson_deviance = 0.0
+
+    for i, row in enumerate(test_data):
+        k_i = row[target_column]
+        n_i = row[exposure_column]
+
+        if n_i > 0:
+            observed_p_values.append(k_i / n_i)
+        else:
+            observed_p_values.append(0.0)
+
+        if known_p_column and known_p_column in row:
+            known_p_values_list.append(row[known_p_column])
+
+        total_k_test += k_i
+        total_n_test += n_i
+
+        p_pred_for_row = predicted_p_values[i]
+        epsilon = 1e-9
+        p_pred_for_row = max(epsilon, min(1.0 - epsilon, p_pred_for_row))
+
+        if n_i > 0:
+            try:
+                test_set_log_likelihood += calculate_binomial_log_likelihood(k_i, n_i, p_pred_for_row)
+            except (ValueError, OverflowError) as e:
+                print(f"Warning: XGBoost LL calculation error for k={k_i},n={n_i},p={p_pred_for_row}: {e}")
+                test_set_log_likelihood += -float('inf')
+
+            mu_i = n_i * p_pred_for_row
+            try:
+                if k_i == 0:
+                    sample_poisson_deviance = 2 * mu_i
+                elif mu_i <= 0:
+                    sample_poisson_deviance = 1e12
+                else:
+                    log_term_val = k_i * math.log(k_i / mu_i)
+                    sample_poisson_deviance = 2 * (log_term_val - (k_i - mu_i))
+
+                if not math.isfinite(sample_poisson_deviance):
+                     total_poisson_deviance += 1e12
+                else:
+                    total_poisson_deviance += sample_poisson_deviance
+            except (ValueError, OverflowError, ZeroDivisionError) as e:
+                print(f"Warning: XGBoost Poisson Deviance calc error for k={k_i},n={n_i},p_pred={p_pred_for_row},mu_i={mu_i}: {e}")
+                total_poisson_deviance += 1e12
+
+    metrics = {}
+    metrics["num_test_samples"] = len(test_data)
+    metrics["avg_predicted_p"] = np.mean(predicted_p_values) if predicted_p_values.size > 0 else 0
+
+    if observed_p_values:
+        metrics["mae_p_vs_observed"] = calculate_mae(observed_p_values, predicted_p_values)
+        metrics["mse_p_vs_observed"] = calculate_mse(observed_p_values, predicted_p_values)
+        metrics["avg_observed_p"] = sum(observed_p_values) / len(observed_p_values) if observed_p_values else 0
+    else:
+        metrics["mae_p_vs_observed"] = None
+        metrics["mse_p_vs_observed"] = None
+        metrics["avg_observed_p"] = None
+
+    if known_p_values_list:
+        metrics["mae_p_vs_known"] = calculate_mae(known_p_values_list, predicted_p_values)
+        metrics["mse_p_vs_known"] = calculate_mse(known_p_values_list, predicted_p_values)
+        metrics["avg_known_p"] = sum(known_p_values_list) / len(known_p_values_list) if known_p_values_list else 0
+    else:
+        metrics["mae_p_vs_known"] = None
+        metrics["mse_p_vs_known"] = None
+        metrics["avg_known_p"] = None
+
+    metrics["total_log_likelihood_on_test"] = test_set_log_likelihood
+    metrics["total_poisson_deviance"] = total_poisson_deviance
+    metrics["total_k_test"] = total_k_test
+    metrics["total_n_test"] = total_n_test
+    metrics["overall_p_test"] = calculate_p_hat(total_k_test, total_n_test)
+
+    if model_params:
+        metrics["n_estimators"] = model_params.get("n_estimators")
+        metrics["max_depth_reached"] = model_params.get("max_depth")
+
+    return metrics
+
+
+def run_xgboost_peer_test(
+    dataset_name,
+    train_data,
+    test_data,
+    target_column,
+    exposure_column,
+    feature_columns,
+    feature_types,
+    known_p_column=None,
+    xgboost_params=None,
+    verbose=True
+):
+    """
+    Runs a peer test scenario using XGBoost.
+    """
+    if verbose:
+        print(f"--- Running XGBoost Peer Test Scenario: {dataset_name} ---")
+
+    if xgboost_params is None:
+        xgboost_params = {
+            'objective': 'reg:squarederror',
+            'n_estimators': 100,
+            'max_depth': 5,
+            'learning_rate': 0.1,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'seed': 42
+        }
+    if verbose:
+        print(f"XGBoost Params: {xgboost_params}")
+
+    start_time_prep = time.time()
+    X_train, y_train, X_test = prepare_data_for_xgboost(
+        train_data, test_data, feature_columns, target_column, exposure_column, feature_types
+    )
+    prep_time = time.time() - start_time_prep
+
+    model = xgb.XGBRegressor(**xgboost_params)
+
+    start_time_fit = time.time()
+    try:
+        model.fit(X_train, y_train, verbose=False)
+    except Exception as e:
+        print(f"!!!!!! ERROR during XGBoost model.fit for scenario: {dataset_name} !!!!!!")
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "dataset_name": f"{dataset_name}_XGBoost_Error",
+            "error": str(e),
+            "details": "XGBoost Fitting failed",
+            "tree_params": xgboost_params,
+            "training_time_seconds": time.time() - start_time_fit,
+            "evaluation": {},
+        }
+
+    training_time = time.time() - start_time_fit
+
+    if verbose:
+        print(f"Data prep in {prep_time:.2f}s. Training in {training_time:.2f}s.")
+
+    predicted_p_values = model.predict(X_test)
+    predicted_p_values = np.clip(predicted_p_values, 0.0, 1.0)
+
+    evaluation_results = evaluate_xgboost_predictions(
+        predicted_p_values,
+        test_data,
+        target_column,
+        exposure_column,
+        known_p_column,
+        model_params=xgboost_params
+    )
+
+    if verbose and evaluation_results:
+        print("XGBoost Evaluation Results:")
+        for key, value in evaluation_results.items():
+            if isinstance(value, float):
+                print(f"  {key}: {value:.4f}")
+            else:
+                print(f"  {key}: {value}")
+        print("--- XGBoost Scenario End ---")
+
+    results = {
+        "dataset_name": f"{dataset_name}_XGBoost",
+        "tree_params": xgboost_params,
+        "training_time_seconds": training_time,
+        "evaluation": evaluation_results,
+    }
+    return results
+
+
 if __name__ == '__main__':
     # This is a placeholder for a simple test.
     # Actual tests would be run from test_accuracy.py using generated datasets.
@@ -306,8 +557,27 @@ if __name__ == '__main__':
     if "evaluation" in results and results["evaluation"]: # Check if evaluation was successful
       assert results["evaluation"]["num_test_samples"] == len(mock_test_data)
       if results["evaluation"].get("mae_p_vs_known") is not None: # Check if metric exists
-           print(f"MAE vs Known P: {results['evaluation']['mae_p_vs_known']:.4f}")
+           print(f"Binomial Tree MAE vs Known P: {results['evaluation']['mae_p_vs_known']:.4f}")
     elif "error" in results:
         print(f"Test scenario failed with error: {results['error']}")
+
+    print("\n--- Running XGBoost Peer Test ---")
+    xgb_results = run_xgboost_peer_test(
+        dataset_name="Mock_Simple_Numerical_XGBoost",
+        train_data=mock_train_data,
+        test_data=mock_test_data,
+        target_column='k',
+        exposure_column='n',
+        feature_columns=['f1'],
+        feature_types={'f1': 'numerical'},
+        known_p_column='true_p',
+        verbose=True
+    )
+    assert xgb_results is not None
+    if "evaluation" in xgb_results and xgb_results["evaluation"]:
+        if xgb_results["evaluation"].get("mae_p_vs_known") is not None:
+            print(f"XGBoost MAE vs Known P: {xgb_results['evaluation']['mae_p_vs_known']:.4f}")
+    elif "error" in xgb_results:
+        print(f"XGBoost peer test failed with error: {xgb_results['error']}")
 
     print("\nTest Harness Self-Test Completed.")

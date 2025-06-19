@@ -11,7 +11,7 @@ project_root_for_path = os.path.dirname(current_dir_for_path)
 if project_root_for_path not in sys.path:
     sys.path.insert(0, project_root_for_path)
 
-from tests.test_harness import run_test_scenario
+from tests.test_harness import run_test_scenario, run_xgboost_peer_test
 from tests.generated_datasets import (
     dataset_generator_numerical,
     dataset_generator_categorical,
@@ -216,15 +216,49 @@ def run_all_tests_for_config(config_params_base, verbose=False):
             verbose=False # Keep harness output clean unless debugging
         )
         all_scenario_results[scenario_name] = results_scenario
-        print(f"  -> Scenario {scenario_name} completed.")
+        print(f"  -> Scenario {scenario_name} (BinomialTree) completed.")
 
-        if verbose and results_scenario:
-            print(f"--- Results for {scenario_name} ---")
-            eval_metrics = results_scenario.get("evaluation", {})
-            for key, value in eval_metrics.items():
-                if isinstance(value, float): print(f"  {key}: {value:.4f}")
-                else: print(f"  {key}: {value}")
-            print("--- End of Scenario ---")
+        # Run the XGBoost peer test for the same scenario
+        print(f"    -> Running XGBoost peer test for {scenario_name}...")
+        # Note: XGBoost params can be passed here if needed, otherwise harness uses defaults
+        xgb_params = {
+            'objective': 'reg:squarederror',
+            'n_estimators': 100,
+            'max_depth': current_tree_params.get('max_depth', 5), # Use same max_depth
+            'learning_rate': 0.1,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'seed': 42
+        }
+        results_xgb = run_xgboost_peer_test(
+            dataset_name=scenario_name,
+            train_data=train_data, test_data=test_data,
+            target_column=TARGET_COLUMN, exposure_column=EXPOSURE_COLUMN,
+            feature_columns=scenario_def["feature_columns"],
+            feature_types=scenario_def["feature_types"],
+            known_p_column=TRUE_P_COLUMN,
+            xgboost_params=xgb_params,
+            verbose=False # Keep harness output clean
+        )
+        all_scenario_results[f"{scenario_name}_XGBoost"] = results_xgb
+        print(f"    -> XGBoost peer test for {scenario_name} completed.")
+
+
+        if verbose:
+            if results_scenario:
+                print(f"--- Results for {scenario_name} (BinomialTree) ---")
+                eval_metrics = results_scenario.get("evaluation", {})
+                for key, value in eval_metrics.items():
+                    if isinstance(value, float): print(f"  {key}: {value:.4f}")
+                    else: print(f"  {key}: {value}")
+                print("--- End of BinomialTree Results ---")
+            if results_xgb:
+                print(f"--- Results for {scenario_name} (XGBoost) ---")
+                eval_metrics_xgb = results_xgb.get("evaluation", {})
+                for key, value in eval_metrics_xgb.items():
+                    if isinstance(value, float): print(f"  {key}: {value:.4f}")
+                    else: print(f"  {key}: {value}")
+                print("--- End of XGBoost Results ---")
 
     return all_scenario_results
 
@@ -285,19 +319,44 @@ if __name__ == "__main__":
             print(f"  Status: FAILED - {results_data.get('ERROR_MAIN_LOOP', 'Unknown error structure')}")
             continue
 
-        for scenario_name, scenario_results in results_data.items():
-            print(f"  Scenario: {scenario_name}")
-            if isinstance(scenario_results, dict) and scenario_results.get("error"):
-                print(f"    Status: FAILED ({scenario_results['error']})")
-            elif isinstance(scenario_results, dict) and "evaluation" in scenario_results:
-                eval_res = scenario_results["evaluation"]
+        # Group results by base scenario name for comparison
+        scenarios = sorted(list(set([k.replace("_XGBoost", "") for k in results_data.keys()])))
+
+        for scenario_base_name in scenarios:
+            print(f"\n  Scenario: {scenario_base_name}")
+
+            # Binomial Tree Results
+            scenario_results_bt = results_data.get(scenario_base_name)
+            print("    - BinomialTree:", end=" ")
+            if isinstance(scenario_results_bt, dict) and scenario_results_bt.get("error"):
+                print(f"FAILED ({scenario_results_bt['error']})")
+            elif isinstance(scenario_results_bt, dict) and "evaluation" in scenario_results_bt and scenario_results_bt["evaluation"]:
+                eval_res = scenario_results_bt["evaluation"]
                 rmse = eval_res.get('mse_p_vs_known', np.nan)**0.5
                 mae = eval_res.get('mae_p_vs_known', np.nan)
+                deviance = eval_res.get('total_poisson_deviance', np.nan)
                 leaves = eval_res.get('num_leaf_nodes', 'N/A')
                 depth = eval_res.get('max_depth_reached', 'N/A')
-                print(f"    RMSE={rmse:.4f} | MAE={mae:.4f} | Leafs={leaves}, Depth={depth}")
+                print(f"RMSE={rmse:.4f} | MAE={mae:.4f} | Deviance={deviance:.2f} | Leafs={leaves}, Depth={depth}")
             else:
-                 print(f"    Status: UNKNOWN OR INCOMPLETE RESULTS")
+                print(f"UNKNOWN OR INCOMPLETE RESULTS")
+
+            # XGBoost Results
+            scenario_results_xgb = results_data.get(f"{scenario_base_name}_XGBoost")
+            if scenario_results_xgb:
+                print("    - XGBoost:     ", end=" ")
+                if isinstance(scenario_results_xgb, dict) and scenario_results_xgb.get("error"):
+                    print(f"FAILED ({scenario_results_xgb['error']})")
+                elif isinstance(scenario_results_xgb, dict) and "evaluation" in scenario_results_xgb and scenario_results_xgb["evaluation"]:
+                    eval_res = scenario_results_xgb["evaluation"]
+                    rmse = eval_res.get('mse_p_vs_known', np.nan)**0.5
+                    mae = eval_res.get('mae_p_vs_known', np.nan)
+                    deviance = eval_res.get('total_poisson_deviance', np.nan)
+                    depth = eval_res.get('max_depth_reached', 'N/A')
+                    estimators = eval_res.get('n_estimators', 'N/A')
+                    print(f"RMSE={rmse:.4f} | MAE={mae:.4f} | Deviance={deviance:.2f} | Estimators={estimators}, Depth={depth}")
+                else:
+                    print(f"UNKNOWN OR INCOMPLETE RESULTS")
 
     save_results_to_json(overall_summary)
     print("\nTest suite finished.")
