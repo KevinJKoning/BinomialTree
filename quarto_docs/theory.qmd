@@ -1,0 +1,147 @@
+# Theory and Mathematical Foundations
+
+## Binomial Distribution Foundation
+
+The BinomialTree algorithm is built on the assumption that the target data follows a binomial distribution. For each observation $i$, we have:
+
+- $k_i$: number of successes (events)
+- $n_i$: number of trials (exposure)
+- $p_i$: true probability of success (unknown, to be estimated)
+
+The likelihood for observation $i$ under a binomial distribution is:
+
+$$P(k_i | n_i, p) = \binom{n_i}{k_i} p^{k_i} (1-p)^{n_i - k_i}$$
+
+The log-likelihood for observation $i$ is:
+
+$$\ell_i(p) = \log\binom{n_i}{k_i} + k_i \log(p) + (n_i - k_i) \log(1-p)$$
+
+For a set of observations in a node, the total log-likelihood is:
+
+$$\ell_{node}(p) = \sum_{i \in node} \ell_i(p)$$
+
+## Why Model Counts Instead of Rates?
+
+A key insight is that we model the count data directly rather than the rate $k_i/n_i$. This is motivated by several factors:
+
+### Statistical Properties
+For rare events where $p$ is small and $n_i$ varies significantly:
+
+1. **Variance Instability**: The variance of $k_i/n_i$ is $p(1-p)/n_i$, which depends on $n_i$
+2. **Distribution Shape**: The distribution of $k_i/n_i$ becomes highly skewed and poorly behaved for small $p$ and varying $n_i$
+3. **Information Loss**: Converting to rates discards the exposure information that affects uncertainty
+
+### Practical Implications
+Consider two observations:
+- Observation A: 1 success out of 10 trials ($k/n = 0.1$)  
+- Observation B: 10 successes out of 100 trials ($k/n = 0.1$)
+
+Both have the same rate but vastly different uncertainty. The binomial likelihood naturally accounts for this difference through the exposure term.
+
+## Splitting Criteria
+
+### Objective Function
+At each node, we seek the split that maximizes the combined log-likelihood of the resulting child nodes:
+
+$$\text{Split Quality} = \ell_{left}(\hat{p}_{left}) + \ell_{right}(\hat{p}_{right}) - \ell_{parent}(\hat{p}_{parent})$$
+
+Where $\hat{p}$ is the maximum likelihood estimate: $\hat{p} = \frac{\sum k_i}{\sum n_i}$
+
+### Numerical Features
+For numerical features, we:
+
+1. Sort observations by feature value
+2. Consider all possible split points (midpoints between consecutive unique values)
+3. For computational efficiency, subsample split points if there are more than `max_numerical_split_points` unique values
+4. Handle missing values by always assigning them to the right child
+
+The algorithm efficiently computes split statistics by maintaining cumulative sums as it iterates through sorted values.
+
+### Categorical Features
+For categorical features with $C$ categories, we use an optimal grouping strategy:
+
+1. **Sort by Rate**: Order categories by their estimated success rate $\hat{p}_c = \frac{\sum_{i \in c} k_i}{\sum_{i \in c} n_i}$
+2. **Optimal Grouping**: Consider all possible ways to split the sorted categories into two groups
+3. **Degrees of Freedom**: The split has $df = C - 1$ degrees of freedom for hypothesis testing
+
+This approach is theoretically optimal for binomial data and avoids the exponential complexity of considering all possible category groupings.
+
+## Statistical Stopping Criteria
+
+### Motivation
+Traditional decision trees often require external validation or pruning to prevent overfitting. BinomialTree incorporates statistical hypothesis testing directly into the splitting process, inspired by Conditional Inference Trees (ctree).
+
+### Hypothesis Testing Framework
+For each potential split, we test:
+
+- **Null Hypothesis ($H_0$)**: The split provides no improvement over the parent node
+- **Alternative Hypothesis ($H_1$)**: The split provides significant improvement
+
+### Likelihood Ratio Test
+The test statistic is:
+
+$$LR = 2(\ell_{children} - \ell_{parent})$$
+
+Under $H_0$, this follows a chi-squared distribution with degrees of freedom:
+- Numerical features: $df = 1$
+- Categorical features: $df = C - 1$ (where $C$ is the number of categories)
+
+### Bonferroni Correction
+Since we test multiple features at each node, we apply Bonferroni correction:
+
+$$p_{adjusted} = \min(1, p_{raw} \times m)$$
+
+Where $m$ is the number of features tested. The split is considered significant if $p_{adjusted} < \alpha$.
+
+### Implementation Details
+The stopping procedure follows these steps:
+
+1. **Pre-split Checks**: Verify minimum sample requirements and maximum depth
+2. **Find Best Split**: For each feature, find the split that maximizes log-likelihood gain
+3. **Calculate P-values**: Compute likelihood ratio test p-value for each feature's best split
+4. **Multiple Testing Correction**: Apply Bonferroni correction to the minimum p-value
+5. **Decision**: Split only if adjusted p-value < α
+
+## Permutation Tests (Future Extension)
+
+While the current implementation uses the likelihood ratio test with chi-squared distribution, the framework supports permutation tests for more robust inference:
+
+### Procedure
+1. Compute observed test statistic for the best split
+2. Randomly permute the target values while keeping exposure fixed
+3. Recompute test statistic on permuted data
+4. Repeat B times to build null distribution
+5. P-value = proportion of permuted statistics ≥ observed statistic
+
+### Advantages
+- No distributional assumptions
+- Exact finite-sample validity
+- Robust to model misspecification
+
+### Current Status
+The permutation test framework is designed into the architecture but not yet implemented, as the likelihood ratio test provides good performance with much lower computational cost.
+
+## Assumptions and Limitations
+
+### Key Assumptions
+1. **Binomial Distribution**: Target data follows or approximates a binomial distribution
+2. **Independence**: Observations are independent conditional on features
+3. **Constant Probability**: Within each leaf, the success probability is constant
+
+### When Assumptions Are Violated
+- **Overdispersion**: If variance > mean (for count data), consider beta-binomial models
+- **Temporal Dependence**: Time-varying probabilities may violate independence
+- **Zero-Inflation**: Excess zeros may indicate a different generating process
+
+### Performance Implications
+BinomialTree should perform well when assumptions are met but may underperform gradient boosting methods when assumptions are significantly violated. The statistical stopping criteria help prevent overfitting but may also limit the model's ability to capture complex nonlinear relationships.
+
+## Theoretical Advantages
+
+1. **Principled Splitting**: Splits directly optimize the relevant likelihood rather than surrogate measures
+2. **Uncertainty Quantification**: Naturally handles varying exposure levels
+3. **Statistical Rigor**: Hypothesis testing framework reduces overfitting
+4. **Interpretability**: Clear decision boundaries with statistical significance
+5. **Reduced Validation Needs**: Statistical stopping may reduce the need for train-test splits
+
+This theoretical foundation guides the practical implementation and helps understand when BinomialTree is likely to excel compared to traditional methods.

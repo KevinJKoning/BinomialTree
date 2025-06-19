@@ -1,0 +1,2112 @@
+{
+    "Config_Baseline": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 5,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.045427799224853516,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1442343220559434,
+                "mae_p_vs_observed": 0.026507362094212457,
+                "mse_p_vs_observed": 0.001286627892351473,
+                "avg_observed_p": 0.1452069950981564,
+                "mae_p_vs_known": 0.00888442416141116,
+                "mse_p_vs_known": 0.0001345089934314166,
+                "avg_known_p": 0.14507457335578613,
+                "total_log_likelihood_on_test": -2744.728278802707,
+                "total_poisson_deviance": 1055.3121329973458,
+                "num_leaf_nodes": 9,
+                "max_depth_reached": 4,
+                "total_k_test": 18616,
+                "total_n_test": 127918,
+                "overall_p_test": 0.1455307306243062
+            },
+            "num_nodes_total": 17
+        },
+        "Numerical_Step_Function_XGBoost": {
+            "dataset_name": "Numerical_Step_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 5,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.09835219383239746,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1439332813024521,
+                "mae_p_vs_observed": 0.027812190353870392,
+                "mse_p_vs_observed": 0.001426228554919362,
+                "avg_observed_p": 0.1452069950981564,
+                "mae_p_vs_known": 0.01151047833263874,
+                "mse_p_vs_known": 0.0002763405500445515,
+                "avg_known_p": 0.14507457335578613,
+                "total_log_likelihood_on_test": -2825.3364081195605,
+                "total_poisson_deviance": 1193.8931884765625,
+                "total_k_test": 18616,
+                "total_n_test": 127918,
+                "overall_p_test": 0.1455307306243062,
+                "n_estimators": 100,
+                "max_depth_reached": 5
+            }
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 5,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.053865909576416016,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20253527683373948,
+                "mae_p_vs_observed": 0.030664414683203075,
+                "mse_p_vs_observed": 0.0015603787879155267,
+                "avg_observed_p": 0.1987436397546334,
+                "mae_p_vs_known": 0.00966181669791608,
+                "mse_p_vs_known": 0.00015405923858336106,
+                "avg_known_p": 0.20052993633395938,
+                "total_log_likelihood_on_test": -2910.1776543092615,
+                "total_poisson_deviance": 952.6979036019271,
+                "num_leaf_nodes": 19,
+                "max_depth_reached": 5,
+                "total_k_test": 25636,
+                "total_n_test": 128004,
+                "overall_p_test": 0.20027499140651855
+            },
+            "num_nodes_total": 37
+        },
+        "Numerical_Linear_Function_XGBoost": {
+            "dataset_name": "Numerical_Linear_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 5,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.09658598899841309,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20208488404750824,
+                "mae_p_vs_observed": 0.03141139820218086,
+                "mse_p_vs_observed": 0.0015849077608436346,
+                "avg_observed_p": 0.1987436397546334,
+                "mae_p_vs_known": 0.01204427145421505,
+                "mse_p_vs_known": 0.0002326937101315707,
+                "avg_known_p": 0.20052993633395938,
+                "total_log_likelihood_on_test": -2929.3780097356575,
+                "total_poisson_deviance": 986.697509765625,
+                "total_k_test": 25636,
+                "total_n_test": 128004,
+                "overall_p_test": 0.20027499140651855,
+                "n_estimators": 100,
+                "max_depth_reached": 5
+            }
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 5,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.020735979080200195,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11294784777774068,
+                "mae_p_vs_observed": 0.022570689629927997,
+                "mse_p_vs_observed": 0.0009259894993354768,
+                "avg_observed_p": 0.11417971610798777,
+                "mae_p_vs_known": 0.004105646149388337,
+                "mse_p_vs_known": 2.649226344905939e-05,
+                "avg_known_p": 0.11324902473513981,
+                "total_log_likelihood_on_test": -2511.73994851243,
+                "total_poisson_deviance": 1006.0974393229993,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14215,
+                "total_n_test": 124529,
+                "overall_p_test": 0.11415011764327988
+            },
+            "num_nodes_total": 7
+        },
+        "Categorical_Simple_Levels_XGBoost": {
+            "dataset_name": "Categorical_Simple_Levels_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 5,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.09156203269958496,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11249851435422897,
+                "mae_p_vs_observed": 0.023041196167469025,
+                "mse_p_vs_observed": 0.0009954043198376894,
+                "avg_observed_p": 0.11417971610798777,
+                "mae_p_vs_known": 0.006970720365643501,
+                "mse_p_vs_known": 0.00010184994607698172,
+                "avg_known_p": 0.11324902473513981,
+                "total_log_likelihood_on_test": -2535.206624205403,
+                "total_poisson_deviance": 1045.39404296875,
+                "total_k_test": 14215,
+                "total_n_test": 124529,
+                "overall_p_test": 0.11415011764327988,
+                "n_estimators": 100,
+                "max_depth_reached": 5
+            }
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 5,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.07683587074279785,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10090283104108573,
+                "mae_p_vs_observed": 0.027356151949983646,
+                "mse_p_vs_observed": 0.0013069529487711794,
+                "avg_observed_p": 0.10253075088235478,
+                "mae_p_vs_known": 0.00996628482806836,
+                "mse_p_vs_known": 0.000174319698682385,
+                "avg_known_p": 0.10219763169696773,
+                "total_log_likelihood_on_test": -2336.5899941029697,
+                "total_poisson_deviance": 1088.8421221186843,
+                "num_leaf_nodes": 27,
+                "max_depth_reached": 5,
+                "total_k_test": 9187,
+                "total_n_test": 90217,
+                "overall_p_test": 0.10183224891095913
+            },
+            "num_nodes_total": 53
+        },
+        "Mixed_Features_Interaction_XGBoost": {
+            "dataset_name": "Mixed_Features_Interaction_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 5,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.1003580093383789,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10063139349222183,
+                "mae_p_vs_observed": 0.027659863233566284,
+                "mse_p_vs_observed": 0.0013521639630198479,
+                "avg_observed_p": 0.10253075088235478,
+                "mae_p_vs_known": 0.011011652648448944,
+                "mse_p_vs_known": 0.00021174376888666302,
+                "avg_known_p": 0.10219763169696773,
+                "total_log_likelihood_on_test": -2432.2085749402627,
+                "total_poisson_deviance": 1279.8026123046875,
+                "total_k_test": 9187,
+                "total_n_test": 90217,
+                "overall_p_test": 0.10183224891095913,
+                "n_estimators": 100,
+                "max_depth_reached": 5
+            }
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 5,
+                "min_samples_split": 100,
+                "min_samples_leaf": 50,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.1450660228729248,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012508819593848029,
+                "mae_p_vs_observed": 0.0017451304700765466,
+                "mse_p_vs_observed": 5.111855251660332e-06,
+                "avg_observed_p": 0.012510414111246978,
+                "mae_p_vs_known": 8.07079399232004e-05,
+                "mse_p_vs_known": 2.4636586525052488e-08,
+                "avg_known_p": 0.012507524622564917,
+                "total_log_likelihood_on_test": -15881.190477571115,
+                "total_poisson_deviance": 5051.789311390547,
+                "num_leaf_nodes": 5,
+                "max_depth_reached": 3,
+                "total_k_test": 187248,
+                "total_n_test": 14972831,
+                "overall_p_test": 0.012505851431836771
+            },
+            "num_nodes_total": 9
+        },
+        "Numerical_Step_Rare_Events_XGBoost": {
+            "dataset_name": "Numerical_Step_Rare_Events_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 5,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.10631608963012695,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012506304308772087,
+                "mae_p_vs_observed": 0.0017645013285800815,
+                "mse_p_vs_observed": 5.212770247453591e-06,
+                "avg_observed_p": 0.012510414111246978,
+                "mae_p_vs_known": 0.00023211455845739692,
+                "mse_p_vs_known": 1.0333319977462452e-07,
+                "avg_known_p": 0.012507524622564917,
+                "total_log_likelihood_on_test": -15928.952290936977,
+                "total_poisson_deviance": 5146.26025390625,
+                "total_k_test": 187248,
+                "total_n_test": 14972831,
+                "overall_p_test": 0.012505851431836771,
+                "n_estimators": 100,
+                "max_depth_reached": 5
+            }
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 6,
+                "min_samples_split": 60,
+                "min_samples_leaf": 30,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.10490107536315918,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08287762964651388,
+                "mae_p_vs_observed": 0.022143340906909274,
+                "mse_p_vs_observed": 0.0008570010939892701,
+                "avg_observed_p": 0.08350132972784519,
+                "mae_p_vs_known": 0.0025839014262475134,
+                "mse_p_vs_known": 9.976828202568027e-06,
+                "avg_known_p": 0.08290630732251937,
+                "total_log_likelihood_on_test": -4602.706028012955,
+                "total_poisson_deviance": 2003.6891611383132,
+                "num_leaf_nodes": 18,
+                "max_depth_reached": 5,
+                "total_k_test": 16809,
+                "total_n_test": 201305,
+                "overall_p_test": 0.0835001614465612
+            },
+            "num_nodes_total": 35
+        },
+        "Categorical_High_Cardinality_XGBoost": {
+            "dataset_name": "Categorical_High_Cardinality_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 6,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13019275665283203,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08306080847978592,
+                "mae_p_vs_observed": 0.022425148636102676,
+                "mse_p_vs_observed": 0.0008855922496877611,
+                "avg_observed_p": 0.08350132972784519,
+                "mae_p_vs_known": 0.00381958344951272,
+                "mse_p_vs_known": 3.896213092957623e-05,
+                "avg_known_p": 0.08290630732251937,
+                "total_log_likelihood_on_test": -4621.605155525161,
+                "total_poisson_deviance": 2037.9248046875,
+                "total_k_test": 16809,
+                "total_n_test": 201305,
+                "overall_p_test": 0.0835001614465612,
+                "n_estimators": 100,
+                "max_depth_reached": 6
+            }
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 7,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 3.9388530254364014,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.1995678147388273,
+                "mae_p_vs_observed": 0.03016051551188172,
+                "mse_p_vs_observed": 0.001519932932840716,
+                "avg_observed_p": 0.1994500008393436,
+                "mae_p_vs_known": 0.008152360862972476,
+                "mse_p_vs_known": 0.00010432971833885834,
+                "avg_known_p": 0.1994505976352927,
+                "total_log_likelihood_on_test": -57281.09307247269,
+                "total_poisson_deviance": 17967.31624254549,
+                "num_leaf_nodes": 91,
+                "max_depth_reached": 7,
+                "total_k_test": 496368,
+                "total_n_test": 2489520,
+                "overall_p_test": 0.19938301359298177
+            },
+            "num_nodes_total": 181
+        },
+        "Numerical_Linear_Large_100K_XGBoost": {
+            "dataset_name": "Numerical_Linear_Large_100K_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.24209213256835938,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.19945858418941498,
+                "mae_p_vs_observed": 0.030143365263938904,
+                "mse_p_vs_observed": 0.0015172027051448822,
+                "avg_observed_p": 0.1994500008393436,
+                "mae_p_vs_known": 0.008173219859600067,
+                "mse_p_vs_known": 0.00010452869173604995,
+                "avg_known_p": 0.1994505976352927,
+                "total_log_likelihood_on_test": -57267.390922793,
+                "total_poisson_deviance": 17948.095703125,
+                "total_k_test": 496368,
+                "total_n_test": 2489520,
+                "overall_p_test": 0.19938301359298177,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        }
+    },
+    "Config_Strict_Alpha": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.03676414489746094,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1452998581595607,
+                "mae_p_vs_observed": 0.027310343247493422,
+                "mse_p_vs_observed": 0.0013044591999869144,
+                "avg_observed_p": 0.14181267594713962,
+                "mae_p_vs_known": 0.009560747029944465,
+                "mse_p_vs_known": 0.00023019939135080465,
+                "avg_known_p": 0.14315699644057003,
+                "total_log_likelihood_on_test": -2831.1006149696395,
+                "total_poisson_deviance": 1294.748286190956,
+                "num_leaf_nodes": 7,
+                "max_depth_reached": 4,
+                "total_k_test": 18048,
+                "total_n_test": 125727,
+                "overall_p_test": 0.14354911832780548
+            },
+            "num_nodes_total": 13
+        },
+        "Numerical_Step_Function_XGBoost": {
+            "dataset_name": "Numerical_Step_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13193202018737793,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14530371129512787,
+                "mae_p_vs_observed": 0.029335567727684975,
+                "mse_p_vs_observed": 0.0015220923814922571,
+                "avg_observed_p": 0.14181267594713962,
+                "mae_p_vs_known": 0.014040312729775906,
+                "mse_p_vs_known": 0.0004462032811716199,
+                "avg_known_p": 0.14315699644057003,
+                "total_log_likelihood_on_test": -2942.2620827213223,
+                "total_poisson_deviance": 1488.9857177734375,
+                "total_k_test": 18048,
+                "total_n_test": 125727,
+                "overall_p_test": 0.14354911832780548,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.056092023849487305,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20149889361759202,
+                "mae_p_vs_observed": 0.030483941695113564,
+                "mse_p_vs_observed": 0.00157094169205052,
+                "avg_observed_p": 0.2030706920249598,
+                "mae_p_vs_known": 0.009611724439340543,
+                "mse_p_vs_known": 0.00014726244574788484,
+                "avg_known_p": 0.20240959686500154,
+                "total_log_likelihood_on_test": -2864.5608893354743,
+                "total_poisson_deviance": 871.4587207364616,
+                "num_leaf_nodes": 16,
+                "max_depth_reached": 4,
+                "total_k_test": 25249,
+                "total_n_test": 125416,
+                "overall_p_test": 0.2013220003827263
+            },
+            "num_nodes_total": 31
+        },
+        "Numerical_Linear_Function_XGBoost": {
+            "dataset_name": "Numerical_Linear_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13486695289611816,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20065289735794067,
+                "mae_p_vs_observed": 0.03186856582760811,
+                "mse_p_vs_observed": 0.0016942269867286086,
+                "avg_observed_p": 0.2030706920249598,
+                "mae_p_vs_known": 0.013812970370054245,
+                "mse_p_vs_known": 0.00029238639399409294,
+                "avg_known_p": 0.20240959686500154,
+                "total_log_likelihood_on_test": -2914.624795779712,
+                "total_poisson_deviance": 951.74951171875,
+                "total_k_test": 25249,
+                "total_n_test": 125416,
+                "overall_p_test": 0.2013220003827263,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.021105051040649414,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1155701527047651,
+                "mae_p_vs_observed": 0.022299793206243496,
+                "mse_p_vs_observed": 0.0008773600281697728,
+                "avg_observed_p": 0.1145513522611327,
+                "mae_p_vs_known": 0.004177245235831814,
+                "mse_p_vs_known": 2.7338059603732182e-05,
+                "avg_known_p": 0.11423627289872434,
+                "total_log_likelihood_on_test": -2454.9245947435606,
+                "total_poisson_deviance": 959.3970740153038,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14324,
+                "total_n_test": 123437,
+                "overall_p_test": 0.11604300169317142
+            },
+            "num_nodes_total": 7
+        },
+        "Categorical_Simple_Levels_XGBoost": {
+            "dataset_name": "Categorical_Simple_Levels_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.12073802947998047,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11540475487709045,
+                "mae_p_vs_observed": 0.02329345792531967,
+                "mse_p_vs_observed": 0.0009575447766110301,
+                "avg_observed_p": 0.1145513522611327,
+                "mae_p_vs_known": 0.008623536676168442,
+                "mse_p_vs_known": 0.00013547127309720963,
+                "avg_known_p": 0.11423627289872434,
+                "total_log_likelihood_on_test": -2516.148233772734,
+                "total_poisson_deviance": 1072.6959228515625,
+                "total_k_test": 14324,
+                "total_n_test": 123437,
+                "overall_p_test": 0.11604300169317142,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.08966708183288574,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10424533514682663,
+                "mae_p_vs_observed": 0.026719137751713702,
+                "mse_p_vs_observed": 0.0012344423989275356,
+                "avg_observed_p": 0.1017850006652938,
+                "mae_p_vs_known": 0.009980036733475117,
+                "mse_p_vs_known": 0.00016325310140736414,
+                "avg_known_p": 0.10396311668946827,
+                "total_log_likelihood_on_test": -2341.197652283232,
+                "total_poisson_deviance": 1105.71347624731,
+                "num_leaf_nodes": 24,
+                "max_depth_reached": 6,
+                "total_k_test": 9308,
+                "total_n_test": 91406,
+                "overall_p_test": 0.1018313896243135
+            },
+            "num_nodes_total": 47
+        },
+        "Mixed_Features_Interaction_XGBoost": {
+            "dataset_name": "Mixed_Features_Interaction_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.14781832695007324,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10412051528692245,
+                "mae_p_vs_observed": 0.029248841106891632,
+                "mse_p_vs_observed": 0.0015044828178361058,
+                "avg_observed_p": 0.1017850006652938,
+                "mae_p_vs_known": 0.013987808488309383,
+                "mse_p_vs_known": 0.00034914645948447287,
+                "avg_known_p": 0.10396311668946827,
+                "total_log_likelihood_on_test": -2525.563832137491,
+                "total_poisson_deviance": 1454.067626953125,
+                "total_k_test": 9308,
+                "total_n_test": 91406,
+                "overall_p_test": 0.1018313896243135,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.14131689071655273,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012468574499434918,
+                "mae_p_vs_observed": 0.00172377093165927,
+                "mse_p_vs_observed": 5.051748781852721e-06,
+                "avg_observed_p": 0.012487647958713205,
+                "mae_p_vs_known": 8.717759888562234e-05,
+                "mse_p_vs_known": 1.159369246912804e-08,
+                "avg_known_p": 0.012467421947565106,
+                "total_log_likelihood_on_test": -15858.171687558903,
+                "total_poisson_deviance": 5011.975954808063,
+                "num_leaf_nodes": 5,
+                "max_depth_reached": 3,
+                "total_k_test": 186805,
+                "total_n_test": 14961755,
+                "overall_p_test": 0.012485500531187684
+            },
+            "num_nodes_total": 9
+        },
+        "Numerical_Step_Rare_Events_XGBoost": {
+            "dataset_name": "Numerical_Step_Rare_Events_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.1441960334777832,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012479417026042938,
+                "mae_p_vs_observed": 0.0017594520468264818,
+                "mse_p_vs_observed": 5.28224427398527e-06,
+                "avg_observed_p": 0.012487647958713205,
+                "mae_p_vs_known": 0.00033402032568119466,
+                "mse_p_vs_known": 1.9705470322151086e-07,
+                "avg_known_p": 0.012467421947565106,
+                "total_log_likelihood_on_test": -15966.785703431959,
+                "total_poisson_deviance": 5226.533203125,
+                "total_k_test": 186805,
+                "total_n_test": 14961755,
+                "overall_p_test": 0.012485500531187684,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.10098004341125488,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08185693174261757,
+                "mae_p_vs_observed": 0.021873651396849554,
+                "mse_p_vs_observed": 0.000848744237803666,
+                "avg_observed_p": 0.08058546534381739,
+                "mae_p_vs_known": 0.0028524114685208996,
+                "mse_p_vs_known": 1.187228805026975e-05,
+                "avg_known_p": 0.08155033186135363,
+                "total_log_likelihood_on_test": -4537.419063709827,
+                "total_poisson_deviance": 1965.1038840699887,
+                "num_leaf_nodes": 15,
+                "max_depth_reached": 5,
+                "total_k_test": 16295,
+                "total_n_test": 200781,
+                "overall_p_test": 0.0811580777065559
+            },
+            "num_nodes_total": 29
+        },
+        "Categorical_High_Cardinality_XGBoost": {
+            "dataset_name": "Categorical_High_Cardinality_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.1527097225189209,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08186657726764679,
+                "mae_p_vs_observed": 0.02239859476685524,
+                "mse_p_vs_observed": 0.0008918730891309679,
+                "avg_observed_p": 0.08058546534381739,
+                "mae_p_vs_known": 0.004753904417157173,
+                "mse_p_vs_known": 5.670134851243347e-05,
+                "avg_known_p": 0.08155033186135363,
+                "total_log_likelihood_on_test": -4568.556526653914,
+                "total_poisson_deviance": 2021.5802001953125,
+                "total_k_test": 16295,
+                "total_n_test": 200781,
+                "overall_p_test": 0.0811580777065559,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "alpha": 0.01,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 3.856855869293213,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.20032186596565563,
+                "mae_p_vs_observed": 0.0299900759188061,
+                "mse_p_vs_observed": 0.0015075645901815751,
+                "avg_observed_p": 0.20053732027044321,
+                "mae_p_vs_known": 0.008193443563630385,
+                "mse_p_vs_known": 0.00010514867146658931,
+                "avg_known_p": 0.20026973939598133,
+                "total_log_likelihood_on_test": -57297.76877484515,
+                "total_poisson_deviance": 17710.81240621667,
+                "num_leaf_nodes": 68,
+                "max_depth_reached": 7,
+                "total_k_test": 502659,
+                "total_n_test": 2508146,
+                "overall_p_test": 0.2004105821590928
+            },
+            "num_nodes_total": 135
+        },
+        "Numerical_Linear_Large_100K_XGBoost": {
+            "dataset_name": "Numerical_Linear_Large_100K_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.23712372779846191,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.20038925111293793,
+                "mae_p_vs_observed": 0.02999710477888584,
+                "mse_p_vs_observed": 0.0015080998418852687,
+                "avg_observed_p": 0.20053732027044321,
+                "mae_p_vs_known": 0.0082256980240345,
+                "mse_p_vs_known": 0.0001056907422025688,
+                "avg_known_p": 0.20026973939598133,
+                "total_log_likelihood_on_test": -57304.35572404381,
+                "total_poisson_deviance": 17722.79296875,
+                "total_k_test": 502659,
+                "total_n_test": 2508146,
+                "overall_p_test": 0.2004105821590928,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        }
+    },
+    "Config_Loose_Alpha": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.044322967529296875,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.146106953404294,
+                "mae_p_vs_observed": 0.027619847731076886,
+                "mse_p_vs_observed": 0.0013539217783453356,
+                "avg_observed_p": 0.1481315631226977,
+                "mae_p_vs_known": 0.008703401370442893,
+                "mse_p_vs_known": 0.0001768745618117273,
+                "avg_known_p": 0.14683796326115384,
+                "total_log_likelihood_on_test": -2777.6906677118855,
+                "total_poisson_deviance": 1159.3561154085648,
+                "num_leaf_nodes": 12,
+                "max_depth_reached": 5,
+                "total_k_test": 18570,
+                "total_n_test": 125827,
+                "overall_p_test": 0.1475835869884842
+            },
+            "num_nodes_total": 23
+        },
+        "Numerical_Step_Function_XGBoost": {
+            "dataset_name": "Numerical_Step_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13038206100463867,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14704690873622894,
+                "mae_p_vs_observed": 0.028737731277942657,
+                "mse_p_vs_observed": 0.0014787917025387287,
+                "avg_observed_p": 0.1481315631226977,
+                "mae_p_vs_known": 0.012860872782766819,
+                "mse_p_vs_known": 0.0002910573093686253,
+                "avg_known_p": 0.14683796326115384,
+                "total_log_likelihood_on_test": -2832.7344831292144,
+                "total_poisson_deviance": 1256.7357177734375,
+                "total_k_test": 18570,
+                "total_n_test": 125827,
+                "overall_p_test": 0.1475835869884842,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.0717628002166748,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20465862020620681,
+                "mae_p_vs_observed": 0.030714894122523127,
+                "mse_p_vs_observed": 0.0016919779533747798,
+                "avg_observed_p": 0.20429645445861414,
+                "mae_p_vs_known": 0.011606728141376149,
+                "mse_p_vs_known": 0.00023109016176750232,
+                "avg_known_p": 0.20258076754778045,
+                "total_log_likelihood_on_test": -2892.8264313913414,
+                "total_poisson_deviance": 923.1114096356145,
+                "num_leaf_nodes": 46,
+                "max_depth_reached": 7,
+                "total_k_test": 24891,
+                "total_n_test": 122775,
+                "overall_p_test": 0.20273671350030545
+            },
+            "num_nodes_total": 91
+        },
+        "Numerical_Linear_Function_XGBoost": {
+            "dataset_name": "Numerical_Linear_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13123703002929688,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.20329700410366058,
+                "mae_p_vs_observed": 0.03224511072039604,
+                "mse_p_vs_observed": 0.0018571753753349185,
+                "avg_observed_p": 0.20429645445861414,
+                "mae_p_vs_known": 0.015205920673906803,
+                "mse_p_vs_known": 0.0003702278481796384,
+                "avg_known_p": 0.20258076754778045,
+                "total_log_likelihood_on_test": -2947.9746852583326,
+                "total_poisson_deviance": 1015.6409301757812,
+                "total_k_test": 24891,
+                "total_n_test": 122775,
+                "overall_p_test": 0.20273671350030545,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.021094322204589844,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1154792835295201,
+                "mae_p_vs_observed": 0.022719913652415307,
+                "mse_p_vs_observed": 0.0009562737874090685,
+                "avg_observed_p": 0.1166282168756087,
+                "mae_p_vs_known": 0.0039781844221316144,
+                "mse_p_vs_known": 2.5104613698425803e-05,
+                "avg_known_p": 0.11504753836834146,
+                "total_log_likelihood_on_test": -2493.1165639211417,
+                "total_poisson_deviance": 944.8082825024217,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14212,
+                "total_n_test": 124467,
+                "overall_p_test": 0.11418287578233588
+            },
+            "num_nodes_total": 7
+        },
+        "Categorical_Simple_Levels_XGBoost": {
+            "dataset_name": "Categorical_Simple_Levels_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.12068676948547363,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11601392924785614,
+                "mae_p_vs_observed": 0.02449975349009037,
+                "mse_p_vs_observed": 0.0011254333658143878,
+                "avg_observed_p": 0.1166282168756087,
+                "mae_p_vs_known": 0.009896465577185154,
+                "mse_p_vs_known": 0.00018853468645829707,
+                "avg_known_p": 0.11504753836834146,
+                "total_log_likelihood_on_test": -2573.0506291490738,
+                "total_poisson_deviance": 1085.7230224609375,
+                "total_k_test": 14212,
+                "total_n_test": 124467,
+                "overall_p_test": 0.11418287578233588,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.09641695022583008,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10563141637720862,
+                "mae_p_vs_observed": 0.028239224577673906,
+                "mse_p_vs_observed": 0.0015319891735584461,
+                "avg_observed_p": 0.10493683194323422,
+                "mae_p_vs_known": 0.010224403416687988,
+                "mse_p_vs_known": 0.0001874897666414667,
+                "avg_known_p": 0.10533926241622857,
+                "total_log_likelihood_on_test": -2368.4886055097936,
+                "total_poisson_deviance": 1166.1737233273827,
+                "num_leaf_nodes": 36,
+                "max_depth_reached": 7,
+                "total_k_test": 9486,
+                "total_n_test": 91177,
+                "overall_p_test": 0.10403939590028187
+            },
+            "num_nodes_total": 71
+        },
+        "Mixed_Features_Interaction_XGBoost": {
+            "dataset_name": "Mixed_Features_Interaction_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.14213991165161133,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10462507605552673,
+                "mae_p_vs_observed": 0.028635691851377487,
+                "mse_p_vs_observed": 0.0016334607498720288,
+                "avg_observed_p": 0.10493683194323422,
+                "mae_p_vs_known": 0.013575656339526176,
+                "mse_p_vs_known": 0.00033225014340132475,
+                "avg_known_p": 0.10533926241622857,
+                "total_log_likelihood_on_test": -2479.0608482863913,
+                "total_poisson_deviance": 1381.1197509765625,
+                "total_k_test": 9486,
+                "total_n_test": 91177,
+                "overall_p_test": 0.10403939590028187,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.24681901931762695,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012439524451740297,
+                "mae_p_vs_observed": 0.0017367484097194428,
+                "mse_p_vs_observed": 5.08307043456893e-06,
+                "avg_observed_p": 0.01245422187838164,
+                "mae_p_vs_known": 0.00010939005311161716,
+                "mse_p_vs_known": 6.758676523299918e-08,
+                "avg_known_p": 0.01244571280239771,
+                "total_log_likelihood_on_test": -15844.999138995236,
+                "total_poisson_deviance": 5038.521519740607,
+                "num_leaf_nodes": 25,
+                "max_depth_reached": 7,
+                "total_k_test": 185341,
+                "total_n_test": 14903489,
+                "overall_p_test": 0.01243608124245269
+            },
+            "num_nodes_total": 49
+        },
+        "Numerical_Step_Rare_Events_XGBoost": {
+            "dataset_name": "Numerical_Step_Rare_Events_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.1454169750213623,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012452185153961182,
+                "mae_p_vs_observed": 0.0017467939760535955,
+                "mse_p_vs_observed": 5.129814780957531e-06,
+                "avg_observed_p": 0.01245422187838164,
+                "mae_p_vs_known": 0.0003036813286598772,
+                "mse_p_vs_known": 1.6248043266386958e-07,
+                "avg_known_p": 0.01244571280239771,
+                "total_log_likelihood_on_test": -15859.08242762207,
+                "total_poisson_deviance": 5066.3720703125,
+                "total_k_test": 185341,
+                "total_n_test": 14903489,
+                "overall_p_test": 0.01243608124245269,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.11074614524841309,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08257596829927544,
+                "mae_p_vs_observed": 0.021989404560032115,
+                "mse_p_vs_observed": 0.0008944737870190376,
+                "avg_observed_p": 0.08241761590974248,
+                "mae_p_vs_known": 0.001802148470496602,
+                "mse_p_vs_known": 5.720670876155689e-06,
+                "avg_known_p": 0.08260430007872957,
+                "total_log_likelihood_on_test": -4521.261601394842,
+                "total_poisson_deviance": 1890.6195813624086,
+                "num_leaf_nodes": 23,
+                "max_depth_reached": 5,
+                "total_k_test": 16248,
+                "total_n_test": 198011,
+                "overall_p_test": 0.08205604739130655
+            },
+            "num_nodes_total": 45
+        },
+        "Categorical_High_Cardinality_XGBoost": {
+            "dataset_name": "Categorical_High_Cardinality_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.15228486061096191,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08295207470655441,
+                "mae_p_vs_observed": 0.022810854017734528,
+                "mse_p_vs_observed": 0.0009593740105628967,
+                "avg_observed_p": 0.08241761590974248,
+                "mae_p_vs_known": 0.004909480921924114,
+                "mse_p_vs_known": 6.221681542228907e-05,
+                "avg_known_p": 0.08260430007872957,
+                "total_log_likelihood_on_test": -4564.624009096659,
+                "total_poisson_deviance": 1968.0498046875,
+                "total_k_test": 16248,
+                "total_n_test": 198011,
+                "overall_p_test": 0.08205604739130655,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "alpha": 0.1,
+                "max_depth": 7,
+                "min_samples_split": 10,
+                "min_samples_leaf": 5,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 3.963752269744873,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.19926239266302387,
+                "mae_p_vs_observed": 0.029742619648325128,
+                "mse_p_vs_observed": 0.0014759161492247919,
+                "avg_observed_p": 0.1994894636107924,
+                "mae_p_vs_known": 0.008235526123454932,
+                "mse_p_vs_known": 0.00010705018565233817,
+                "avg_known_p": 0.1992597745934174,
+                "total_log_likelihood_on_test": -57115.43830241318,
+                "total_poisson_deviance": 17661.86125944398,
+                "num_leaf_nodes": 114,
+                "max_depth_reached": 7,
+                "total_k_test": 497164,
+                "total_n_test": 2493070,
+                "overall_p_test": 0.19941838777090093
+            },
+            "num_nodes_total": 227
+        },
+        "Numerical_Linear_Large_100K_XGBoost": {
+            "dataset_name": "Numerical_Linear_Large_100K_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 7,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.2277820110321045,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.1992378979921341,
+                "mae_p_vs_observed": 0.029699575155973434,
+                "mse_p_vs_observed": 0.001472313073463738,
+                "avg_observed_p": 0.1994894636107924,
+                "mae_p_vs_known": 0.008195904083549976,
+                "mse_p_vs_known": 0.00010562361421762034,
+                "avg_known_p": 0.1992597745934174,
+                "total_log_likelihood_on_test": -57090.03476197191,
+                "total_poisson_deviance": 17624.802734375,
+                "total_k_test": 497164,
+                "total_n_test": 2493070,
+                "overall_p_test": 0.19941838777090093,
+                "n_estimators": 100,
+                "max_depth_reached": 7
+            }
+        }
+    },
+    "Config_Shallow_Tree": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.03151726722717285,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.14148527553561216,
+                "mae_p_vs_observed": 0.025890993830782576,
+                "mse_p_vs_observed": 0.0011593066945532653,
+                "avg_observed_p": 0.13922133744194565,
+                "mae_p_vs_known": 0.008463084369750625,
+                "mse_p_vs_known": 0.00018013988513691537,
+                "avg_known_p": 0.1407817272968938,
+                "total_log_likelihood_on_test": -2693.4389429496932,
+                "total_poisson_deviance": 1040.8407030091162,
+                "num_leaf_nodes": 5,
+                "max_depth_reached": 3,
+                "total_k_test": 17332,
+                "total_n_test": 125344,
+                "overall_p_test": 0.13827546591779424
+            },
+            "num_nodes_total": 9
+        },
+        "Numerical_Step_Function_XGBoost": {
+            "dataset_name": "Numerical_Step_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.06662774085998535,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1415647268295288,
+                "mae_p_vs_observed": 0.02609029784798622,
+                "mse_p_vs_observed": 0.0011718441965058446,
+                "avg_observed_p": 0.13922133744194565,
+                "mae_p_vs_known": 0.009696216322481632,
+                "mse_p_vs_known": 0.00020449655130505562,
+                "avg_known_p": 0.1407817272968938,
+                "total_log_likelihood_on_test": -2699.482661413011,
+                "total_poisson_deviance": 1050.379638671875,
+                "total_k_test": 17332,
+                "total_n_test": 125344,
+                "overall_p_test": 0.13827546591779424,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.035822153091430664,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.2019412697961073,
+                "mae_p_vs_observed": 0.03176051654422967,
+                "mse_p_vs_observed": 0.0016263223789053515,
+                "avg_observed_p": 0.20075698339753262,
+                "mae_p_vs_known": 0.01240506157308311,
+                "mse_p_vs_known": 0.00023699396424664896,
+                "avg_known_p": 0.20160899875439814,
+                "total_log_likelihood_on_test": -2914.9556072693636,
+                "total_poisson_deviance": 964.1833289735873,
+                "num_leaf_nodes": 8,
+                "max_depth_reached": 3,
+                "total_k_test": 25009,
+                "total_n_test": 125326,
+                "overall_p_test": 0.19955156950672645
+            },
+            "num_nodes_total": 15
+        },
+        "Numerical_Linear_Function_XGBoost": {
+            "dataset_name": "Numerical_Linear_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.06528568267822266,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.2008780837059021,
+                "mae_p_vs_observed": 0.030828073620796204,
+                "mse_p_vs_observed": 0.001590459025464952,
+                "avg_observed_p": 0.20075698339753262,
+                "mae_p_vs_known": 0.010958143509924412,
+                "mse_p_vs_known": 0.00019038781465496868,
+                "avg_known_p": 0.20160899875439814,
+                "total_log_likelihood_on_test": -2886.925832022792,
+                "total_poisson_deviance": 916.575439453125,
+                "total_k_test": 25009,
+                "total_n_test": 125326,
+                "overall_p_test": 0.19955156950672645,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.0193021297454834,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11198710258449367,
+                "mae_p_vs_observed": 0.02260439623011514,
+                "mse_p_vs_observed": 0.000899406885351393,
+                "avg_observed_p": 0.11055187142135725,
+                "mae_p_vs_known": 0.004092086743571912,
+                "mse_p_vs_known": 2.639885149713293e-05,
+                "avg_known_p": 0.11137002643034988,
+                "total_log_likelihood_on_test": -2531.514331312416,
+                "total_poisson_deviance": 1074.1385197189866,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 13907,
+                "total_n_test": 125927,
+                "overall_p_test": 0.11043699921383024
+            },
+            "num_nodes_total": 7
+        },
+        "Categorical_Simple_Levels_XGBoost": {
+            "dataset_name": "Categorical_Simple_Levels_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.06663703918457031,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11214062571525574,
+                "mae_p_vs_observed": 0.02297188714146614,
+                "mse_p_vs_observed": 0.0009251153096556664,
+                "avg_observed_p": 0.11055187142135725,
+                "mae_p_vs_known": 0.005010481923818588,
+                "mse_p_vs_known": 4.155546412221156e-05,
+                "avg_known_p": 0.11137002643034988,
+                "total_log_likelihood_on_test": -2538.961983679203,
+                "total_poisson_deviance": 1086.540771484375,
+                "total_k_test": 13907,
+                "total_n_test": 125927,
+                "overall_p_test": 0.11043699921383024,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.04939389228820801,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10251425344871107,
+                "mae_p_vs_observed": 0.031167904490461796,
+                "mse_p_vs_observed": 0.0017672531516155666,
+                "avg_observed_p": 0.10465502174487562,
+                "mae_p_vs_known": 0.01968892690370103,
+                "mse_p_vs_known": 0.0006127823094514581,
+                "avg_known_p": 0.10445510706293802,
+                "total_log_likelihood_on_test": -2552.001946509431,
+                "total_poisson_deviance": 1515.348241945622,
+                "num_leaf_nodes": 8,
+                "max_depth_reached": 3,
+                "total_k_test": 9402,
+                "total_n_test": 90115,
+                "overall_p_test": 0.1043333518282195
+            },
+            "num_nodes_total": 15
+        },
+        "Mixed_Features_Interaction_XGBoost": {
+            "dataset_name": "Mixed_Features_Interaction_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.0674581527709961,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.10212327539920807,
+                "mae_p_vs_observed": 0.026706896722316742,
+                "mse_p_vs_observed": 0.0013314922107383609,
+                "avg_observed_p": 0.10465502174487562,
+                "mae_p_vs_known": 0.009744281880557537,
+                "mse_p_vs_known": 0.00015385408187285066,
+                "avg_known_p": 0.10445510706293802,
+                "total_log_likelihood_on_test": -2379.3157949454476,
+                "total_poisson_deviance": 1215.2440185546875,
+                "total_k_test": 9402,
+                "total_n_test": 90115,
+                "overall_p_test": 0.1043333518282195,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.14782476425170898,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012546654604547207,
+                "mae_p_vs_observed": 0.0017354572684081802,
+                "mse_p_vs_observed": 4.9628194455655235e-06,
+                "avg_observed_p": 0.012491121350023412,
+                "mae_p_vs_known": 0.00010279016550230884,
+                "mse_p_vs_known": 1.6184533364552137e-08,
+                "avg_known_p": 0.012536206711453004,
+                "total_log_likelihood_on_test": -15809.964193042648,
+                "total_poisson_deviance": 4940.893705817982,
+                "num_leaf_nodes": 8,
+                "max_depth_reached": 3,
+                "total_k_test": 186446,
+                "total_n_test": 14904766,
+                "overall_p_test": 0.012509153112501063
+            },
+            "num_nodes_total": 15
+        },
+        "Numerical_Step_Rare_Events_XGBoost": {
+            "dataset_name": "Numerical_Step_Rare_Events_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.07326102256774902,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012557192705571651,
+                "mae_p_vs_observed": 0.0017353224102407694,
+                "mse_p_vs_observed": 4.988754881196655e-06,
+                "avg_observed_p": 0.012491121350023412,
+                "mae_p_vs_known": 0.00016356860578525811,
+                "mse_p_vs_known": 6.06646395340249e-08,
+                "avg_known_p": 0.012536206711453004,
+                "total_log_likelihood_on_test": -15825.261070818435,
+                "total_poisson_deviance": 4971.1328125,
+                "total_k_test": 186446,
+                "total_n_test": 14904766,
+                "overall_p_test": 0.012509153112501063,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.06820225715637207,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08195818477260655,
+                "mae_p_vs_observed": 0.02221205768149985,
+                "mse_p_vs_observed": 0.0008712063034572773,
+                "avg_observed_p": 0.08262963250922098,
+                "mae_p_vs_known": 0.004942384015411639,
+                "mse_p_vs_known": 3.501918427878318e-05,
+                "avg_known_p": 0.08202933010372727,
+                "total_log_likelihood_on_test": -4583.796464571794,
+                "total_poisson_deviance": 1978.1219113812222,
+                "num_leaf_nodes": 8,
+                "max_depth_reached": 3,
+                "total_k_test": 16503,
+                "total_n_test": 199865,
+                "overall_p_test": 0.08257073524629124
+            },
+            "num_nodes_total": 15
+        },
+        "Categorical_High_Cardinality_XGBoost": {
+            "dataset_name": "Categorical_High_Cardinality_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.07966399192810059,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08188914507627487,
+                "mae_p_vs_observed": 0.02275950275361538,
+                "mse_p_vs_observed": 0.0008949240436777472,
+                "avg_observed_p": 0.08262963250922098,
+                "mae_p_vs_known": 0.008951300755143166,
+                "mse_p_vs_known": 8.93898686626926e-05,
+                "avg_known_p": 0.08202933010372727,
+                "total_log_likelihood_on_test": -4638.8739990637205,
+                "total_poisson_deviance": 2083.42529296875,
+                "total_k_test": 16503,
+                "total_n_test": 199865,
+                "overall_p_test": 0.08257073524629124,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 3,
+                "min_samples_split": 20,
+                "min_samples_leaf": 10,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 2.1626710891723633,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.19945792995055875,
+                "mae_p_vs_observed": 0.03136489770895731,
+                "mse_p_vs_observed": 0.0016253060381028782,
+                "avg_observed_p": 0.19954868432300427,
+                "mae_p_vs_known": 0.012162800128716738,
+                "mse_p_vs_known": 0.00022358365624742648,
+                "avg_known_p": 0.19961412186816457,
+                "total_log_likelihood_on_test": -58370.130111650724,
+                "total_poisson_deviance": 19631.55275670856,
+                "num_leaf_nodes": 8,
+                "max_depth_reached": 3,
+                "total_k_test": 499913,
+                "total_n_test": 2503574,
+                "overall_p_test": 0.19967973784677426
+            },
+            "num_nodes_total": 15
+        },
+        "Numerical_Linear_Large_100K_XGBoost": {
+            "dataset_name": "Numerical_Linear_Large_100K_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.12756896018981934,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.1994188278913498,
+                "mae_p_vs_observed": 0.029922159388661385,
+                "mse_p_vs_observed": 0.0014895998174324632,
+                "avg_observed_p": 0.19954868432300427,
+                "mae_p_vs_known": 0.00810206774622202,
+                "mse_p_vs_known": 0.00010351139644626528,
+                "avg_known_p": 0.19961412186816457,
+                "total_log_likelihood_on_test": -57252.21068607002,
+                "total_poisson_deviance": 17827.427734375,
+                "total_k_test": 499913,
+                "total_n_test": 2503574,
+                "overall_p_test": 0.19967973784677426,
+                "n_estimators": 100,
+                "max_depth_reached": 3
+            }
+        }
+    },
+    "Config_High_Min_Samples": {
+        "Numerical_Step_Function": {
+            "dataset_name": "Numerical_Step_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.033796072006225586,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.15194207506904614,
+                "mae_p_vs_observed": 0.026349515037393793,
+                "mse_p_vs_observed": 0.0013939977542201504,
+                "avg_observed_p": 0.14884893327623647,
+                "mae_p_vs_known": 0.009948000395828013,
+                "mse_p_vs_known": 0.0003926328504802746,
+                "avg_known_p": 0.1506318399735199,
+                "total_log_likelihood_on_test": -2819.7950120990968,
+                "total_poisson_deviance": 1189.4814969854676,
+                "num_leaf_nodes": 6,
+                "max_depth_reached": 3,
+                "total_k_test": 18686,
+                "total_n_test": 126402,
+                "overall_p_test": 0.14782993939969305
+            },
+            "num_nodes_total": 11
+        },
+        "Numerical_Step_Function_XGBoost": {
+            "dataset_name": "Numerical_Step_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.15114188194274902,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.15126678347587585,
+                "mae_p_vs_observed": 0.02776653692126274,
+                "mse_p_vs_observed": 0.0013313817325979471,
+                "avg_observed_p": 0.14884893327623647,
+                "mae_p_vs_known": 0.01464089471846819,
+                "mse_p_vs_known": 0.00040158271440304816,
+                "avg_known_p": 0.1506318399735199,
+                "total_log_likelihood_on_test": -2829.1484077334226,
+                "total_poisson_deviance": 1222.821533203125,
+                "total_k_test": 18686,
+                "total_n_test": 126402,
+                "overall_p_test": 0.14782993939969305,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Numerical_Linear_Function": {
+            "dataset_name": "Numerical_Linear_Function",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.041063785552978516,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.19849924902700283,
+                "mae_p_vs_observed": 0.030188330769215895,
+                "mse_p_vs_observed": 0.0015148470204825282,
+                "avg_observed_p": 0.19887983037471457,
+                "mae_p_vs_known": 0.009627504787408574,
+                "mse_p_vs_known": 0.00014263093167845642,
+                "avg_known_p": 0.19947796718277103,
+                "total_log_likelihood_on_test": -2867.155286756538,
+                "total_poisson_deviance": 910.0140639962895,
+                "num_leaf_nodes": 16,
+                "max_depth_reached": 4,
+                "total_k_test": 24680,
+                "total_n_test": 123519,
+                "overall_p_test": 0.19980731709291688
+            },
+            "num_nodes_total": 31
+        },
+        "Numerical_Linear_Function_XGBoost": {
+            "dataset_name": "Numerical_Linear_Function_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.15268611907958984,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1993800401687622,
+                "mae_p_vs_observed": 0.03229254111647606,
+                "mse_p_vs_observed": 0.001724760513752699,
+                "avg_observed_p": 0.19887983037471457,
+                "mae_p_vs_known": 0.015110805630683899,
+                "mse_p_vs_known": 0.00036363594699651003,
+                "avg_known_p": 0.19947796718277103,
+                "total_log_likelihood_on_test": -2951.832443290652,
+                "total_poisson_deviance": 1048.094482421875,
+                "total_k_test": 24680,
+                "total_n_test": 123519,
+                "overall_p_test": 0.19980731709291688,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Categorical_Simple_Levels": {
+            "dataset_name": "Categorical_Simple_Levels",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.021060943603515625,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.11731115661354831,
+                "mae_p_vs_observed": 0.022610539275689547,
+                "mse_p_vs_observed": 0.0008855371235852104,
+                "avg_observed_p": 0.11762930050457644,
+                "mae_p_vs_known": 0.00413816801282147,
+                "mse_p_vs_known": 2.6452897132309603e-05,
+                "avg_known_p": 0.11751832539452241,
+                "total_log_likelihood_on_test": -2498.0025372412447,
+                "total_poisson_deviance": 1032.718109718701,
+                "num_leaf_nodes": 4,
+                "max_depth_reached": 3,
+                "total_k_test": 14570,
+                "total_n_test": 123700,
+                "overall_p_test": 0.11778496362166532
+            },
+            "num_nodes_total": 7
+        },
+        "Categorical_Simple_Levels_XGBoost": {
+            "dataset_name": "Categorical_Simple_Levels_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.13418102264404297,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1178000345826149,
+                "mae_p_vs_observed": 0.02527845837175846,
+                "mse_p_vs_observed": 0.0011248118244111538,
+                "avg_observed_p": 0.11762930050457644,
+                "mae_p_vs_known": 0.01007158774882555,
+                "mse_p_vs_known": 0.0001904595410451293,
+                "avg_known_p": 0.11751832539452241,
+                "total_log_likelihood_on_test": -2619.5386412461285,
+                "total_poisson_deviance": 1247.7183837890625,
+                "total_k_test": 14570,
+                "total_n_test": 123700,
+                "overall_p_test": 0.11778496362166532,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Mixed_Features_Interaction": {
+            "dataset_name": "Mixed_Features_Interaction",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.058866262435913086,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.103456402733415,
+                "mae_p_vs_observed": 0.02817783289176976,
+                "mse_p_vs_observed": 0.0014480650051711288,
+                "avg_observed_p": 0.10238033131652491,
+                "mae_p_vs_known": 0.011583229530273197,
+                "mse_p_vs_known": 0.00023254335132255678,
+                "avg_known_p": 0.10298532879651788,
+                "total_log_likelihood_on_test": -2381.665804878121,
+                "total_poisson_deviance": 1207.5787141431965,
+                "num_leaf_nodes": 15,
+                "max_depth_reached": 5,
+                "total_k_test": 9136,
+                "total_n_test": 90183,
+                "overall_p_test": 0.10130512402559241
+            },
+            "num_nodes_total": 29
+        },
+        "Mixed_Features_Interaction_XGBoost": {
+            "dataset_name": "Mixed_Features_Interaction_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.16569113731384277,
+            "evaluation": {
+                "num_test_samples": 1000,
+                "avg_predicted_p": 0.1029077023267746,
+                "mae_p_vs_observed": 0.029538368806242943,
+                "mse_p_vs_observed": 0.00164502183906734,
+                "avg_observed_p": 0.10238033131652491,
+                "mae_p_vs_known": 0.01615721546113491,
+                "mse_p_vs_known": 0.00047166645526885986,
+                "avg_known_p": 0.10298532879651788,
+                "total_log_likelihood_on_test": -2499.2116102938926,
+                "total_poisson_deviance": 1430.2186279296875,
+                "total_k_test": 9136,
+                "total_n_test": 90183,
+                "overall_p_test": 0.10130512402559241,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Numerical_Step_Rare_Events": {
+            "dataset_name": "Numerical_Step_Rare_Events",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.18683886528015137,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012525124842745674,
+                "mae_p_vs_observed": 0.0017173766359761188,
+                "mse_p_vs_observed": 4.898252164929351e-06,
+                "avg_observed_p": 0.01249329818102401,
+                "mae_p_vs_known": 0.00010159886222361537,
+                "mse_p_vs_known": 4.982338268218618e-08,
+                "avg_known_p": 0.01250510541534691,
+                "total_log_likelihood_on_test": -15770.978451934481,
+                "total_poisson_deviance": 4861.879567597726,
+                "num_leaf_nodes": 9,
+                "max_depth_reached": 4,
+                "total_k_test": 186557,
+                "total_n_test": 14900296,
+                "overall_p_test": 0.012520355300324235
+            },
+            "num_nodes_total": 17
+        },
+        "Numerical_Step_Rare_Events_XGBoost": {
+            "dataset_name": "Numerical_Step_Rare_Events_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.162092924118042,
+            "evaluation": {
+                "num_test_samples": 5000,
+                "avg_predicted_p": 0.012524808757007122,
+                "mae_p_vs_observed": 0.0017372587462887168,
+                "mse_p_vs_observed": 5.036236871092115e-06,
+                "avg_observed_p": 0.01249329818102401,
+                "mae_p_vs_known": 0.00035740152816288173,
+                "mse_p_vs_known": 2.2129243859581038e-07,
+                "avg_known_p": 0.01250510541534691,
+                "total_log_likelihood_on_test": -15842.491652735747,
+                "total_poisson_deviance": 5003.12109375,
+                "total_k_test": 186557,
+                "total_n_test": 14900296,
+                "overall_p_test": 0.012520355300324235,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Categorical_High_Cardinality": {
+            "dataset_name": "Categorical_High_Cardinality",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 0.10324621200561523,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.08286147461932873,
+                "mae_p_vs_observed": 0.021940917138224686,
+                "mse_p_vs_observed": 0.0008460401759014381,
+                "avg_observed_p": 0.08161734409323797,
+                "mae_p_vs_known": 0.002708499886166175,
+                "mse_p_vs_known": 1.1516600473273057e-05,
+                "avg_known_p": 0.08248360776339587,
+                "total_log_likelihood_on_test": -4546.40218947044,
+                "total_poisson_deviance": 1925.1770798211974,
+                "num_leaf_nodes": 17,
+                "max_depth_reached": 5,
+                "total_k_test": 16261,
+                "total_n_test": 200471,
+                "overall_p_test": 0.081113976585142
+            },
+            "num_nodes_total": 33
+        },
+        "Categorical_High_Cardinality_XGBoost": {
+            "dataset_name": "Categorical_High_Cardinality_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.17010784149169922,
+            "evaluation": {
+                "num_test_samples": 2000,
+                "avg_predicted_p": 0.0827440470457077,
+                "mae_p_vs_observed": 0.02256336621940136,
+                "mse_p_vs_observed": 0.0009038256830535829,
+                "avg_observed_p": 0.08161734409323797,
+                "mae_p_vs_known": 0.005487455986440182,
+                "mse_p_vs_known": 7.497107435483485e-05,
+                "avg_known_p": 0.08248360776339587,
+                "total_log_likelihood_on_test": -4589.156207261964,
+                "total_poisson_deviance": 2001.6348876953125,
+                "total_k_test": 16261,
+                "total_n_test": 200471,
+                "overall_p_test": 0.081113976585142,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        },
+        "Numerical_Linear_Large_100K": {
+            "dataset_name": "Numerical_Linear_Large_100K",
+            "tree_params": {
+                "alpha": 0.05,
+                "max_depth": 8,
+                "min_samples_split": 200,
+                "min_samples_leaf": 100,
+                "confidence_level": 0.95,
+                "max_numerical_split_points": 100
+            },
+            "training_time_seconds": 3.9907779693603516,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.1999289212344938,
+                "mae_p_vs_observed": 0.03029829453089296,
+                "mse_p_vs_observed": 0.0015397998667065738,
+                "avg_observed_p": 0.20028244944885867,
+                "mae_p_vs_known": 0.00818120426616891,
+                "mse_p_vs_known": 0.00010468323843674447,
+                "avg_known_p": 0.20005917176873303,
+                "total_log_likelihood_on_test": -57505.60249515106,
+                "total_poisson_deviance": 18146.15509128599,
+                "num_leaf_nodes": 85,
+                "max_depth_reached": 8,
+                "total_k_test": 501441,
+                "total_n_test": 2502207,
+                "overall_p_test": 0.2003994873325828
+            },
+            "num_nodes_total": 169
+        },
+        "Numerical_Linear_Large_100K_XGBoost": {
+            "dataset_name": "Numerical_Linear_Large_100K_XGBoost",
+            "tree_params": {
+                "objective": "reg:squarederror",
+                "n_estimators": 100,
+                "max_depth": 8,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "seed": 42
+            },
+            "training_time_seconds": 0.2594571113586426,
+            "evaluation": {
+                "num_test_samples": 20000,
+                "avg_predicted_p": 0.19986824691295624,
+                "mae_p_vs_observed": 0.030316729098558426,
+                "mse_p_vs_observed": 0.0015411137137562037,
+                "avg_observed_p": 0.20028244944885867,
+                "mae_p_vs_known": 0.00823324266821146,
+                "mse_p_vs_known": 0.00010617194493534043,
+                "avg_known_p": 0.20005917176873303,
+                "total_log_likelihood_on_test": -57518.46591909799,
+                "total_poisson_deviance": 18166.51953125,
+                "total_k_test": 501441,
+                "total_n_test": 2502207,
+                "overall_p_test": 0.2003994873325828,
+                "n_estimators": 100,
+                "max_depth_reached": 8
+            }
+        }
+    }
+}

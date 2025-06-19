@@ -1,0 +1,31 @@
+project:
+  type: book
+  output-dir: ../docs
+
+book:
+  title: "BinomialTree: A Binomial Decision Tree for Rare Event Modeling"
+  author: "Generated Documentation" 
+  date: today
+  chapters:
+    - index.qmd
+    - theory.qmd
+    - implementation.qmd
+    - performance.qmd
+  downloads: [pdf, epub]
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    self-contained: true
+    fig-width: 8
+    fig-height: 6
+    
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: false

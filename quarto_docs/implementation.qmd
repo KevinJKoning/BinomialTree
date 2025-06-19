@@ -1,0 +1,311 @@
+# Implementation Guide
+
+## Installation and Dependencies
+
+BinomialTree is implemented in pure Python with minimal dependencies:
+
+```python
+# Required dependencies
+import numpy as np
+import pandas as pd  # Optional, for DataFrame support
+```
+
+No external machine learning libraries are required for the core functionality.
+
+## Basic Usage
+
+### Data Preparation
+
+Your data should contain:
+- **Target column**: Number of successes (k)
+- **Exposure column**: Number of trials (n) 
+- **Feature columns**: Predictor variables (numerical or categorical)
+
+```python
+# Example data structure
+data = [
+    {'feature_num': 10.0, 'feature_cat': 'A', 'successes': 2, 'trials': 20},
+    {'feature_num': 12.0, 'feature_cat': 'B', 'successes': 8, 'trials': 25},
+    {'feature_num': 15.0, 'feature_cat': 'A', 'successes': 3, 'trials': 18},
+    # ... more observations
+]
+
+# Or as a pandas DataFrame
+import pandas as pd
+df = pd.DataFrame(data)
+```
+
+### Basic Model Training
+
+```python
+from binomial_tree.tree import BinomialDecisionTree
+
+# Initialize the tree
+tree = BinomialDecisionTree(
+    min_samples_split=20,
+    min_samples_leaf=10, 
+    max_depth=5,
+    alpha=0.05,
+    verbose=True
+)
+
+# Fit the model
+tree.fit(
+    data=data,  # or df for pandas DataFrame
+    target_column='successes',
+    exposure_column='trials', 
+    feature_columns=['feature_num', 'feature_cat']
+)
+
+# Make predictions
+new_data = [
+    {'feature_num': 13.0, 'feature_cat': 'A'},
+    {'feature_num': 23.0, 'feature_cat': 'C'}
+]
+predicted_probabilities = tree.predict_p(new_data)
+```
+
+### Inspecting the Model
+
+```python
+# Print the tree structure
+tree.print_tree()
+
+# Output example:
+# Split: feature_num <= 15.500 (p-val=0.0123, gain=12.45) | k=45, n=180 (p̂=0.250)
+#   |--L: Split: feature_cat in {'A', 'C'} (p-val=0.0089, gain=8.32) | k=15, n=80 (p̂=0.188)
+#   |    |--L: Leaf: k=8, n=50 (p̂=0.160) | Reason: stat_stop
+#   |    +--R: Leaf: k=7, n=30 (p̂=0.233) | Reason: min_samples_split
+#   +--R: Leaf: k=30, n=100 (p̂=0.300) | Reason: stat_stop
+```
+
+## Hyperparameter Configuration
+
+### Core Parameters
+
+```python
+tree = BinomialDecisionTree(
+    # Structural constraints
+    max_depth=5,                    # Maximum tree depth
+    min_samples_split=20,           # Min samples to consider splitting
+    min_samples_leaf=10,            # Min samples in each leaf
+    
+    # Statistical stopping
+    alpha=0.05,                     # Significance level for splits
+    
+    # Performance tuning  
+    max_numerical_split_points=255, # Limit split points for large features
+    
+    # Output control
+    verbose=False,                  # Enable detailed logging
+    confidence_level=0.95           # For confidence intervals (display only)
+)
+```
+
+### Parameter Guidelines
+
+**`alpha` (Significance Level)**
+- Lower values (0.01) create more conservative, smaller trees
+- Higher values (0.10) allow more aggressive splitting
+- Default 0.05 provides good balance
+
+**`min_samples_split` and `min_samples_leaf`**
+- Increase for rare events to ensure statistical power
+- Decrease for abundant data to capture fine patterns
+- Rule of thumb: min_samples_leaf ≥ 5-10 expected events
+
+**`max_depth`**
+- Acts as a safety constraint
+- Statistical stopping often kicks in before max depth
+- Set higher when alpha is strict (low)
+
+## Advanced Usage
+
+### Feature Type Specification
+
+```python
+# Explicit feature type control
+tree.fit(
+    data=data,
+    target_column='successes',
+    exposure_column='trials',
+    feature_columns=['numeric_feat', 'categorical_feat'],
+    feature_types={
+        'numeric_feat': 'numerical',
+        'categorical_feat': 'categorical'
+    }
+)
+```
+
+### Missing Value Handling
+
+BinomialTree handles missing values automatically:
+
+**Numerical Features**
+- Missing values imputed with median during training
+- Same median used for prediction
+
+**Categorical Features**  
+- Missing values treated as a distinct category ('__NaN__')
+- Unseen categories in prediction mapped to NaN path
+
+```python
+# Data with missing values
+data_with_missing = [
+    {'num_feat': 10.0, 'cat_feat': 'A', 'k': 2, 'n': 20},
+    {'num_feat': None, 'cat_feat': 'B', 'k': 8, 'n': 25},  # Missing numeric
+    {'num_feat': 15.0, 'cat_feat': None, 'k': 3, 'n': 18}, # Missing categorical
+]
+
+# No special handling needed
+tree.fit(data=data_with_missing, ...)
+```
+
+### Pandas Integration
+
+```python
+import pandas as pd
+import numpy as np
+
+# Create DataFrame with missing values
+df = pd.DataFrame({
+    'numeric_feature': [10.0, 12.0, np.nan, 15.0],
+    'categorical_feature': ['A', 'B', 'A', None], 
+    'successes': [2, 8, 1, 3],
+    'trials': [20, 25, 5, 18]
+})
+
+# Seamless integration
+tree.fit(
+    data=df,
+    target_column='successes', 
+    exposure_column='trials',
+    feature_columns=['numeric_feature', 'categorical_feature']
+)
+
+# Prediction on new DataFrame
+new_df = pd.DataFrame({
+    'numeric_feature': [13.0, 23.0],
+    'categorical_feature': ['A', 'C']
+})
+predictions = tree.predict_p(new_df)
+```
+
+## Model Interpretation
+
+### Understanding Tree Output
+
+Each node displays comprehensive statistics:
+
+```
+Split: feature_name <= threshold (p-val=X.XXXX, gain=XX.XX) | k=XX, n=XXX (p̂=X.XXX) | CI_rel_width=X.XX | LL=XX.XX | N=XXX
+```
+
+**Split Information**
+- `p-val`: Statistical significance of the split
+- `gain`: Log-likelihood improvement from splitting
+
+**Node Statistics**
+- `k`: Total successes in node
+- `n`: Total trials in node  
+- `p̂`: Estimated success probability
+- `CI_rel_width`: Relative width of confidence interval
+- `LL`: Log-likelihood of the node
+- `N`: Number of observations
+
+**Leaf Reasons**
+- `stat_stop`: Stopped due to statistical test
+- `min_samples_split`: Not enough samples to split
+- `max_depth`: Reached maximum depth
+- `pure_node`: All observations have same outcome
+
+### Extracting Predictions and Uncertainty
+
+```python
+# Get point predictions
+probabilities = tree.predict_p(test_data)
+
+# Access detailed node information for uncertainty
+def get_prediction_details(tree, data_point):
+    """Get prediction with node statistics"""
+    # This would require extending the current API
+    # Implementation would traverse tree and return node info
+    pass
+```
+
+## Common Patterns and Best Practices
+
+### Rare Event Modeling
+
+```python
+# Configuration for rare events (p < 0.01)
+rare_event_tree = BinomialDecisionTree(
+    min_samples_split=100,    # Need more samples for stability
+    min_samples_leaf=50,      # Ensure adequate events per leaf
+    max_depth=6,              # Allow deeper trees
+    alpha=0.01,               # More conservative splitting
+    verbose=True
+)
+```
+
+### High-Cardinality Categoricals
+
+```python
+# For categorical features with many levels
+high_card_tree = BinomialDecisionTree(
+    min_samples_split=60,     # Account for category splits
+    min_samples_leaf=30,      # Ensure representation per category
+    max_depth=6,              # Categories may need more depth
+    alpha=0.05
+)
+```
+
+### Large Dataset Optimization
+
+```python
+# For datasets with many unique numerical values
+large_data_tree = BinomialDecisionTree(
+    max_numerical_split_points=500,  # More split points
+    min_samples_split=50,            # Can afford larger minimums
+    verbose=False                    # Reduce logging overhead
+)
+```
+
+## Error Handling and Diagnostics
+
+### Common Issues
+
+**Empty Leaves**
+- Increase `min_samples_leaf`
+- Check for data quality issues
+- Consider feature engineering
+
+**No Splits Found**
+- Increase `alpha` to be less strict
+- Ensure adequate sample sizes
+- Check feature-target relationships
+
+**Performance Issues**
+- Reduce `max_numerical_split_points`
+- Limit `max_depth`
+- Consider feature selection
+
+### Debugging Output
+
+```python
+# Enable verbose mode for detailed logging
+tree = BinomialDecisionTree(verbose=True)
+tree.fit(...)
+
+# Sample verbose output:
+# Processing Node abc123 (Depth 0): 1000 samples
+#   Evaluating feature 'numeric_feat' (numerical)...
+#   Feature 'numeric_feat' best split LL Gain: 23.45, p-value: 0.0012
+#   Evaluating feature 'cat_feat' (categorical)...  
+#   Feature 'cat_feat' best split LL Gain: 18.32, p-value: 0.0089
+#   Overall best split: Feature 'numeric_feat' with p-value: 0.0012
+#   Stat Stop Check: Bonferroni-adjusted p-value: 0.0024 < 0.05
+#   Node abc123 SPLIT on numeric_feat
+```
+
+This implementation guide provides the essential knowledge for effectively using BinomialTree in practice, from basic usage to advanced configurations for specific use cases.

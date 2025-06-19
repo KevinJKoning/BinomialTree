@@ -1,0 +1,47 @@
+# Introduction {.unnumbered}
+
+## Overview
+
+BinomialTree is a specialized decision tree algorithm designed specifically for modeling rare count events with exposure values. Unlike traditional decision trees that split on variance reduction or information gain, BinomialTree optimizes splits by maximizing the binomial likelihood, making it particularly suited for scenarios where:
+
+- The target is a count variable (k) with known exposure (n)
+- Events are relatively rare (low success probability)
+- The goal is to predict the probability of event occurrence
+- The underlying data follows or approximates a binomial distribution
+
+## Key Features
+
+- **Binomial Likelihood Maximization**: Tree splits are chosen to maximize the binomial log-likelihood rather than traditional metrics
+- **Statistical Stopping Criteria**: Uses hypothesis testing with Bonferroni correction to determine when to stop splitting, inspired by Conditional Inference Trees (ctree)
+- **Exposure-Aware**: Designed to handle count data with varying exposure levels
+- **Robust Splitting**: Handles both numerical and categorical features with appropriate split strategies
+
+## Why BinomialTree?
+
+Traditional decision trees and ensemble methods like Random Forest or XGBoost are optimized for minimizing squared error or other general loss functions. However, when modeling rare events:
+
+1. **Count/Exposure Structure**: The natural structure of count data with exposure (k successes out of n trials) is better captured by binomial likelihood
+2. **Probability Distribution**: For rare events, modeling count/n directly can be problematic due to the poorly behaved probability distribution of ratios
+3. **Statistical Rigor**: The hypothesis testing framework reduces overfitting and may reduce the need for train-test splits
+
+## When to Use BinomialTree
+
+BinomialTree performs best when:
+
+- Your target follows or approximates a binomial distribution
+- You have count data with exposure information
+- Events are relatively rare (p < 0.5, ideally p < 0.1)
+- You want interpretable decision boundaries
+- Statistical stopping criteria are important for your use case
+
+**Note**: If the binomial distribution assumptions are significantly violated, traditional gradient boosting methods like XGBoost may perform better.
+
+## About This Documentation
+
+This documentation is organized into three main sections:
+
+1. **Theory**: Mathematical foundations, splitting criteria, and stopping conditions
+2. **Implementation**: Practical usage guide and API reference  
+3. **Performance**: Comparative analysis with XGBoost on various datasets
+
+The examples and comparisons in this documentation demonstrate both the strengths and limitations of the binomial tree approach.

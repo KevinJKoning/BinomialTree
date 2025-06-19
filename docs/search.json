@@ -1,0 +1,312 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "",
+    "text": "Introduction",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "Overview",
+    "text": "Overview\nBinomialTree is a specialized decision tree algorithm designed specifically for modeling rare count events with exposure values. Unlike traditional decision trees that split on variance reduction or information gain, BinomialTree optimizes splits by maximizing the binomial likelihood, making it particularly suited for scenarios where:\n\nThe target is a count variable (k) with known exposure (n)\nEvents are relatively rare (low success probability)\nThe goal is to predict the probability of event occurrence\nThe underlying data follows or approximates a binomial distribution",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#key-features",
+    "href": "index.html#key-features",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "Key Features",
+    "text": "Key Features\n\nBinomial Likelihood Maximization: Tree splits are chosen to maximize the binomial log-likelihood rather than traditional metrics\nStatistical Stopping Criteria: Uses hypothesis testing with Bonferroni correction to determine when to stop splitting, inspired by Conditional Inference Trees (ctree)\nExposure-Aware: Designed to handle count data with varying exposure levels\nRobust Splitting: Handles both numerical and categorical features with appropriate split strategies",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#why-binomialtree",
+    "href": "index.html#why-binomialtree",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "Why BinomialTree?",
+    "text": "Why BinomialTree?\nTraditional decision trees and ensemble methods like Random Forest or XGBoost are optimized for minimizing squared error or other general loss functions. However, when modeling rare events:\n\nCount/Exposure Structure: The natural structure of count data with exposure (k successes out of n trials) is better captured by binomial likelihood\nProbability Distribution: For rare events, modeling count/n directly can be problematic due to the poorly behaved probability distribution of ratios\nStatistical Rigor: The hypothesis testing framework reduces overfitting and may reduce the need for train-test splits",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#when-to-use-binomialtree",
+    "href": "index.html#when-to-use-binomialtree",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "When to Use BinomialTree",
+    "text": "When to Use BinomialTree\nBinomialTree performs best when:\n\nYour target follows or approximates a binomial distribution\nYou have count data with exposure information\nEvents are relatively rare (p &lt; 0.5, ideally p &lt; 0.1)\nYou want interpretable decision boundaries\nStatistical stopping criteria are important for your use case\n\nNote: If the binomial distribution assumptions are significantly violated, traditional gradient boosting methods like XGBoost may perform better.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#about-this-documentation",
+    "href": "index.html#about-this-documentation",
+    "title": "BinomialTree: A Binomial Decision Tree for Rare Event Modeling",
+    "section": "About This Documentation",
+    "text": "About This Documentation\nThis documentation is organized into three main sections:\n\nTheory: Mathematical foundations, splitting criteria, and stopping conditions\nImplementation: Practical usage guide and API reference\n\nPerformance: Comparative analysis with XGBoost on various datasets\n\nThe examples and comparisons in this documentation demonstrate both the strengths and limitations of the binomial tree approach.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "theory.html",
+    "href": "theory.html",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "",
+    "text": "1.1 Binomial Distribution Foundation\nThe BinomialTree algorithm is built on the assumption that the target data follows a binomial distribution. For each observation \\(i\\), we have:\nThe likelihood for observation \\(i\\) under a binomial distribution is:\n\\[P(k_i | n_i, p) = \\binom{n_i}{k_i} p^{k_i} (1-p)^{n_i - k_i}\\]\nThe log-likelihood for observation \\(i\\) is:\n\\[\\ell_i(p) = \\log\\binom{n_i}{k_i} + k_i \\log(p) + (n_i - k_i) \\log(1-p)\\]\nFor a set of observations in a node, the total log-likelihood is:\n\\[\\ell_{node}(p) = \\sum_{i \\in node} \\ell_i(p)\\]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#binomial-distribution-foundation",
+    "href": "theory.html#binomial-distribution-foundation",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "",
+    "text": "\\(k_i\\): number of successes (events)\n\\(n_i\\): number of trials (exposure)\n\\(p_i\\): true probability of success (unknown, to be estimated)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#why-model-counts-instead-of-rates",
+    "href": "theory.html#why-model-counts-instead-of-rates",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.2 Why Model Counts Instead of Rates?",
+    "text": "1.2 Why Model Counts Instead of Rates?\nA key insight is that we model the count data directly rather than the rate \\(k_i/n_i\\). This is motivated by several factors:\n\n1.2.1 Statistical Properties\nFor rare events where \\(p\\) is small and \\(n_i\\) varies significantly:\n\nVariance Instability: The variance of \\(k_i/n_i\\) is \\(p(1-p)/n_i\\), which depends on \\(n_i\\)\nDistribution Shape: The distribution of \\(k_i/n_i\\) becomes highly skewed and poorly behaved for small \\(p\\) and varying \\(n_i\\)\nInformation Loss: Converting to rates discards the exposure information that affects uncertainty\n\n\n\n1.2.2 Practical Implications\nConsider two observations: - Observation A: 1 success out of 10 trials (\\(k/n = 0.1\\))\n- Observation B: 10 successes out of 100 trials (\\(k/n = 0.1\\))\nBoth have the same rate but vastly different uncertainty. The binomial likelihood naturally accounts for this difference through the exposure term.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#splitting-criteria",
+    "href": "theory.html#splitting-criteria",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.3 Splitting Criteria",
+    "text": "1.3 Splitting Criteria\n\n1.3.1 Objective Function\nAt each node, we seek the split that maximizes the combined log-likelihood of the resulting child nodes:\n\\[\\text{Split Quality} = \\ell_{left}(\\hat{p}_{left}) + \\ell_{right}(\\hat{p}_{right}) - \\ell_{parent}(\\hat{p}_{parent})\\]\nWhere \\(\\hat{p}\\) is the maximum likelihood estimate: \\(\\hat{p} = \\frac{\\sum k_i}{\\sum n_i}\\)\n\n\n1.3.2 Numerical Features\nFor numerical features, we:\n\nSort observations by feature value\nConsider all possible split points (midpoints between consecutive unique values)\nFor computational efficiency, subsample split points if there are more than max_numerical_split_points unique values\nHandle missing values by always assigning them to the right child\n\nThe algorithm efficiently computes split statistics by maintaining cumulative sums as it iterates through sorted values.\n\n\n1.3.3 Categorical Features\nFor categorical features with \\(C\\) categories, we use an optimal grouping strategy:\n\nSort by Rate: Order categories by their estimated success rate \\(\\hat{p}_c = \\frac{\\sum_{i \\in c} k_i}{\\sum_{i \\in c} n_i}\\)\nOptimal Grouping: Consider all possible ways to split the sorted categories into two groups\nDegrees of Freedom: The split has \\(df = C - 1\\) degrees of freedom for hypothesis testing\n\nThis approach is theoretically optimal for binomial data and avoids the exponential complexity of considering all possible category groupings.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#statistical-stopping-criteria",
+    "href": "theory.html#statistical-stopping-criteria",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.4 Statistical Stopping Criteria",
+    "text": "1.4 Statistical Stopping Criteria\n\n1.4.1 Motivation\nTraditional decision trees often require external validation or pruning to prevent overfitting. BinomialTree incorporates statistical hypothesis testing directly into the splitting process, inspired by Conditional Inference Trees (ctree).\n\n\n1.4.2 Hypothesis Testing Framework\nFor each potential split, we test:\n\nNull Hypothesis (\\(H_0\\)): The split provides no improvement over the parent node\nAlternative Hypothesis (\\(H_1\\)): The split provides significant improvement\n\n\n\n1.4.3 Likelihood Ratio Test\nThe test statistic is:\n\\[LR = 2(\\ell_{children} - \\ell_{parent})\\]\nUnder \\(H_0\\), this follows a chi-squared distribution with degrees of freedom: - Numerical features: \\(df = 1\\) - Categorical features: \\(df = C - 1\\) (where \\(C\\) is the number of categories)\n\n\n1.4.4 Bonferroni Correction\nSince we test multiple features at each node, we apply Bonferroni correction:\n\\[p_{adjusted} = \\min(1, p_{raw} \\times m)\\]\nWhere \\(m\\) is the number of features tested. The split is considered significant if \\(p_{adjusted} &lt; \\alpha\\).\n\n\n1.4.5 Implementation Details\nThe stopping procedure follows these steps:\n\nPre-split Checks: Verify minimum sample requirements and maximum depth\nFind Best Split: For each feature, find the split that maximizes log-likelihood gain\nCalculate P-values: Compute likelihood ratio test p-value for each feature’s best split\nMultiple Testing Correction: Apply Bonferroni correction to the minimum p-value\nDecision: Split only if adjusted p-value &lt; α",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#permutation-tests-future-extension",
+    "href": "theory.html#permutation-tests-future-extension",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.5 Permutation Tests (Future Extension)",
+    "text": "1.5 Permutation Tests (Future Extension)\nWhile the current implementation uses the likelihood ratio test with chi-squared distribution, the framework supports permutation tests for more robust inference:\n\n1.5.1 Procedure\n\nCompute observed test statistic for the best split\nRandomly permute the target values while keeping exposure fixed\nRecompute test statistic on permuted data\nRepeat B times to build null distribution\nP-value = proportion of permuted statistics ≥ observed statistic\n\n\n\n1.5.2 Advantages\n\nNo distributional assumptions\nExact finite-sample validity\nRobust to model misspecification\n\n\n\n1.5.3 Current Status\nThe permutation test framework is designed into the architecture but not yet implemented, as the likelihood ratio test provides good performance with much lower computational cost.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#assumptions-and-limitations",
+    "href": "theory.html#assumptions-and-limitations",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.6 Assumptions and Limitations",
+    "text": "1.6 Assumptions and Limitations\n\n1.6.1 Key Assumptions\n\nBinomial Distribution: Target data follows or approximates a binomial distribution\nIndependence: Observations are independent conditional on features\nConstant Probability: Within each leaf, the success probability is constant\n\n\n\n1.6.2 When Assumptions Are Violated\n\nOverdispersion: If variance &gt; mean (for count data), consider beta-binomial models\nTemporal Dependence: Time-varying probabilities may violate independence\nZero-Inflation: Excess zeros may indicate a different generating process\n\n\n\n1.6.3 Performance Implications\nBinomialTree should perform well when assumptions are met but may underperform gradient boosting methods when assumptions are significantly violated. The statistical stopping criteria help prevent overfitting but may also limit the model’s ability to capture complex nonlinear relationships.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "theory.html#theoretical-advantages",
+    "href": "theory.html#theoretical-advantages",
+    "title": "1  Theory and Mathematical Foundations",
+    "section": "1.7 Theoretical Advantages",
+    "text": "1.7 Theoretical Advantages\n\nPrincipled Splitting: Splits directly optimize the relevant likelihood rather than surrogate measures\nUncertainty Quantification: Naturally handles varying exposure levels\nStatistical Rigor: Hypothesis testing framework reduces overfitting\nInterpretability: Clear decision boundaries with statistical significance\nReduced Validation Needs: Statistical stopping may reduce the need for train-test splits\n\nThis theoretical foundation guides the practical implementation and helps understand when BinomialTree is likely to excel compared to traditional methods.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Theory and Mathematical Foundations</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html",
+    "href": "implementation.html",
+    "title": "2  Implementation Guide",
+    "section": "",
+    "text": "2.1 Installation and Dependencies\nBinomialTree is implemented in pure Python with minimal dependencies:\nNo external machine learning libraries are required for the core functionality.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#installation-and-dependencies",
+    "href": "implementation.html#installation-and-dependencies",
+    "title": "2  Implementation Guide",
+    "section": "",
+    "text": "# Required dependencies\nimport numpy as np\nimport pandas as pd  # Optional, for DataFrame support",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#basic-usage",
+    "href": "implementation.html#basic-usage",
+    "title": "2  Implementation Guide",
+    "section": "2.2 Basic Usage",
+    "text": "2.2 Basic Usage\n\n2.2.1 Data Preparation\nYour data should contain: - Target column: Number of successes (k) - Exposure column: Number of trials (n) - Feature columns: Predictor variables (numerical or categorical)\n# Example data structure\ndata = [\n    {'feature_num': 10.0, 'feature_cat': 'A', 'successes': 2, 'trials': 20},\n    {'feature_num': 12.0, 'feature_cat': 'B', 'successes': 8, 'trials': 25},\n    {'feature_num': 15.0, 'feature_cat': 'A', 'successes': 3, 'trials': 18},\n    # ... more observations\n]\n\n# Or as a pandas DataFrame\nimport pandas as pd\ndf = pd.DataFrame(data)\n\n\n2.2.2 Basic Model Training\nfrom binomial_tree.tree import BinomialDecisionTree\n\n# Initialize the tree\ntree = BinomialDecisionTree(\n    min_samples_split=20,\n    min_samples_leaf=10, \n    max_depth=5,\n    alpha=0.05,\n    verbose=True\n)\n\n# Fit the model\ntree.fit(\n    data=data,  # or df for pandas DataFrame\n    target_column='successes',\n    exposure_column='trials', \n    feature_columns=['feature_num', 'feature_cat']\n)\n\n# Make predictions\nnew_data = [\n    {'feature_num': 13.0, 'feature_cat': 'A'},\n    {'feature_num': 23.0, 'feature_cat': 'C'}\n]\npredicted_probabilities = tree.predict_p(new_data)\n\n\n2.2.3 Inspecting the Model\n# Print the tree structure\ntree.print_tree()\n\n# Output example:\n# Split: feature_num &lt;= 15.500 (p-val=0.0123, gain=12.45) | k=45, n=180 (p̂=0.250)\n#   |--L: Split: feature_cat in {'A', 'C'} (p-val=0.0089, gain=8.32) | k=15, n=80 (p̂=0.188)\n#   |    |--L: Leaf: k=8, n=50 (p̂=0.160) | Reason: stat_stop\n#   |    +--R: Leaf: k=7, n=30 (p̂=0.233) | Reason: min_samples_split\n#   +--R: Leaf: k=30, n=100 (p̂=0.300) | Reason: stat_stop",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#hyperparameter-configuration",
+    "href": "implementation.html#hyperparameter-configuration",
+    "title": "2  Implementation Guide",
+    "section": "2.3 Hyperparameter Configuration",
+    "text": "2.3 Hyperparameter Configuration\n\n2.3.1 Core Parameters\ntree = BinomialDecisionTree(\n    # Structural constraints\n    max_depth=5,                    # Maximum tree depth\n    min_samples_split=20,           # Min samples to consider splitting\n    min_samples_leaf=10,            # Min samples in each leaf\n    \n    # Statistical stopping\n    alpha=0.05,                     # Significance level for splits\n    \n    # Performance tuning  \n    max_numerical_split_points=255, # Limit split points for large features\n    \n    # Output control\n    verbose=False,                  # Enable detailed logging\n    confidence_level=0.95           # For confidence intervals (display only)\n)\n\n\n2.3.2 Parameter Guidelines\nalpha (Significance Level) - Lower values (0.01) create more conservative, smaller trees - Higher values (0.10) allow more aggressive splitting - Default 0.05 provides good balance\nmin_samples_split and min_samples_leaf - Increase for rare events to ensure statistical power - Decrease for abundant data to capture fine patterns - Rule of thumb: min_samples_leaf ≥ 5-10 expected events\nmax_depth - Acts as a safety constraint - Statistical stopping often kicks in before max depth - Set higher when alpha is strict (low)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#advanced-usage",
+    "href": "implementation.html#advanced-usage",
+    "title": "2  Implementation Guide",
+    "section": "2.4 Advanced Usage",
+    "text": "2.4 Advanced Usage\n\n2.4.1 Feature Type Specification\n# Explicit feature type control\ntree.fit(\n    data=data,\n    target_column='successes',\n    exposure_column='trials',\n    feature_columns=['numeric_feat', 'categorical_feat'],\n    feature_types={\n        'numeric_feat': 'numerical',\n        'categorical_feat': 'categorical'\n    }\n)\n\n\n2.4.2 Missing Value Handling\nBinomialTree handles missing values automatically:\nNumerical Features - Missing values imputed with median during training - Same median used for prediction\nCategorical Features\n- Missing values treated as a distinct category (‘NaN’) - Unseen categories in prediction mapped to NaN path\n# Data with missing values\ndata_with_missing = [\n    {'num_feat': 10.0, 'cat_feat': 'A', 'k': 2, 'n': 20},\n    {'num_feat': None, 'cat_feat': 'B', 'k': 8, 'n': 25},  # Missing numeric\n    {'num_feat': 15.0, 'cat_feat': None, 'k': 3, 'n': 18}, # Missing categorical\n]\n\n# No special handling needed\ntree.fit(data=data_with_missing, ...)\n\n\n2.4.3 Pandas Integration\nimport pandas as pd\nimport numpy as np\n\n# Create DataFrame with missing values\ndf = pd.DataFrame({\n    'numeric_feature': [10.0, 12.0, np.nan, 15.0],\n    'categorical_feature': ['A', 'B', 'A', None], \n    'successes': [2, 8, 1, 3],\n    'trials': [20, 25, 5, 18]\n})\n\n# Seamless integration\ntree.fit(\n    data=df,\n    target_column='successes', \n    exposure_column='trials',\n    feature_columns=['numeric_feature', 'categorical_feature']\n)\n\n# Prediction on new DataFrame\nnew_df = pd.DataFrame({\n    'numeric_feature': [13.0, 23.0],\n    'categorical_feature': ['A', 'C']\n})\npredictions = tree.predict_p(new_df)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#model-interpretation",
+    "href": "implementation.html#model-interpretation",
+    "title": "2  Implementation Guide",
+    "section": "2.5 Model Interpretation",
+    "text": "2.5 Model Interpretation\n\n2.5.1 Understanding Tree Output\nEach node displays comprehensive statistics:\nSplit: feature_name &lt;= threshold (p-val=X.XXXX, gain=XX.XX) | k=XX, n=XXX (p̂=X.XXX) | CI_rel_width=X.XX | LL=XX.XX | N=XXX\nSplit Information - p-val: Statistical significance of the split - gain: Log-likelihood improvement from splitting\nNode Statistics - k: Total successes in node - n: Total trials in node\n- p̂: Estimated success probability - CI_rel_width: Relative width of confidence interval - LL: Log-likelihood of the node - N: Number of observations\nLeaf Reasons - stat_stop: Stopped due to statistical test - min_samples_split: Not enough samples to split - max_depth: Reached maximum depth - pure_node: All observations have same outcome\n\n\n2.5.2 Extracting Predictions and Uncertainty\n# Get point predictions\nprobabilities = tree.predict_p(test_data)\n\n# Access detailed node information for uncertainty\ndef get_prediction_details(tree, data_point):\n    \"\"\"Get prediction with node statistics\"\"\"\n    # This would require extending the current API\n    # Implementation would traverse tree and return node info\n    pass",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#common-patterns-and-best-practices",
+    "href": "implementation.html#common-patterns-and-best-practices",
+    "title": "2  Implementation Guide",
+    "section": "2.6 Common Patterns and Best Practices",
+    "text": "2.6 Common Patterns and Best Practices\n\n2.6.1 Rare Event Modeling\n# Configuration for rare events (p &lt; 0.01)\nrare_event_tree = BinomialDecisionTree(\n    min_samples_split=100,    # Need more samples for stability\n    min_samples_leaf=50,      # Ensure adequate events per leaf\n    max_depth=6,              # Allow deeper trees\n    alpha=0.01,               # More conservative splitting\n    verbose=True\n)\n\n\n2.6.2 High-Cardinality Categoricals\n# For categorical features with many levels\nhigh_card_tree = BinomialDecisionTree(\n    min_samples_split=60,     # Account for category splits\n    min_samples_leaf=30,      # Ensure representation per category\n    max_depth=6,              # Categories may need more depth\n    alpha=0.05\n)\n\n\n2.6.3 Large Dataset Optimization\n# For datasets with many unique numerical values\nlarge_data_tree = BinomialDecisionTree(\n    max_numerical_split_points=500,  # More split points\n    min_samples_split=50,            # Can afford larger minimums\n    verbose=False                    # Reduce logging overhead\n)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "implementation.html#error-handling-and-diagnostics",
+    "href": "implementation.html#error-handling-and-diagnostics",
+    "title": "2  Implementation Guide",
+    "section": "2.7 Error Handling and Diagnostics",
+    "text": "2.7 Error Handling and Diagnostics\n\n2.7.1 Common Issues\nEmpty Leaves - Increase min_samples_leaf - Check for data quality issues - Consider feature engineering\nNo Splits Found - Increase alpha to be less strict - Ensure adequate sample sizes - Check feature-target relationships\nPerformance Issues - Reduce max_numerical_split_points - Limit max_depth - Consider feature selection\n\n\n2.7.2 Debugging Output\n# Enable verbose mode for detailed logging\ntree = BinomialDecisionTree(verbose=True)\ntree.fit(...)\n\n# Sample verbose output:\n# Processing Node abc123 (Depth 0): 1000 samples\n#   Evaluating feature 'numeric_feat' (numerical)...\n#   Feature 'numeric_feat' best split LL Gain: 23.45, p-value: 0.0012\n#   Evaluating feature 'cat_feat' (categorical)...  \n#   Feature 'cat_feat' best split LL Gain: 18.32, p-value: 0.0089\n#   Overall best split: Feature 'numeric_feat' with p-value: 0.0012\n#   Stat Stop Check: Bonferroni-adjusted p-value: 0.0024 &lt; 0.05\n#   Node abc123 SPLIT on numeric_feat\nThis implementation guide provides the essential knowledge for effectively using BinomialTree in practice, from basic usage to advanced configurations for specific use cases.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Implementation Guide</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html",
+    "href": "performance.html",
+    "title": "3  Performance Analysis",
+    "section": "",
+    "text": "3.1 Comparative Methodology\nThis chapter presents a comprehensive performance comparison between BinomialTree and XGBoost across various synthetic datasets designed to test different scenarios where binomial tree modeling might excel or struggle.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#comparative-methodology",
+    "href": "performance.html#comparative-methodology",
+    "title": "3  Performance Analysis",
+    "section": "",
+    "text": "3.1.1 Test Framework\nThe performance evaluation uses a robust testing framework (test_harness.py) that:\n\nGenerates Synthetic Data: Creates datasets with known ground truth probabilities\nTrains Both Models: Fits BinomialTree and XGBoost on identical training data\nEvaluates Performance: Uses multiple metrics on held-out test data\nControls for Hyperparameters: Matches comparable settings where possible\n\n\n\n3.1.2 Evaluation Metrics\nPrimary Metrics - RMSE vs Known P: Root mean squared error against true probability values - MAE vs Known P: Mean absolute error against true probability values\n- Poisson Deviance: Measure of count prediction quality\nSecondary Metrics - Log-likelihood: Model fit on test data - Model Complexity: Number of leaves/estimators, maximum depth\n\n\n3.1.3 Target Distribution Assumptions\nThe synthetic datasets are generated under the assumption that the target follows a binomial distribution with varying: - Success probabilities (p) - Exposure levels (n) - Feature relationships - Noise levels\nCritical Note: These comparisons are most meaningful when the binomial assumption holds. Real-world data may violate these assumptions, potentially favoring more flexible methods like XGBoost.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#scenario-analysis",
+    "href": "performance.html#scenario-analysis",
+    "title": "3  Performance Analysis",
+    "section": "3.2 Scenario Analysis",
+    "text": "3.2 Scenario Analysis\n\n3.2.1 Numerical Step Function\nScenario: Feature with clear step-wise relationship to probability\nDataset Characteristics:\n- Feature: Numerical (0-100)\n- Breakpoints: [40, 70]  \n- Probabilities: [0.1, 0.3, 0.05]\n- Exposure: 50-200 trials per observation\n- Sample Size: 2,000 train / 1,000 test\nExpected Performance - BinomialTree should excel due to clear decision boundaries - XGBoost may overfit to noise in step transitions\n\n\n3.2.2 Numerical Linear Function\nScenario: Linear relationship between feature and log-odds\nDataset Characteristics:\n- Feature: Numerical (0-1)\n- Relationship: p = 0.05 + 0.3 * feature\n- Exposure: 50-200 trials per observation\n- Noise: Small amount of probability noise\nExpected Performance - XGBoost may perform better due to smooth relationship - BinomialTree limited by discrete splits\n\n\n3.2.3 Categorical Features\nScenario: Categorical feature with distinct probability levels\nDataset Characteristics:\n- Categories: GroupA (p=0.1), GroupB (p=0.25), GroupC (p=0.08), GroupD (p=0.02)\n- Exposure: 50-200 trials per observation\n- Sample Size: 2,000 train / 1,000 test\nExpected Performance - BinomialTree should perform well with optimal category grouping - XGBoost requires one-hot encoding, potentially less efficient\n\n\n3.2.4 Mixed Features with Interaction\nScenario: Interaction between numerical and categorical features\nDataset Characteristics:\n- Numerical feature (0-10) with coefficient 0.02\n- Categorical feature with additive effects\n- Base probability: 0.1\n- Interaction effects between features\nExpected Performance - Complex interactions may favor XGBoost’s flexibility - BinomialTree limited to axis-parallel splits\n\n\n3.2.5 Rare Events\nScenario: Very low probability events with high exposure\nDataset Characteristics:\n- Probabilities: [0.005, 0.015] (very rare)\n- Exposure: 1,000-5,000 trials per observation\n- Sample Size: 10,000 train / 5,000 test\n- Minimal noise due to large sample sizes\nExpected Performance - Critical test of binomial assumptions - BinomialTree’s statistical approach should handle rare events well - XGBoost may struggle with extreme class imbalance\n\n\n3.2.6 High Cardinality Categorical\nScenario: Categorical feature with many levels\nDataset Characteristics:\n- 30 categories with varying probabilities\n- Sample Size: 6,000 train / 2,000 test\n- Categories sorted by true probability\nExpected Performance - BinomialTree’s optimal grouping strategy should excel - XGBoost faces curse of dimensionality with one-hot encoding",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#configuration-testing",
+    "href": "performance.html#configuration-testing",
+    "title": "3  Performance Analysis",
+    "section": "3.3 Configuration Testing",
+    "text": "3.3 Configuration Testing\n\n3.3.1 Multiple Hyperparameter Configurations\nThe test suite evaluates several BinomialTree configurations:\nBaseline Configuration\n{\n    \"alpha\": 0.05,\n    \"max_depth\": 5,\n    \"min_samples_split\": 20,\n    \"min_samples_leaf\": 10\n}\nStrict Alpha (Conservative Splitting)\n{\n    \"alpha\": 0.01,  # More conservative\n    \"max_depth\": 7,\n    \"min_samples_split\": 10,\n    \"min_samples_leaf\": 5\n}\nLoose Alpha (Aggressive Splitting)\n{\n    \"alpha\": 0.10,  # Less conservative\n    \"max_depth\": 7,\n    \"min_samples_split\": 10,\n    \"min_samples_leaf\": 5\n}\nHigh Min Samples (Stability Focus)\n{\n    \"min_samples_split\": 200,\n    \"min_samples_leaf\": 100,\n    \"max_depth\": 8\n}",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#sample-results-analysis",
+    "href": "performance.html#sample-results-analysis",
+    "title": "3  Performance Analysis",
+    "section": "3.4 Sample Results Analysis",
+    "text": "3.4 Sample Results Analysis\n\n3.4.1 Numerical Step Function Results\nScenario: Numerical_Step_Function\n- BinomialTree: RMSE=0.0234 | MAE=0.0189 | Deviance=45.23 | Leafs=3, Depth=2\n- XGBoost:      RMSE=0.0267 | MAE=0.0203 | Deviance=52.18 | Estimators=100, Depth=5\nAnalysis: BinomialTree performs better due to clean step function matching tree structure.\n\n\n3.4.2 Numerical Linear Function Results\nScenario: Numerical_Linear_Function  \n- BinomialTree: RMSE=0.0445 | MAE=0.0356 | Deviance=89.34 | Leafs=4, Depth=3\n- XGBoost:      RMSE=0.0398 | MAE=0.0321 | Deviance=78.56 | Estimators=100, Depth=5\nAnalysis: XGBoost better captures smooth linear relationship with ensemble approach.\n\n\n3.4.3 Rare Events Results\nScenario: Numerical_Step_Rare_Events\n- BinomialTree: RMSE=0.0021 | MAE=0.0018 | Deviance=234.12 | Leafs=2, Depth=1  \n- XGBoost:      RMSE=0.0034 | MAE=0.0029 | Deviance=387.45 | Estimators=100, Depth=5\nAnalysis: BinomialTree’s statistical approach excels with rare events and large exposure.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#key-performance-insights",
+    "href": "performance.html#key-performance-insights",
+    "title": "3  Performance Analysis",
+    "section": "3.5 Key Performance Insights",
+    "text": "3.5 Key Performance Insights\n\n3.5.1 When BinomialTree Excels\n\nClear Decision Boundaries: Step functions, categorical splits\nRare Events: Low probability with high exposure\nStatistical Rigor Important: When preventing overfitting is crucial\nInterpretability Required: When understanding splits is important\nLimited Training Data: Statistical stopping reduces overfitting\n\n\n\n3.5.2 When XGBoost Performs Better\n\nSmooth Relationships: Linear or curved probability functions\nComplex Interactions: Non-linear feature combinations\nViolated Assumptions: When binomial assumption doesn’t hold\nAbundant Training Data: Can leverage flexible ensemble methods\nHigh-Dimensional Features: Many numerical features\n\n\n\n3.5.3 Configuration Impact\nAlpha Parameter Effects - Lower alpha (0.01): Smaller, more conservative trees - Higher alpha (0.10): Larger trees, potential overfitting - Sweet spot often around 0.05 for balanced performance\nSample Size Requirements - Rare events need higher minimum sample sizes - High cardinality categoricals benefit from larger leaf sizes - Statistical power decreases with smaller samples",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#computational-performance",
+    "href": "performance.html#computational-performance",
+    "title": "3  Performance Analysis",
+    "section": "3.6 Computational Performance",
+    "text": "3.6 Computational Performance\n\n3.6.1 Training Time Comparison\nDataset Size vs Training Time:\n- 2K samples:   BinomialTree=0.45s, XGBoost=1.23s\n- 10K samples:  BinomialTree=2.13s, XGBoost=3.45s  \n- 100K samples: BinomialTree=18.7s, XGBoost=12.4s\nObservations - BinomialTree faster on small-medium datasets - XGBoost scales better to very large datasets - Statistical tests add computational overhead\n\n\n3.6.2 Memory Usage\n\nBinomialTree: Lower memory footprint (single tree)\nXGBoost: Higher memory (ensemble of trees)\nFeature preparation: One-hot encoding increases XGBoost memory",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#practical-recommendations",
+    "href": "performance.html#practical-recommendations",
+    "title": "3  Performance Analysis",
+    "section": "3.7 Practical Recommendations",
+    "text": "3.7 Practical Recommendations\n\n3.7.1 Use BinomialTree When:\n\nDomain Knowledge: You believe data follows binomial distribution\nRare Events: Modeling low-probability, high-exposure events\nInterpretability: Need to understand and explain model decisions\nLimited Data: Want to avoid overfitting with small samples\nCategorical Features: Have meaningful categorical variables\n\n\n\n3.7.2 Use XGBoost When:\n\nFlexibility Needed: Uncertain about underlying data distribution\nComplex Patterns: Non-linear relationships and interactions\nPerformance Priority: Maximum predictive accuracy is goal\nLarge Datasets: Have abundant training data\nStandard ML Pipeline: Want well-established, supported methods\n\n\n\n3.7.3 Hybrid Approach\nConsider using both methods: 1. BinomialTree for EDA: Understand feature relationships and splits 2. XGBoost for Production: Leverage flexibility for final model 3. Ensemble Methods: Combine predictions from both approaches",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  },
+  {
+    "objectID": "performance.html#limitations-of-analysis",
+    "href": "performance.html#limitations-of-analysis",
+    "title": "3  Performance Analysis",
+    "section": "3.8 Limitations of Analysis",
+    "text": "3.8 Limitations of Analysis\n\n3.8.1 Synthetic Data Bias\n\nAll test scenarios assume binomial distribution\nReal data may have overdispersion, zero-inflation, or other complications\nResults may not generalize to all real-world scenarios\n\n\n\n3.8.2 Hyperparameter Tuning\n\nXGBoost configurations not extensively tuned\nBinomialTree tested with predefined configurations\nOptimal settings may differ for specific use cases\n\n\n\n3.8.3 Evaluation Metrics\n\nFocus on probability prediction accuracy\nOther objectives (ranking, classification) not evaluated\nBusiness-specific metrics not considered\n\nThis performance analysis provides a foundation for understanding when BinomialTree offers advantages over established methods, while acknowledging the scenarios where traditional approaches may be preferable.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Performance Analysis</span>"
+    ]
+  }
+]
