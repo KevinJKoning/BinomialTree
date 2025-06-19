@@ -200,12 +200,14 @@ Conditional Inference Trees use permutation testing because they make **no assum
 5. P-value = proportion of permuted statistics ≥ observed statistic
 
 **Advantages of Permutation Testing:**
+
 - No distributional assumptions required
 - Exact finite-sample validity
 - Robust to any form of model misspecification
 - Works for any target distribution
 
 **Computational Cost:**
+
 - Requires B × (number of features) × (split evaluations) calculations
 - Typically 1000+ permutations needed for stable p-values
 - Computationally expensive for large datasets
@@ -362,16 +364,19 @@ tree = BinomialDecisionTree(
 ### Parameter Guidelines
 
 **`alpha` (Significance Level)**
+
 - Lower values (0.01) create more conservative, smaller trees
 - Higher values (0.10) allow more aggressive splitting
 - Default 0.05 provides good balance
 
 **`min_samples_split` and `min_samples_leaf`**
+
 - Increase for rare events to ensure statistical power
 - Decrease for abundant data to capture fine patterns
 - Rule of thumb: min_samples_leaf ≥ 5-10 expected events
 
 **`max_depth`**
+
 - Acts as a safety constraint
 - Statistical stopping often kicks in before max depth
 - Set higher when alpha is strict (low)
@@ -399,10 +404,12 @@ tree.fit(
 BinomialTree handles missing values automatically:
 
 **Numerical Features**
+
 - Missing values imputed with median during training
 - Same median used for prediction
 
-**Categorical Features**  
+**Categorical Features**
+
 - Missing values treated as a distinct category ('__NaN__')
 - Unseen categories in prediction mapped to NaN path
 
@@ -459,10 +466,12 @@ Split: feature_name <= threshold (p-val=X.XXXX, gain=XX.XX) | k=XX, n=XXX (p̂=X
 ```
 
 **Split Information**
+
 - `p-val`: Statistical significance of the split
 - `gain`: Log-likelihood improvement from splitting
 
 **Node Statistics**
+
 - `k`: Total successes in node
 - `n`: Total trials in node  
 - `p̂`: Estimated success probability
@@ -471,6 +480,7 @@ Split: feature_name <= threshold (p-val=X.XXXX, gain=XX.XX) | k=XX, n=XXX (p̂=X
 - `N`: Number of observations
 
 **Leaf Reasons**
+
 - `stat_stop`: Stopped due to statistical test
 - `min_samples_split`: Not enough samples to split
 - `max_depth`: Reached maximum depth
@@ -533,16 +543,19 @@ large_data_tree = BinomialDecisionTree(
 ### Common Issues
 
 **Empty Leaves**
+
 - Increase `min_samples_leaf`
 - Check for data quality issues
 - Consider feature engineering
 
 **No Splits Found**
+
 - Increase `alpha` to be less strict
 - Ensure adequate sample sizes
 - Check feature-target relationships
 
 **Performance Issues**
+
 - Reduce `max_numerical_split_points`
 - Limit `max_depth`
 - Consider feature selection

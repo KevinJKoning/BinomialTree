@@ -131,12 +131,14 @@ Conditional Inference Trees use permutation testing because they make **no assum
 5. P-value = proportion of permuted statistics ≥ observed statistic
 
 **Advantages of Permutation Testing:**
+
 - No distributional assumptions required
 - Exact finite-sample validity
 - Robust to any form of model misspecification
 - Works for any target distribution
 
 **Computational Cost:**
+
 - Requires B × (number of features) × (split evaluations) calculations
 - Typically 1000+ permutations needed for stable p-values
 - Computationally expensive for large datasets
