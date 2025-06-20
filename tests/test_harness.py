@@ -7,6 +7,16 @@ import numpy as np
 from binomial_tree.tree import BinomialDecisionTree
 from binomial_tree.utils import get_total_log_likelihood, calculate_p_hat, calculate_binomial_log_likelihood
 
+
+def _format_metric(value):
+    """Formats a float for printing, using scientific notation if it is very small."""
+    if isinstance(value, (float, np.floating)):
+        if 0 < abs(value) < 0.0001:
+            return f"{value:.4e}"
+        return f"{value:.6f}"
+    return value
+
+
 def calculate_mae(true_values, predicted_values):
     """Calculates Mean Absolute Error."""
     if len(true_values) != len(predicted_values):
@@ -247,10 +257,7 @@ def run_test_scenario(
     if verbose and evaluation_results:
         print("Evaluation Results:")
         for key, value in evaluation_results.items():
-            if isinstance(value, float):
-                print(f"  {key}: {value:.4f}")
-            else:
-                print(f"  {key}: {value}")
+            print(f"  {key}: {_format_metric(value)}")
         print("--- Scenario End ---")
 
     results = {
@@ -496,10 +503,7 @@ def run_xgboost_peer_test(
     if verbose and evaluation_results:
         print("XGBoost Evaluation Results:")
         for key, value in evaluation_results.items():
-            if isinstance(value, float):
-                print(f"  {key}: {value:.4f}")
-            else:
-                print(f"  {key}: {value}")
+            print(f"  {key}: {_format_metric(value)}")
         print("--- XGBoost Scenario End ---")
 
     results = {
