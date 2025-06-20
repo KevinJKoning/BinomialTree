@@ -142,7 +142,7 @@ TEST_SCENARIOS_DEFINITIONS = [
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "num_feat_rare", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.005, 0.015],
+            "thresholds": [50], "p_values": [0.0005, 0.0015],
             "n_min": 1000, "n_max": 5000, "noise_on_p_stddev": 0.0001, "p_clip": 1e-6
         },
         "n_samples_train_override": 10000, "n_samples_test_override": 5000,
@@ -154,7 +154,7 @@ TEST_SCENARIOS_DEFINITIONS = [
         "generator_function_name": "generate_categorical_p_data",
         "specific_generator_params": {
             "feature_name": "cat_feat_high_card",
-            "categories_p_map": {f"HC_Cat_{i}": (0.01 + i*0.005) for i in range(30)},
+            "categories_p_map": {f"HC_Cat_{i}": (0.001 + i*0.0005) for i in range(30)},
             "n_min": 40, "n_max": 160, "noise_on_p_stddev": 0.001, "p_clip": 1e-6
         },
         "n_samples_train_override": 6000, "n_samples_test_override": 2000,
@@ -172,49 +172,49 @@ TEST_SCENARIOS_DEFINITIONS = [
         "feature_columns": ["num_feat_linear_large"], "feature_types": {"num_feat_linear_large": "numerical"}
     },
     {
-        "name": "Rare_Events_100k_p001",
+        "name": "Rare_Events_100k_p1e-6",
         "generator_module": dataset_generator_numerical,
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "rare_event_feat_100k", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.001, 0.002],
-            "n_min": 500, "n_max": 2000, "noise_on_p_stddev": 0.0001, "p_clip": 1e-6
+            "thresholds": [50], "p_values": [1e-6, 2e-6],
+            "n_min": 500, "n_max": 2000, "noise_on_p_stddev": 0.0001, "p_clip": 1e-9
         },
         "n_samples_train_override": 100000, "n_samples_test_override": 20000,
         "feature_columns": ["rare_event_feat_100k"], "feature_types": {"rare_event_feat_100k": "numerical"}
     },
     {
-        "name": "Rare_Events_1M_p001",
+        "name": "Rare_Events_1M_p1e-6",
         "generator_module": dataset_generator_numerical,
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "rare_event_feat_1m", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.001, 0.002],
-            "n_min": 500, "n_max": 2000, "noise_on_p_stddev": 0.0001, "p_clip": 1e-6
+            "thresholds": [50], "p_values": [1e-6, 2e-6],
+            "n_min": 500, "n_max": 2000, "noise_on_p_stddev": 0.0001, "p_clip": 1e-9
         },
         "n_samples_train_override": 1000000, "n_samples_test_override": 200000,
         "feature_columns": ["rare_event_feat_1m"], "feature_types": {"rare_event_feat_1m": "numerical"}
     },
     {
-        "name": "Very_Rare_Events_100k_p0001",
+        "name": "Very_Rare_Events_100k_pe-7",
         "generator_module": dataset_generator_numerical,
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "very_rare_event_feat_100k", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.0001, 0.0002],
-            "n_min": 5000, "n_max": 20000, "noise_on_p_stddev": 0.00001, "p_clip": 1e-6
+            "thresholds": [50], "p_values": [1e-7, 2e-7],
+            "n_min": 5000, "n_max": 20000, "noise_on_p_stddev": 0.00001, "p_clip": 1e-9
         },
         "n_samples_train_override": 100000, "n_samples_test_override": 20000,
         "feature_columns": ["very_rare_event_feat_100k"], "feature_types": {"very_rare_event_feat_100k": "numerical"}
     },
     {
-        "name": "Very_Rare_Events_1M_p0001",
+        "name": "Very_Rare_Events_1M_pe-8",
         "generator_module": dataset_generator_numerical,
         "generator_function_name": "generate_numerical_step_p_data",
         "specific_generator_params": {
             "feature_name": "very_rare_event_feat_1m", "min_val": 0, "max_val": 100,
-            "thresholds": [50], "p_values": [0.0001, 0.0002],
-            "n_min": 5000, "n_max": 20000, "noise_on_p_stddev": 0.00001, "p_clip": 1e-6
+            "thresholds": [50], "p_values": [1e-8, 2e-8],
+            "n_min": 5000, "n_max": 20000, "noise_on_p_stddev": 0.00001, "p_clip": 1e-9
         },
         "n_samples_train_override": 1000000, "n_samples_test_override": 200000,
         "feature_columns": ["very_rare_event_feat_1m"], "feature_types": {"very_rare_event_feat_1m": "numerical"}
