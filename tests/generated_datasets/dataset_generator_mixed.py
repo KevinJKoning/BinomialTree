@@ -23,16 +23,17 @@ def generate_mixed_p_data(
     category_effects=None, # e.g., {'TypeA': 0.05, 'TypeB': -0.05}
     n_min=20,
     n_max=150,
-    noise_on_p_stddev=0.01
+    noise_on_p_stddev=0.01,
+    p_clip=0.01
 ):
     """
     Generates data where true 'p' is a function of one numerical and one categorical feature.
     p = base_p + num_coeff * (numerical_value - num_offset) + category_effects[category_value]
-    p is clipped to [0.01, 0.99].
+    p is clipped to [p_clip, 1.0 - p_clip].
     """
     if categories_list is None:
         categories_list = ['M_Alpha', 'M_Beta', 'M_Gamma']
-    
+
     if category_effects is None:
         category_effects = {cat: (i - len(categories_list)//2) * 0.05 for i, cat in enumerate(categories_list)}
         # e.g. {'M_Alpha': -0.05, 'M_Beta': 0.0, 'M_Gamma': 0.05} for 3 cats
@@ -46,17 +47,17 @@ def generate_mixed_p_data(
     for i in range(num_samples):
         num_val = random.uniform(num_min_val, num_max_val)
         cat_val = random.choice(categories_list)
-        
+
         true_p = base_p + num_coeff * (num_val - num_offset) + category_effects[cat_val]
-        
+
         if noise_on_p_stddev > 0:
             true_p += random.gauss(0, noise_on_p_stddev)
-        
-        true_p = max(0.01, min(0.99, true_p)) # Clip p
-        
+
+        true_p = max(p_clip, min(1.0 - p_clip, true_p)) # Clip p
+
         n_exposure = random.randint(n_min, n_max)
         k_target = binomial_sampler(n_exposure, true_p)
-        
+
         row = {
             numerical_feature_name: num_val,
             categorical_feature_name: cat_val,
@@ -78,12 +79,13 @@ def get_dataset(config=None):
         "numerical_feature_name": "temperature",
         "categorical_feature_name": "product_type",
         "num_feature_params": {"min_val": 10, "max_val": 30},
-        "cat_feature_params": {"categories_list": ["Basic", "Premium"], 
+        "cat_feature_params": {"categories_list": ["Basic", "Premium"],
                                "category_effects": {"Basic": -0.05, "Premium": 0.05}},
         "p_formula_params": {"base_p": 0.15, "num_coeff": 0.01, "num_offset": 20},
         "n_exposure_min": 30,
         "n_exposure_max": 180,
-        "noise_on_p_stddev": 0.015
+        "noise_on_p_stddev": 0.015,
+        "p_clip": 0.01
     }
     Returns: (train_data, test_data, feature_names_list, feature_types_dict)
     """
@@ -103,7 +105,8 @@ def get_dataset(config=None):
             "p_formula_params": {"base_p": 0.2, "num_coeff": 0.1, "num_offset": 0.5},
             "n_exposure_min": 25,
             "n_exposure_max": 125,
-            "noise_on_p_stddev": 0.01
+            "noise_on_p_stddev": 0.01,
+            "p_clip": 0.01
         }
 
     num_params = config["num_feature_params"]
@@ -122,7 +125,8 @@ def get_dataset(config=None):
         "category_effects": cat_params["category_effects"],
         "n_min": config["n_exposure_min"],
         "n_max": config["n_exposure_max"],
-        "noise_on_p_stddev": config["noise_on_p_stddev"]
+        "noise_on_p_stddev": config["noise_on_p_stddev"],
+        "p_clip": config.get("p_clip", 0.01)
     }
 
     data_train = generate_mixed_p_data(
@@ -139,14 +143,14 @@ def get_dataset(config=None):
         config["numerical_feature_name"]: "numerical",
         config["categorical_feature_name"]: "categorical"
     }
-    
+
     return data_train, data_test, feature_names, feature_types
 
 
 if __name__ == '__main__':
     print("Generating sample mixed dataset...")
     mixed_config = {
-        "num_samples_train": 20, 
+        "num_samples_train": 20,
         "num_samples_test": 10,
         "numerical_feature_name": "humidity",
         "categorical_feature_name": "season",
@@ -156,9 +160,10 @@ if __name__ == '__main__':
         "p_formula_params": {"base_p": 0.1, "num_coeff": 0.15, "num_offset": 0.5}, # p around 0.1, higher humidity means higher p
         "n_exposure_min": 50,
         "n_exposure_max": 100,
-        "noise_on_p_stddev": 0.005
+        "noise_on_p_stddev": 0.005,
+        "p_clip": 0.01
     }
-    
+
     train_data, test_data, f_names, f_types = get_dataset(mixed_config)
 
     print(f"Generated {len(train_data)} training samples and {len(test_data)} test samples.")
